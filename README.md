@@ -1,10 +1,11 @@
-to be able to view the web,  
-make sure you have Node.js installed  
-now,  create a folder in your system and open it in the vs code  
-in the vs code terminal  
-- clone the repo in your system using ( git clone <- repo link -> )
-- cd <- repo name ->
-- cd <- frontend ->
-- npm install
-- npm run dev
-- copy the localhost link and open it in the browser
+To see the website locally in your system,  
+- Make sure you have Node.js installed ( Just Visit Node.js page and Install it )  
+- Once installed, Create a folder in your system and open it in the VS Code  
+- Open a new terminal in your VS Code  
+- Copy the repo HTTPS url  
+- Clone the repo in your system using ( git clone <- repository url -> )  
+- cd <- repository name ->  
+- cd <- frontend ->  
+- npm install  
+- npm run dev  
+- Copy the localhost link and open it in the browser  
