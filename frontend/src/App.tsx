@@ -9,6 +9,7 @@ import { gsap } from "gsap";
 
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
+import WriteBlog from "./pages/WriteBlog";
 import Shop from "./pages/Shop";
 import Training from "./pages/Training";
 import Events from "./pages/Events";
@@ -54,6 +55,7 @@ const App = () => {
             <Route path="/" element={<Index />} />
             <Route path="/community" element={<Community />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/write" element={<WriteBlog />} />
             <Route path="/events" element={<Events />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/training" element={<Training />} />
