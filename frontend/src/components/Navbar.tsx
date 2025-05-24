@@ -76,13 +76,7 @@ const Navbar = () => {
               asChild
               className="bg-space-accent hover:bg-space-accent/80 text-white"
             >
-              <a 
-                href="https://chat.whatsapp.com/L3cBfJnQuO3BAbTnr4FbUE?fbclid=PAZXh0bgNhZW0CMTEAAabtBxDh4K2fihtHj_B3jxL87pA6nBaZurvhwesU32G5CftYqkhHFxdlicg_aem_v3_CsBh8Vl8Pxnf3HD8Ltg"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Join Now
-              </a>
+              <Link to="/login" className="text-white hover:text-space-light transition-colors">Login</Link>
             </Button>
           </div>
 
