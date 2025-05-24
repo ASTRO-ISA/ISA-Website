@@ -7,7 +7,7 @@ process.on('uncaughtException', (err) => {
 const app = require('./app')
 
 // Start the server
-const port = 3000
+const port = process.env.port || 3000
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`)
 })

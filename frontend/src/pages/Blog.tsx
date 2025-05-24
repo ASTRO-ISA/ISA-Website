@@ -1,8 +1,7 @@
-
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Calendar, Clock, Users, Play, ExternalLink } from "lucide-react";
-// import StarBackground from "@/components/StarBackground";
+import { Calendar, Clock, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Blog = () => {
   const blogs = [
@@ -44,43 +43,48 @@ const Blog = () => {
     }
   ];
 
+  const navigate = useNavigate();
+
+  const handleWriteClick = () => {
+    navigate("/write");
+  };
+
   return (
     <div className="min-h-screen bg-space-dark text-white">
-      {/* <StarBackground /> */}
       <Navbar />
-      
+
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Blogs</h1>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-          Explore Insights from Scientists, Astronauts, and Industry Experts
+            Explore Insights from Scientists, Astronauts, and Industry Experts
           </p>
         </div>
 
-        {/* Featured Session */}
+        {/* Featured Blog */}
         <section className="mb-16">
           <h2 className="text-2xl font-bold mb-8">Featured Blog</h2>
-          
+
           <div className="cosmic-card p-0 overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-5">
-              <div className="lg:col-span-3 h-64 relative"> {/*lg:h-auto - I have removed it*/}
-                <img 
-                  src="https://images.unsplash.com/photo-1501862700950-18382cd41497?q=80&w=1000" 
+            <div className="lg:col-span-3 relative">
+              <div className="aspect-video lg:h-full">
+                <img
+                  src="https://images.unsplash.com/photo-1501862700950-18382cd41497?q=80&w=1000"
                   alt="Space Talk"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  {/* black shade */}
-                </div>
+                <div className="absolute inset-0 bg-black/40" />
               </div>
+            </div>
               <div className="lg:col-span-2 p-6 flex flex-col justify-center">
                 <h3 className="text-2xl font-bold mb-3">A Blog with NASA Scientist: Mars Exploration Updates</h3>
                 <p className="text-gray-400 mb-6">
-                In this blog, Dr. Rajesh Kumar, a NASA scientist working on the Mars Exploration Program, shares exclusive insights about the latest discoveries on the Red Planet.
+                  In this blog, Dr. Rajesh Kumar, a NASA scientist working on the Mars Exploration Program, shares exclusive insights about the latest discoveries on the Red Planet.
                 </p>
                 <div className="flex items-center gap-2 mb-4">
-                  <img 
-                    src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=100" 
+                  <img
+                    src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=100"
                     alt="Dr. Rajesh Kumar"
                     className="w-12 h-12 rounded-full object-cover"
                   />
@@ -89,8 +93,8 @@ const Blog = () => {
                     <p className="text-sm text-gray-400">NASA Mars Exploration Program</p>
                   </div>
                 </div>
-                <a 
-                  href="#" 
+                <a
+                  href="#"
                   className="inline-flex items-center text-space-accent hover:underline"
                 >
                   Read full blog
@@ -100,64 +104,75 @@ const Blog = () => {
             </div>
           </div>
         </section>
-        
+
         {/* Recent Blogs */}
         <section className="mb-20">
-          <h2 className="text-2xl font-bold mb-8">Recent Blogs</h2>
-          
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold">Recent Blogs</h2>
+            <button
+              onClick={handleWriteClick}
+              className="bg-space-accent text-white px-4 py-2 rounded hover:bg-space-accent/80 transition"
+            >
+              Create&nbsp;<i className="fa-solid fa-plus fa-lg" style={{color: "white"}}></i>
+            </button>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {blogs.map((blog) => (
-              <div key={blog.id} className="cosmic-card overflow-hidden group">
-                <div className="h-48 overflow-hidden relative">
-                  <img 
-                    src={blog.image} 
+              <div
+              key={blog.id}
+              className="cosmic-card overflow-hidden group flex flex-col cursor-pointer"
+              onClick={() => navigate(`/blogs/${blog.id}`)}
+              >
+                <div className="h-48 w-full relative">
+                  <img
+                    src={blog.image}
                     alt={blog.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
-                    {/* <span className="text-white font-medium">{blog.presenter}</span> */}
-                  </div>
                 </div>
-                <div className="p-5">
-                  <h3 className="text-xl font-semibold mb-3">{blog.title}</h3>
-                  <p className="text-gray-400 text-sm mb-4">{blog.description}</p>
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-sm text-gray-400">
-                      <Calendar className="h-4 w-4 mr-2 text-space-accent" />
-                      <span>{blog.date}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-400">
-                      <Clock className="h-4 w-4 mr-2 text-space-accent" />
-                      <span>{blog.time}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 mb-4">
-                  <img 
-                    src={blog.autherProfileImage}
-                    alt="Dr. Rajesh Kumar"
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
+                <div className="p-5 flex-1 flex flex-col justify-between">
                   <div>
-                    <h4 className="font-semibold">{blog.auther}</h4>
-                    <p className="text-sm text-gray-400">{blog.autherDescription}</p>
+                    <h3 className="text-xl font-semibold mb-3">{blog.title}</h3>
+                    <p className="text-gray-400 text-sm mb-4">{blog.description}</p>
+
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center text-sm text-gray-400">
+                        <Calendar className="h-4 w-4 mr-2 text-space-accent" />
+                        <span>{blog.date}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-400">
+                        <Clock className="h-4 w-4 mr-2 text-space-accent" />
+                        <span>{blog.time}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={blog.autherProfileImage}
+                      alt={blog.auther}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div>
+                      <h4 className="font-semibold">{blog.auther}</h4>
+                      <p className="text-sm text-gray-400">{blog.autherDescription}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </section>
-        
+
         {/* Suggest a Blog Topic */}
         <section className="cosmic-card p-8">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-2/3">
               <h2 className="text-2xl font-bold mb-4">Suggest a Blog Topic</h2>
               <p className="text-gray-300 mb-6">
-              Got a Speaker or Topic in Mind? We'd Love to Hear from You!
+                Got a Speaker or Topic in Mind? We'd Love to Hear from You!
               </p>
-              
+
               <form className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
@@ -181,22 +196,25 @@ const Blog = () => {
                   rows={3}
                   className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
                 ></textarea>
-                <button type="submit" className="bg-space-accent hover:bg-space-accent/80 text-white px-6 py-2 rounded transition-colors">
+                <button
+                  type="submit"
+                  className="bg-space-accent hover:bg-space-accent/80 text-white px-6 py-2 rounded transition-colors"
+                >
                   Submit Suggestion
                 </button>
               </form>
             </div>
             <div className="md:w-1/3">
-              <img 
-                src="https://images.unsplash.com/photo-1576633587382-13ddf37b1fc1?q=80&w=500" 
-                alt="Space Speaker" 
+              <img
+                src="https://images.unsplash.com/photo-1576633587382-13ddf37b1fc1?q=80&w=500"
+                alt="Space Speaker"
                 className="rounded-lg h-auto w-full"
               />
             </div>
           </div>
         </section>
       </main>
-      
+
       <Footer />
     </div>
   );
