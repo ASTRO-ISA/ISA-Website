@@ -1,53 +1,51 @@
+
+// This is the main blog page where we will see all the featured blogs, recent blogs etc.
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Calendar, Clock, ExternalLink } from "lucide-react";
+import { Calendar, Clock, ExternalLink} from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Blog = () => {
-  const blogs = [
-    {
-      id: 1,
-      title: "Exploring the James Webb Space Telescope Discoveries",
-      date: "December 18, 2023",
-      time: "5 Min Read",
-      description: "Join us as Dr. Anjali Gupta discusses the latest discoveries from the James Webb Space Telescope and their implications for our understanding of the universe.",
-      attendees: 245,
-      image: "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?q=80&w=500",
-      auther: "Dr Santosh",
-      autherProfileImage: "images/placeholder.svg",
-      autherDescription: "ISRO Scientist"
-    },
-    {
-      id: 2,
-      title: "Careers in Space Science and Technology",
-      date: "January 5, 2024",
-      time: "5 Min Read",
-      description: "Discover career paths in the growing space industry with insights from professionals working in different sectors of space science and technology.",
-      attendees: 178,
-      image: "https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=500",
-      auther: "Dr Rajesh",
-      autherProfileImage: "images/placeholder.svg",
-      autherDescription: "Researcher"
-    },
-    {
-      id: 3,
-      title: "Amateur Astronomy: Getting Started with Limited Budget",
-      date: "January 15, 2024",
-      time: "5 Min Read",
-      description: "Learn how to begin your astronomy journey with affordable equipment and free resources. Perfect for beginners and students.",
-      attendees: 120,
-      image: "https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?q=80&w=500",
-      auther: "Dr Prakash",
-      autherProfileImage: "images/placeholder.svg",
-      autherDescription: "NASA Mars Exploration Program"
-    }
-  ];
 
-  const navigate = useNavigate();
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleWriteClick = () => {
-    navigate("/write");
-  };
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get("http://localhost:3000/blogs");
+        setBlogs(res.data);
+      } catch (err) {
+        console.error('Error fetching blogs', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchBlogs();
+  }, []);
+
+  if(loading) return <p>Loading blogs for you...</p>
+  if(!blogs) return <p>Nothing to see here right now.</p>
+
+  const formatDate = (dateStr) =>
+    new Date(dateStr).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  
+  const formatTime = (dateStr) =>
+    new Date(dateStr).toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
@@ -109,24 +107,31 @@ const Blog = () => {
         <section className="mb-20">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold">Recent Blogs</h2>
+            <Link
+            to="/write"
+            >
             <button
-              onClick={handleWriteClick}
+              // onClick={handleWriteClick}
               className="bg-space-accent text-white px-4 py-2 rounded hover:bg-space-accent/80 transition"
             >
               Create&nbsp;<i className="fa-solid fa-plus fa-lg" style={{color: "white"}}></i>
             </button>
+            </Link>
+            
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {blogs.map((blog) => (
-              <div
-              key={blog.id}
+
+              <Link
+              key={blog._id}
+              to={`/blogs/${blog._id}`}
               className="cosmic-card overflow-hidden group flex flex-col cursor-pointer"
-              onClick={() => navigate(`/blogs/${blog.id}`)}
+              // onClick={() => navigate(`/blogs/${blog.id}`)}
               >
                 <div className="h-48 w-full relative">
                   <img
-                    src={blog.image}
+                    src={`http://localhost:3000/uploads/${blog.thumbnail}`}
                     alt={blog.title}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
@@ -139,11 +144,11 @@ const Blog = () => {
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center text-sm text-gray-400">
                         <Calendar className="h-4 w-4 mr-2 text-space-accent" />
-                        <span>{blog.date}</span>
+                        <span>{formatDate(blog.createdAt)}</span>
                       </div>
                       <div className="flex items-center text-sm text-gray-400">
                         <Clock className="h-4 w-4 mr-2 text-space-accent" />
-                        <span>{blog.time}</span>
+                        <span>{formatTime(blog.createdAt)}</span>
                       </div>
                     </div>
                   </div>
@@ -154,12 +159,12 @@ const Blog = () => {
                       className="w-12 h-12 rounded-full object-cover"
                     />
                     <div>
-                      <h4 className="font-semibold">{blog.auther}</h4>
+                      <h4 className="font-semibold">{blog.author}</h4>
                       <p className="text-sm text-gray-400">{blog.autherDescription}</p>
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>

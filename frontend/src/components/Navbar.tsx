@@ -34,7 +34,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-2 space-x-5">
 
             <Link to="/community" className="text-white hover:text-space-light transition-colors">Community</Link>
-            <Link to="/blog" className="text-white hover:text-space-light transition-colors">Blog</Link>
+            <Link to="/blogs" className="text-white hover:text-space-light transition-colors">Blog</Link>
             <Link to="/events" className="text-white hover:text-space-light transition-colors">Events</Link>
             <Link to="/shop" className="text-white hover:text-space-light transition-colors">Shop</Link>
             <Link to="/training" className="text-white hover:text-space-light transition-colors">Training</Link>
