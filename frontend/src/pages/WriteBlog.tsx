@@ -1,44 +1,50 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import axios from 'axios';
+import axios from "axios";
 
 const WriteBlog = () => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
 
   const handleThumbnailChange = (e) => {
     setThumbnail(e.target.files[0]);
   };
 
-  {/*form submit */}
+  {
+    /*form submit */
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('title', title);
-    formData.append('content', content);
-    formData.append('thumbnail', thumbnail);
-  
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("thumbnail", thumbnail);
+
     try {
-      const response = await axios.post('http://localhost:3000/create/blog', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-  
-      console.log('Blog published:', response.data);
-      alert('Blog published successfully!');
+      const response = await axios.post(
+        "http://localhost:3000/apip/v1/create/blog",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("Blog published:", response.data);
+      alert("Blog published successfully!");
     } catch (err) {
-      console.error('Failed to publish blog', err);
-      alert('Error publishing blog.');
+      console.error("Failed to publish blog", err);
+      alert("Error publishing blog.");
     }
   };
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
       <Navbar />
-      
+
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Write a Blog</h1>
@@ -48,13 +54,15 @@ const WriteBlog = () => {
         </div>
 
         <form className="space-y-6 max-w-4xl mx-auto" onSubmit={handleSubmit}>
-
           {/* Thumbnail Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Thumbnail Image</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Thumbnail Image
+            </label>
             <input
               type="file"
               accept="image/*"
+              placeholder="Choose a file"
               onChange={handleThumbnailChange}
               className="block w-full text-sm text-gray-300 file:bg-space-purple/30 file:border-0 file:px-4 file:py-2 file:rounded file:text-white hover:file:bg-space-purple/50 transition"
             />
@@ -62,7 +70,9 @@ const WriteBlog = () => {
 
           {/* Blog Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Blog Title</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Blog Title
+            </label>
             <input
               type="text"
               placeholder="Enter the blog title"
@@ -74,7 +84,9 @@ const WriteBlog = () => {
 
           {/* Blog Content */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Content</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Content
+            </label>
             <textarea
               placeholder="Start writing your blog..."
               value={content}
