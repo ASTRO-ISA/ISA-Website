@@ -119,7 +119,11 @@ const Blog = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {blogs.map((blog) => (
-              <div key={blog.id} className="cosmic-card overflow-hidden group flex flex-col">
+              <div
+              key={blog.id}
+              className="cosmic-card overflow-hidden group flex flex-col cursor-pointer"
+              onClick={() => navigate(`/blogs/${blog.id}`)}
+              >
                 <div className="h-48 w-full relative">
                   <img
                     src={blog.image}
