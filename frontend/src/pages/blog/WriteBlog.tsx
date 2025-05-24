@@ -1,3 +1,6 @@
+
+// form/page to write a blog
+
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,6 +10,8 @@ const WriteBlog = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [thumbnail, setThumbnail] = useState(null);
+  const [auther, setAuther] = useState('');
+  const [description, setDescription] = useState('');
 
   const handleThumbnailChange = (e) => {
     setThumbnail(e.target.files[0]);
@@ -19,7 +24,10 @@ const WriteBlog = () => {
     formData.append('title', title);
     formData.append('content', content);
     formData.append('thumbnail', thumbnail);
+    formData.append('auther', auther);
+    formData.append('description', description);
   
+    // to post the form data to the server
     try {
       const response = await axios.post('http://localhost:3000/create/blog', formData, {
         headers: {
@@ -47,9 +55,10 @@ const WriteBlog = () => {
           </p>
         </div>
 
+        {/* Form to write blog */}
         <form className="space-y-6 max-w-4xl mx-auto" onSubmit={handleSubmit}>
 
-          {/* Thumbnail Upload */}
+          {/* Blog Thumbnail Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">Thumbnail Image</label>
             <input
@@ -82,6 +91,30 @@ const WriteBlog = () => {
               rows={10}
               className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
             ></textarea>
+          </div>
+
+          {/* Blog Description */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Descriptioin</label>
+            <textarea
+              placeholder="A brief description..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={10}
+              className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
+            ></textarea>
+          </div>
+
+          {/* Blog Auther */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Auther</label>
+            <input
+              type="text"
+              placeholder="Auther name"
+              value={auther}
+              onChange={(e) => setAuther(e.target.value)}
+              className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
+            />
           </div>
 
           {/* Submit Button */}

@@ -13,7 +13,9 @@ mongoose.connect(mongo_uri)
   .catch(err => console.error(err));
 
 // routes
+const allBlogsRoute = require('./routes/allBlogs.js');
 const createBlogRoute = require('./routes/createBlog.js');
+const readBlogRoute = require('./routes/readBlog.js');
 
 // middlewares
 app.use(cors());
@@ -22,7 +24,9 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static('uploads'));
 
+app.use('/blogs', allBlogsRoute);
 app.use('/create/blog', createBlogRoute);
+app.use('/', readBlogRoute);
 
 // create blog
 // app.post('/create/blog', upload.single('thumbnail'), async (req, res) => {
