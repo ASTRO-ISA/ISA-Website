@@ -8,9 +8,9 @@ import { useEffect } from "react";
 import { gsap } from "gsap";
 
 import Index from "./pages/Index";
-import Blog from "./pages/Blog";
-import BlogDetail from "./pages/BlogDetail";
-import WriteBlog from "./pages/WriteBlog";
+import Blog from "./pages/blog/Blog";
+import BlogDetail from "./pages/blog/BlogDetail";
+import WriteBlog from "./pages/blog/WriteBlog";
 import Shop from "./pages/Shop";
 import Training from "./pages/Training";
 import Events from "./pages/Events";
@@ -58,7 +58,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/community" element={<Community />} />
-            <Route path="/blog" element={<Blog />} />
+            <Route path="/blogs" element={<Blog />} />
             <Route path="/write" element={<WriteBlog />} />
             <Route path="/events" element={<Events />} />
             <Route path="/shop" element={<Shop />} />
@@ -66,6 +66,8 @@ const App = () => {
             <Route path="/webinars" element={<Webinars />} />
             <Route path="/login" element={<Login />}/>
             <Route path="/signup" element={<CreateAccount />}/>
+
+            <Route path="/blogs/:id" element={<BlogDetail />}/>
             
             {/* <Route path="/spline-models" element={<SplineModels />} />
             <Route path="/figma-design" element={<FigmaDesign />} />

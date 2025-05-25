@@ -6,7 +6,9 @@ require('dotenv').config()
 const bodyParser = require('body-parser')
 
 // routes
-const createBlogRouter = require('./routes/createBlog.js')
+const allBlogsRoute = require('./routes/allBlogs.js');
+const createBlogRoute = require('./routes/createBlog.js');
+const readBlogRoute = require('./routes/readBlog.js');
 const userRouter = require('./routes/userRoutes.js')
 
 // middlewares
@@ -16,7 +18,9 @@ app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use('/uploads', express.static('uploads'))
 
-app.use('api/v1/create/blog', createBlogRouter)
+app.use('/blogs', allBlogsRoute);
+app.use('/api/v1/create/blog', createBlogRoute);
+app.use('/', readBlogRoute);
 app.use('/api/v1/users', userRouter)
 
 // create blog
