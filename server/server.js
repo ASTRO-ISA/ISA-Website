@@ -1,10 +1,28 @@
+const mongoose = require('mongoose')
+const dotenv = require('dotenv')
+dotenv.config() // we need this to load our environment variables present in dotenv file
+
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION, SHUTTING DOWN...')
   console.log(err.name, err.message)
   process.exit(1)
 })
 
+// Load environment variables
+dotenv.config({ path: './config.env' })
+
 const app = require('./app')
+
+// connect to mongoDB
+mongoose
+  .connect(process.env.DB_URL, {
+    ssl: true
+  })
+  .then(() => console.log('DB connection successful'))
+  .catch((err) => {
+    console.error('DB connection failed:', err.message)
+    process.exit(1)
+  })
 
 // Start the server
 const port = process.env.port || 3000
