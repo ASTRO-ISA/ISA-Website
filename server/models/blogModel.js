@@ -1,29 +1,31 @@
 const mongoose = require('mongoose');
 
 const blogSchema = new mongoose.Schema({
+    thumbnail: {
+        type: String,
+        default: 'http://localhost:3000/uploads/blogThumbnail.webp'
+    },
     title: {
         type: String,
         required: [true, 'Title is required.']
+    },
+    description: {
+        type: String,
+        maxLength: [180, 'Max of 180 characters are allowed.']
     },
     content: {
         type: String,
         minLength: [300, 'At least 300 characters are required.'],
         required: [true]
     },
-    thumbnail: {
-        type: String,
-        default: 'http://localhost:3000/uploads/blogThumbnail.webp'
-    },
     createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now // gives fresh timestamp to every blog when the blog is saved
     },
     author: {
-        type: String,
-    },
-    description: {
-        type: String,
-        maxLength: [180, 'Max of 180 characters are allowed.']
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 })
 
