@@ -18,7 +18,7 @@ const Blog = () => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:3000/blogs");
+        const res = await axios.get("http://localhost:3000/api/v1/blogs");
         setBlogs(res.data);
       } catch (err) {
         console.error('Error fetching blogs', err);
@@ -154,13 +154,13 @@ const Blog = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <img
-                      src={blog.autherProfileImage}
-                      alt={blog.auther}
+                      src={blog.authorProfileImage}
+                      alt={blog.author}
                       className="w-12 h-12 rounded-full object-cover"
                     />
                     <div>
                       <h4 className="font-semibold">{blog.author}</h4>
-                      <p className="text-sm text-gray-400">{blog.autherDescription}</p>
+                      <p className="text-sm text-gray-400">{blog.authorDescription}</p>
                     </div>
                   </div>
                 </div>

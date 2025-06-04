@@ -6,9 +6,10 @@ require('dotenv').config()
 const bodyParser = require('body-parser')
 
 // routes
-const allBlogsRoute = require('./routes/allBlogs.js');
-const createBlogRoute = require('./routes/createBlog.js');
-const readBlogRoute = require('./routes/readBlog.js');
+const blogRouter = require('./routes/blogRoutes.js')
+// const allBlogsRoute = require('./routes/allBlogs.js');
+// const createBlogRoute = require('./routes/createBlog.js');
+// const readBlogRoute = require('./routes/readBlog.js');
 const userRouter = require('./routes/userRoutes.js')
 
 // middlewares
@@ -18,20 +19,11 @@ app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use('/uploads', express.static('uploads'))
 
-app.use('/blogs', allBlogsRoute);
-app.use('/api/v1/create/blog', createBlogRoute);
-app.use('/', readBlogRoute);
+// app.use('/blogs', allBlogsRoute);
+app.use('/api/v1/blogs', blogRouter);
+// app.use('/api/v1/create/blog', createBlogRoute);
+// app.use('/', readBlogRoute);
 app.use('/api/v1/users', userRouter)
-
-// create blog
-// app.post('/create/blog', upload.single('thumbnail'), async (req, res) => {
-//   const { title, content } = req.body;
-//   const thumbnailPath = req.file?.path;
-
-//   const blog = new Blog({ title, content, thumbnail: thumbnailPath });
-//   await blog.save();
-//   res.status(201).json({ message: 'Blog saved successfully' });
-// });
 
 app.get('/', (req, res) => {
   res.status(200).json({
@@ -42,7 +34,7 @@ app.get('/', (req, res) => {
 
 app.all('*', (req, res, next) => {
   res.status(404).json({
-    status: 'fail',
+    status: 'Fail',
     message: `Can't find ${req.originalUrl} on this server!`
   })
   next()

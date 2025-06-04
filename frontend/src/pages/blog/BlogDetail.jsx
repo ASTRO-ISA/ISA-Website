@@ -15,7 +15,7 @@ const BlogDetail = () => {
 
   // to get all the blog data form database
   useEffect(() => {
-    axios.get(`http://localhost:3000/blogs/${id}`)
+    axios.get(`http://localhost:3000/api/v1/blogs/${id}`)
     .then((res) => {
         setBlog(res.data);
         setLoading(false);

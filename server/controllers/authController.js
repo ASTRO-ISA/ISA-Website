@@ -45,7 +45,7 @@ exports.signup = async (req, res) => {
 
     createSendToken(newUser, 201, res)
   } catch (error) {
-    res.status(500).json({ status: 'Fali', message: error.message })
+    res.status(500).json({ status: 'Fail', message: error.message })
   }
 }
 
@@ -56,7 +56,7 @@ exports.login = async (req, res) => {
     //check both email and password are there
     if (!email || !password) {
       return res.status(400).json({
-        status: 'Fali',
+        status: 'Fail',
         message: 'Please provide both email and Password'
       })
     }
@@ -66,11 +66,11 @@ exports.login = async (req, res) => {
     if (!user || !(await user.correctPassword(password, user.password))) {
       return res
         .status(401)
-        .json({ status: 'Fali', message: 'Incorrect email or password' })
+        .json({ status: 'Fail', message: 'Incorrect email or password' })
     }
 
     createSendToken(user, 200, res)
   } catch (error) {
-    res.status(500).json({ status: 'Fali', message: error.message })
+    res.status(500).json({ status: 'Fail', message: error.message })
   }
 }

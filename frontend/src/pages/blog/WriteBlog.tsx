@@ -29,7 +29,7 @@ const WriteBlog = () => {
   
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/v1/create/blog",
+        "http://localhost:3000/api/v1/blogs/create",
         formData,
         {
           headers: {
