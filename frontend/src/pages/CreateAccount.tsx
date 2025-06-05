@@ -2,15 +2,18 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+// import { AccordionContent } from "@radix-ui/react-accordion";
+import axios from "axios";
 
 const Signup = () => {
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     
   const [form, setForm] = useState({
-    fullName: '',
+    name: '',
     email: '',
+    phoneNo: '',
     password: '',
     confirmPassword: '',
     country: ''
@@ -20,16 +23,36 @@ const Signup = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match");
       return;
     }
 
-    // send form data to server (API call here)
-    console.log("Signup data submitted:", form);
-    alert("Account created!");
+    const accountInfo = new FormData();
+    for(let key in form){
+      accountInfo.append(key, form[key]); // saving account info in the FormData to send to API, since we have defined a single useState for all our form data, using for loop to assign values
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/users/signup",
+        accountInfo,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true, // this is to ensure cookie is accepted by the browser
+        }
+      );
+
+      console.log("Account created!:", response.data);
+      alert("Account created!:");
+    } catch (err) {
+      console.error("Something went wrong", err);
+      alert("Something went wrong");
+    }
   };
 
   return (
@@ -46,8 +69,8 @@ const Signup = () => {
               <label className="block text-sm text-gray-300 mb-1">Full Name</label>
               <input
                 type="text"
-                name="fullName"
-                value={form.fullName}
+                name="name"
+                value={form.name}
                 onChange={handleChange}
                 placeholder="John Doe"
                 required
@@ -64,6 +87,20 @@ const Signup = () => {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="you@example.com"
+                required
+                className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
+              />
+            </div>
+
+            {/* Phone Number */}
+            <div>
+              <label className="block text-sm text-gray-300 mb-1">Phone Number</label>
+              <input
+                type="tel"
+                name="phoneNo"
+                value={form.phoneNo}
+                onChange={handleChange}
+                placeholder="Number"
                 required
                 className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
               />

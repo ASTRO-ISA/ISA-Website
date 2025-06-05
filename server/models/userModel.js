@@ -20,22 +20,22 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    minlength: 8,
+    minlength: [8, 'Minimum 8 character'],
     required: [true, 'Password is required'],
     select: false
   },
-  confirmPassword: {
-    type: String,
-    minlength: 8,
-    required: [true, 'Confirm Password is required'],
-    validate: {
-      // this only work on save ans create
-      validator: function (el) {
-        return el === this.password
-      },
-      message: 'passwords are not same'
-    }
-  },
+  // confirmPassword: {
+  //   type: String,
+  //   minlength: 8,
+  //   required: [true, 'Confirm Password is required'],
+  //   validate: {
+  //     // this only work on save ans create
+  //     validator: function (el) {
+  //       return el === this.password
+  //     },
+  //     message: 'passwords are not same'
+  //   }
+  // },
   country: {
     type: String,
     default: 'India',
@@ -43,12 +43,12 @@ const userSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now()
+    default: Date.now
   }
 })
 
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next
+  if (!this.isModified('password')) return next()
   // hash the password
   this.password = await bcrypt.hash(this.password, 12)
   // delete the confirm password field
