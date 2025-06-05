@@ -18,6 +18,7 @@ import Webinars from "./pages/Webinars";
 import Community from "./pages/Community";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
+import Profile from "./pages/Profile";
 // import SplineModels from "./pages/SplineModels";
 // import FigmaDesign from "./pages/FigmaDesign";
 // import AstronomyResources from "./pages/AstronomyResources";
@@ -66,8 +67,10 @@ const App = () => {
             <Route path="/webinars" element={<Webinars />} />
             <Route path="/login" element={<Login />}/>
             <Route path="/signup" element={<CreateAccount />}/>
+            
 
             <Route path="/blogs/:id" element={<BlogDetail />}/>
+            <Route path="/profile" element={<Profile />}/>
             
             {/* <Route path="/spline-models" element={<SplineModels />} />
             <Route path="/figma-design" element={<FigmaDesign />} />

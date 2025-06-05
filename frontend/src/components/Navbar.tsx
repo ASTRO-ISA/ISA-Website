@@ -1,12 +1,48 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Instagram, MessageCircle, Rocket, Palette, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate()
+
+  // check if logged in
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    axios
+      .get('http://localhost:3000/api/v1/users/me', {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setIsLoggedIn(true);
+        setUser(res.data);
+      })
+      .catch(() => setIsLoggedIn(false));
+  }, []);
+
+  // if the user is logged in, avatar will be shown and when clcking it, user dashboard will open
+  const handleAvatarClick = () => {
+    navigate('/profile');
+  }
+
+  // logout handler
+  const logout = async () => {
+    try {
+      await axios.get('http://localhost:3000/api/v1/users/logout', {
+        withCredentials: true,
+      });
+      setIsLoggedIn(false);
+      alert('Logged out');
+    } catch (err) {
+      alert('Could not logout');
+    }
+  };
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -72,12 +108,28 @@ const Navbar = () => {
               </a>
             </div> */}
 
+
+            
+          {!isLoggedIn && (
             <Button 
               asChild
               className="bg-space-accent hover:bg-space-accent/80 text-white"
             >
-              <Link to="/login" className="text-white hover:text-space-light transition-colors">Login</Link>
+              <Link to="/login" className="text-white hover:text-space-light transition-colors">
+                Login
+              </Link>
             </Button>
+          )}
+          
+          {/* if the user is logged in show avatar */}
+          {isLoggedIn && (
+            <img
+            src="/public/placeholder.svg"
+            alt="User Avatar"
+            onClick={handleAvatarClick}
+            className="h-10 w-10 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform"
+            />
+          )}
           </div>
 
           {/* Mobile Menu Button */}

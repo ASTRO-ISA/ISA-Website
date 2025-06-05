@@ -4,6 +4,8 @@ const app = express()
 const cors = require('cors')
 require('dotenv').config()
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
+
 
 // routes
 const blogRouter = require('./routes/blogRoutes.js')
@@ -13,11 +15,15 @@ const blogRouter = require('./routes/blogRoutes.js')
 const userRouter = require('./routes/userRoutes.js')
 
 // middlewares
-app.use(cors())
+app.use(cors({
+  origin: 'http://localhost:8080',
+  credentials: true,
+}))
 app.use(express.json())
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use('/uploads', express.static('uploads'))
+app.use(cookieParser())
 
 // app.use('/blogs', allBlogsRoute);
 app.use('/api/v1/blogs', blogRouter);

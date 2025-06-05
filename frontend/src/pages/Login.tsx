@@ -2,17 +2,43 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Add login logic here
+    const loginInfo = new FormData();
+    for(let key in form){
+      loginInfo.append(key, form[key]);
+    }
+
+    try{
+      const response = await axios.post(
+        'http://localhost:3000/api/v1/users/login',
+        loginInfo,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          withCredentials: true
+        }
+      )
+
+      console.log('Login success', response.data)
+      // alert('Login success')
+      navigate('/')
+    } catch (err){
+      console.log('Something went wrong', err)
+      alert('Something went wrong')
+    }
     console.log("Login submitted:", form);
   };
 
