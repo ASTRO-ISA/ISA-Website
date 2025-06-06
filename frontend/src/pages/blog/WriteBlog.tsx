@@ -2,30 +2,26 @@
 // form/page to write a blog
 
 import { useState } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import axios from "axios";
 
 const WriteBlog = () => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [thumbnail, setThumbnail] = useState(null);
-  const [auther, setAuther] = useState('');
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [thumbnail, setThumbnail] = useState('');
   const [description, setDescription] = useState('');
 
   const handleThumbnailChange = (e) => {
     setThumbnail(e.target.files[0]);
   };
 
-  {
-    /*form submit */
-  }
+  // Submit Form
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append('title', title);
     formData.append('content', content);
     formData.append('thumbnail', thumbnail);
+    formData.append('description', description);
   
     try {
       const response = await axios.post(
@@ -35,6 +31,7 @@ const WriteBlog = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true
         }
       );
 
@@ -48,8 +45,6 @@ const WriteBlog = () => {
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
-      <Navbar />
-
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Write a Blog</h1>
@@ -110,21 +105,9 @@ const WriteBlog = () => {
               placeholder="A brief description..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={10}
+              rows={3}
               className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
             ></textarea>
-          </div>
-
-          {/* Blog Auther */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Auther</label>
-            <input
-              type="text"
-              placeholder="Auther name"
-              value={auther}
-              onChange={(e) => setAuther(e.target.value)}
-              className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
-            />
           </div>
 
           {/* Submit Button */}
@@ -138,8 +121,6 @@ const WriteBlog = () => {
           </div>
         </form>
       </main>
-
-      <Footer />
     </div>
   );
 };
