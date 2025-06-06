@@ -46,7 +46,7 @@ const BlogDetail = () => {
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
-      <Navbar />
+      {/* <Navbar /> */}
 
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-4xl mx-auto space-y-8">
@@ -81,21 +81,21 @@ const BlogDetail = () => {
 
           {/* Author Info */}
           <div className="flex items-center gap-4 mt-12 pt-6 border-t border-gray-600">
-            {/* <img
-              src={blog.authorProfileImage} // Right now we have not set up this yet
-              alt={blog.author}
+            <img
+              src='/images/placeholder.svg' // Right now we have not set up this yet
+              alt={blog.author?.name}
               className="w-14 h-14 rounded-full object-cover"
             />
             <div>
-              <h4 className="font-semibold">{blog.author}</h4>
-              <p className="text-sm text-gray-400">{blog.authorDescription}</p>
-            </div> */}
-            <p>{blog.author}</p> {/* for time being we are using only the auther name, once we set up the above commented (9 lines) details, this can be removed */}
+              <h4 className="font-semibold">{blog.author?.name}</h4>
+              <p className="text-sm text-gray-400">{blog.author?.country}</p>
+            </div>
+            {/* <p>{blog.author.name}</p> for time being we are using only the auther name, once we set up the above commented (9 lines) details, this can be removed */}
           </div>
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

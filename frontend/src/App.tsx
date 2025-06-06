@@ -23,6 +23,8 @@ import Profile from "./pages/Profile";
 // import FigmaDesign from "./pages/FigmaDesign";
 // import AstronomyResources from "./pages/AstronomyResources";
 import NotFound from "./pages/NotFound";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +58,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+        <Navbar />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/community" element={<Community />} />
@@ -77,6 +80,7 @@ const App = () => {
             <Route path="/astronomy-resources" element={<AstronomyResources />} /> */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <Footer />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

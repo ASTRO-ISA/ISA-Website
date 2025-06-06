@@ -76,7 +76,7 @@ const Webinars = () => {
   return (
     <div className="min-h-screen bg-space-dark text-white">
       {/* <StarBackground /> */}
-      <Navbar />
+      {/* <Navbar /> */}
       
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="text-center mb-12">
@@ -265,7 +265,7 @@ const Webinars = () => {
         </section>
       </main>
       
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

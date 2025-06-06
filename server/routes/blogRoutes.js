@@ -14,7 +14,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.get('/', blogController.allBlogs)
-router.post('/create', upload.single('thumbnail'), authenticateToken, blogController.createBlog)
+router.post('/create', authenticateToken, upload.single('thumbnail'), blogController.createBlog)
+router.get('/featured', blogController.featuredBlog)
 router.get('/:id', blogController.readBlog)
 
 module.exports = router
