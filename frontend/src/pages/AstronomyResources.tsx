@@ -64,7 +64,7 @@ const AstronomyResources = () => {
   return (
     <div className="min-h-screen bg-space-dark text-white">
       {/* <StarBackground /> */}
-      <Navbar />
+      {/* <Navbar /> */}
       
       <div className="container mx-auto px-4 pt-28 pb-16">
         <motion.div
@@ -115,7 +115,7 @@ const AstronomyResources = () => {
         </motion.div>
       </div>
       
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

@@ -14,14 +14,14 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-space-dark text-white">
       {/* <StarBackground /> */}
-      <Navbar />
+      {/* <Navbar /> */}
       <HeroSection />
       <FeaturesSection />
       <EventsCalendar />
       {/* <InteractiveModel /> */}
       <GallerySection />
       <CtaSection />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

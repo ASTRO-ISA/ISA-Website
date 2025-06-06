@@ -6,12 +6,8 @@ require('dotenv').config()
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 
-
 // routes
 const blogRouter = require('./routes/blogRoutes.js')
-// const allBlogsRoute = require('./routes/allBlogs.js');
-// const createBlogRoute = require('./routes/createBlog.js');
-// const readBlogRoute = require('./routes/readBlog.js');
 const userRouter = require('./routes/userRoutes.js')
 
 // middlewares
@@ -25,10 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/uploads', express.static('uploads'))
 app.use(cookieParser())
 
-// app.use('/blogs', allBlogsRoute);
-app.use('/api/v1/blogs', blogRouter);
-// app.use('/api/v1/create/blog', createBlogRoute);
-// app.use('/', readBlogRoute);
+app.use('/api/v1/blogs', blogRouter)
 app.use('/api/v1/users', userRouter)
 
 app.get('/', (req, res) => {

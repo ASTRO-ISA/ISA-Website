@@ -57,7 +57,7 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
-      <Navbar />
+      {/* <Navbar /> */}
 
       <main className="container mx-auto px-4 pt-24 pb-16 max-w-xl">
         <div className="bg-space-purple/10 p-8 rounded-lg shadow-xl">
@@ -174,7 +174,7 @@ const Signup = () => {
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };
