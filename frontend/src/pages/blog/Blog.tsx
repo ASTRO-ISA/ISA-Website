@@ -11,8 +11,23 @@ import axios from "axios";
 
 const Blog = () => {
 
+  // client-server communication
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [featured, setFeatured] = useState({
+    _id: '',
+    thumbnail: '',
+    title: '',
+    description: '',
+    content: '',
+    author: {
+      name: '',
+      country: ''
+    },
+    createdAt: ''
+  });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -30,9 +45,26 @@ const Blog = () => {
     fetchBlogs();
   }, []);
 
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get("http://localhost:3000/api/v1/blogs/featured");
+        setFeatured(res.data);
+      } catch (err) {
+        console.error('Error fetching blogs', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchBlogs();
+  }, []);
+
   if(loading) return <p>Loading blogs for you...</p>
   if(!blogs) return <p>Nothing to see here right now.</p>
 
+  // to show the date in readable format
   const formatDate = (dateStr) =>
     new Date(dateStr).toLocaleDateString('en-IN', {
       day: 'numeric',
@@ -40,6 +72,7 @@ const Blog = () => {
       year: 'numeric',
     });
   
+  // to set time in readable format
   const formatTime = (dateStr) =>
     new Date(dateStr).toLocaleTimeString('en-IN', {
       hour: '2-digit',
@@ -47,9 +80,23 @@ const Blog = () => {
       hour12: true,
     });
 
+  // to check if the user is logged in before writing the blog, if the user is not logged in, he cannot write blog
+  const handleWriteClick = () => {
+    axios.get('http://localhost:3000/api/v1/users/me', {withCredentials: true})
+    .then(() => {navigate('/write')})
+    .catch(() => alert('Please Login to use this feature'))
+  };
+
+  // get featured blog
+  // const featuredBlog = () => {
+  //   axios.get('http://localhost:3000/api/v1/blogs/featured')
+  //     .then((res) => setFeatured(res.data))
+  //     .catch((err) => console.error('Error finding featured blog:', err));
+  // };
+
   return (
     <div className="min-h-screen bg-space-dark text-white">
-      <Navbar />
+      {/* <Navbar /> */}
 
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="text-center mb-12">
@@ -68,7 +115,7 @@ const Blog = () => {
             <div className="lg:col-span-3 relative">
               <div className="aspect-video lg:h-full">
                 <img
-                  src="https://images.unsplash.com/photo-1501862700950-18382cd41497?q=80&w=1000"
+                  src={`http://localhost:3000/uploads/${featured.thumbnail}`}
                   alt="Space Talk"
                   className="w-full h-full object-cover"
                 />
@@ -76,28 +123,32 @@ const Blog = () => {
               </div>
             </div>
               <div className="lg:col-span-2 p-6 flex flex-col justify-center">
+                <Link
+                to={`/blogs/${featured._id}`}
+                >
                 <h3 className="text-2xl font-bold mb-3">A Blog with NASA Scientist: Mars Exploration Updates</h3>
+                </Link>
                 <p className="text-gray-400 mb-6">
-                  In this blog, Dr. Rajesh Kumar, a NASA scientist working on the Mars Exploration Program, shares exclusive insights about the latest discoveries on the Red Planet.
+                  {featured.description}
                 </p>
                 <div className="flex items-center gap-2 mb-4">
                   <img
-                    src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=100"
-                    alt="Dr. Rajesh Kumar"
+                    src={`http://localhost:3000/uploads/${featured.thumbnail}`}
+                    alt={featured.author.name}
                     className="w-12 h-12 rounded-full object-cover"
                   />
                   <div>
-                    <h4 className="font-semibold">Dr. Rajesh Kumar</h4>
+                    <h4 className="font-semibold">{featured.author.name}</h4>
                     <p className="text-sm text-gray-400">NASA Mars Exploration Program</p>
                   </div>
                 </div>
-                <a
+                {/* <a
                   href="#"
                   className="inline-flex items-center text-space-accent hover:underline"
                 >
                   Read full blog
                   <ExternalLink className="ml-1 h-4 w-4" />
-                </a>
+                </a> */}
               </div>
             </div>
           </div>
@@ -107,16 +158,18 @@ const Blog = () => {
         <section className="mb-20">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold">Recent Blogs</h2>
-            <Link
-            to="/write"
-            >
+            {/* <Link
+            onClick={handleWriteClick}
+            // to="/write"
+            > */}
+              {/* Create blog button */}
             <button
-              // onClick={handleWriteClick}
+              onClick={handleWriteClick}
               className="bg-space-accent text-white px-4 py-2 rounded hover:bg-space-accent/80 transition"
             >
               Create&nbsp;<i className="fa-solid fa-plus fa-lg" style={{color: "white"}}></i>
             </button>
-            </Link>
+            {/* </Link> */}
             
           </div>
 
@@ -154,13 +207,13 @@ const Blog = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <img
-                      src={blog.authorProfileImage}
+                      src='/images/placeholder.svg'
                       alt={blog.author}
                       className="w-12 h-12 rounded-full object-cover"
                     />
                     <div>
-                      <h4 className="font-semibold">{blog.author}</h4>
-                      <p className="text-sm text-gray-400">{blog.authorDescription}</p>
+                      <h4 className="font-semibold">{blog.author?.name}</h4>
+                      <p className="text-sm text-gray-400">{blog.author?.country}</p>
                     </div>
                   </div>
                 </div>
@@ -220,7 +273,7 @@ const Blog = () => {
         </section>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

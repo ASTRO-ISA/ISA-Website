@@ -3,9 +3,11 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import StarBackground from '@/components/StarBackground';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -29,6 +31,7 @@ const Profile = () => {
             withCredentials: true,
           });
           alert('Logged out');
+          navigate('/');
         } catch (err) {
           alert('Could not logout');
         }
@@ -36,7 +39,7 @@ const Profile = () => {
 
   return (
     <>
-    <Navbar />
+    {/* <Navbar /> */}
     <StarBackground />
     <div className="min-h-screen  text-white flex flex-col items-center justify-center">
         <img
@@ -48,7 +51,7 @@ const Profile = () => {
         <p className="text-space-light mt-1">{user.email}</p>
         <button onClick={logout} className="px-4 py-2 border border-gray-700 text-white rounded-md hover:bg-gray-700 hover:text-white transition">Logout</button>
     </div>
-    <Footer />
+    {/* <Footer /> */}
     </>
     
   );

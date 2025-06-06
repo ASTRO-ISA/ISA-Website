@@ -44,7 +44,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-space-dark text-white flex flex-col">
-      <Navbar />
+      {/* <Navbar /> */}
 
       <main className="flex-grow flex items-center justify-center px-4 pt-24 pb-16">
         <form

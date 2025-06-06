@@ -40,7 +40,7 @@ const SplineModels = () => {
   return (
     <div className="min-h-screen bg-space-dark text-white">
       {/* <StarBackground /> */}
-      <Navbar />
+      {/* <Navbar /> */}
       
       <div className="pt-28 pb-16 px-4">
         <h1 className="text-4xl font-bold text-center mb-12 space-glow">Interactive 3D Models</h1>
@@ -123,7 +123,7 @@ const SplineModels = () => {
         </div>
       </div>
       
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };
