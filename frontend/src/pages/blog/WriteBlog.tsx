@@ -1,14 +1,17 @@
-
 // form/page to write a blog
 
 import { useState } from "react";
 import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const WriteBlog = () => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [thumbnail, setThumbnail] = useState('');
-  const [description, setDescription] = useState('');
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [thumbnail, setThumbnail] = useState("");
+  const [description, setDescription] = useState("");
 
   const handleThumbnailChange = (e) => {
     setThumbnail(e.target.files[0]);
@@ -18,11 +21,11 @@ const WriteBlog = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('title', title);
-    formData.append('content', content);
-    formData.append('thumbnail', thumbnail);
-    formData.append('description', description);
-  
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("thumbnail", thumbnail);
+    formData.append("description", description);
+
     try {
       const response = await axios.post(
         "http://localhost:3000/api/v1/blogs/create",
@@ -31,15 +34,23 @@ const WriteBlog = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-          withCredentials: true
+          withCredentials: true,
         }
       );
 
       console.log("Blog published:", response.data);
-      alert("Blog published successfully!");
+      setContent("");
+      setDescription("");
+      setThumbnail("");
+      setTitle("");
+      setTimeout(() => {
+        navigate("/blogs");
+      }, 1000);
+      toast({ title: "Blog published successfully!" });
     } catch (err) {
       console.error("Failed to publish blog", err);
-      alert("Error publishing blog.");
+      // alert("Error publishing blog.");
+      toast({ title: "Error publishing blog.", variant: "destructive" });
     }
   };
 
@@ -55,7 +66,6 @@ const WriteBlog = () => {
 
         {/* Form to write blog */}
         <form className="space-y-6 max-w-4xl mx-auto" onSubmit={handleSubmit}>
-
           {/* Thumbnail Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -100,7 +110,9 @@ const WriteBlog = () => {
 
           {/* Blog Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Descriptioin</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Descriptioin
+            </label>
             <textarea
               placeholder="A brief description..."
               value={description}

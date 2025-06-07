@@ -1,47 +1,29 @@
-
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X, Instagram, MessageCircle, Rocket, Palette, BookOpen } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  Menu,
+  X,
+  Instagram,
+  MessageCircle,
+  Rocket,
+  Palette,
+  BookOpen,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate()
-
-  // check if logged in
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  useEffect(() => {
-    axios
-      .get('http://localhost:3000/api/v1/users/me', {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setIsLoggedIn(true);
-        setUser(res.data);
-      })
-      .catch(() => setIsLoggedIn(false));
-  }, []);
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
   // if the user is logged in, avatar will be shown and when clcking it, user dashboard will open
   const handleAvatarClick = () => {
-    navigate('/profile');
-  }
-
-  // logout handler
-  const logout = async () => {
-    try {
-      await axios.get('http://localhost:3000/api/v1/users/logout', {
-        withCredentials: true,
-      });
-      setIsLoggedIn(false);
-      alert('Logged out');
-    } catch (err) {
-      alert('Could not logout');
-    }
+    navigate("/profile");
   };
 
   const toggleMobileMenu = () => {
@@ -49,7 +31,7 @@ const Navbar = () => {
   };
 
   return (
-    <motion.nav 
+    <motion.nav
       // initial={{ y: -100 }}
       // animate={{ y: 0 }}
       // transition={{ type: 'spring', stiffness: 120, damping: 20 }}
@@ -58,9 +40,9 @@ const Navbar = () => {
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
-            <img 
-              src="/images/b6dae26d-ef96-4680-9fc3-9b743f9ae50f.png" 
-              alt="ISA Logo" 
+            <img
+              src="/images/b6dae26d-ef96-4680-9fc3-9b743f9ae50f.png"
+              alt="ISA Logo"
               className="h-10 w-auto"
             />
             {/* <span className="font-bold text-xl text-white">ISA Club</span> */}
@@ -68,14 +50,43 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-2 space-x-5">
+            <Link
+              to="/community"
+              className="text-white hover:text-space-light transition-colors"
+            >
+              Community
+            </Link>
+            <Link
+              to="/blogs"
+              className="text-white hover:text-space-light transition-colors"
+            >
+              Blog
+            </Link>
+            <Link
+              to="/events"
+              className="text-white hover:text-space-light transition-colors"
+            >
+              Events
+            </Link>
+            <Link
+              to="/shop"
+              className="text-white hover:text-space-light transition-colors"
+            >
+              Shop
+            </Link>
+            <Link
+              to="/training"
+              className="text-white hover:text-space-light transition-colors"
+            >
+              Training
+            </Link>
+            <Link
+              to="/webinars"
+              className="text-white hover:text-space-light transition-colors"
+            >
+              Webinars
+            </Link>
 
-            <Link to="/community" className="text-white hover:text-space-light transition-colors">Community</Link>
-            <Link to="/blogs" className="text-white hover:text-space-light transition-colors">Blog</Link>
-            <Link to="/events" className="text-white hover:text-space-light transition-colors">Events</Link>
-            <Link to="/shop" className="text-white hover:text-space-light transition-colors">Shop</Link>
-            <Link to="/training" className="text-white hover:text-space-light transition-colors">Training</Link>
-            <Link to="/webinars" className="text-white hover:text-space-light transition-colors">Webinars</Link>
-            
             {/* <Link to="/spline-models" className="text-white hover:text-space-light transition-colors flex items-center gap-1">
               <Rocket size={16} />
               <span>3D Models</span>
@@ -88,7 +99,7 @@ const Navbar = () => {
               <BookOpen size={16} />
               <span>Resources</span>
             </Link> */}
-            
+
             {/* <div className="flex items-center space-x-4">
               <a 
                 href="https://www.instagram.com/isa.astrospace?igsh=cGgyeDB3M2d4dDJ5"
@@ -108,34 +119,35 @@ const Navbar = () => {
               </a>
             </div> */}
 
+            {!isLoggedIn && (
+              <Button
+                asChild
+                className="bg-space-accent hover:bg-space-accent/80 text-white"
+              >
+                <Link
+                  to="/login"
+                  className="text-white hover:text-space-light transition-colors"
+                >
+                  Login
+                </Link>
+              </Button>
+            )}
 
-            
-          {!isLoggedIn && (
-            <Button 
-              asChild
-              className="bg-space-accent hover:bg-space-accent/80 text-white"
-            >
-              <Link to="/login" className="text-white hover:text-space-light transition-colors">
-                Login
-              </Link>
-            </Button>
-          )}
-          
-          {/* if the user is logged in show avatar */}
-          {isLoggedIn && (
-            <img
-            src="/public/placeholder.svg"
-            alt="User Avatar"
-            onClick={handleAvatarClick}
-            className="h-10 w-10 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform"
-            />
-          )}
+            {/* if the user is logged in show avatar */}
+            {isLoggedIn && (
+              <img
+                src="/public/placeholder.svg"
+                alt="User Avatar"
+                onClick={handleAvatarClick}
+                className="h-10 w-10 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform"
+              />
+            )}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
-            <button 
-              onClick={toggleMobileMenu} 
+            <button
+              onClick={toggleMobileMenu}
               className="text-white focus:outline-none"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -145,7 +157,7 @@ const Navbar = () => {
 
         {/* Mobile Menu Panel */}
         {mobileMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -153,82 +165,82 @@ const Navbar = () => {
             className="md:hidden"
           >
             <div className="flex flex-col space-y-4 pt-4 pb-6 px-2">
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="text-white hover:text-space-light transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
               </Link>
-              <Link 
-                to="/community" 
+              <Link
+                to="/community"
                 className="text-white hover:text-space-light transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Community
               </Link>
-              <Link 
-                to="/blog" 
+              <Link
+                to="/blog"
                 className="text-white hover:text-space-light transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Blog
               </Link>
-              <Link 
-                to="/events" 
+              <Link
+                to="/events"
                 className="text-white hover:text-space-light transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Events
               </Link>
-              <Link 
-                to="/shop" 
+              <Link
+                to="/shop"
                 className="text-white hover:text-space-light transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Shop
               </Link>
-              <Link 
-                to="/training" 
+              <Link
+                to="/training"
                 className="text-white hover:text-space-light transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Training
               </Link>
-              <Link 
-                to="/webinars" 
+              <Link
+                to="/webinars"
                 className="text-white hover:text-space-light transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Webinars
               </Link>
-              <Link 
-                to="/spline-models" 
+              <Link
+                to="/spline-models"
                 className="text-white hover:text-space-light transition-colors py-2 flex items-center gap-1"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Rocket size={16} />
                 <span>3D Models</span>
               </Link>
-              <Link 
-                to="/figma-design" 
+              <Link
+                to="/figma-design"
                 className="text-white hover:text-space-light transition-colors py-2 flex items-center gap-1"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Palette size={16} />
                 <span>Figma</span>
               </Link>
-              <Link 
-                to="/astronomy-resources" 
+              <Link
+                to="/astronomy-resources"
                 className="text-white hover:text-space-light transition-colors py-2 flex items-center gap-1"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <BookOpen size={16} />
                 <span>Resources</span>
               </Link>
-              
+
               <div className="flex items-center space-x-4 py-2">
-                <a 
+                <a
                   href="https://www.instagram.com/isa.astrospace?igsh=cGgyeDB3M2d4dDJ5"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -236,7 +248,7 @@ const Navbar = () => {
                 >
                   <Instagram />
                 </a>
-                <a 
+                <a
                   href="https://chat.whatsapp.com/L3cBfJnQuO3BAbTnr4FbUE?fbclid=PAZXh0bgNhZW0CMTEAAabtBxDh4K2fihtHj_B3jxL87pA6nBaZurvhwesU32G5CftYqkhHFxdlicg_aem_v3_CsBh8Vl8Pxnf3HD8Ltg"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -246,11 +258,11 @@ const Navbar = () => {
                 </a>
               </div>
 
-              <Button 
+              <Button
                 asChild
                 className="bg-space-accent hover:bg-space-accent/80 text-white w-full"
               >
-                <a 
+                <a
                   href="https://chat.whatsapp.com/L3cBfJnQuO3BAbTnr4FbUE?fbclid=PAZXh0bgNhZW0CMTEAAabtBxDh4K2fihtHj_B3jxL87pA6nBaZurvhwesU32G5CftYqkhHFxdlicg_aem_v3_CsBh8Vl8Pxnf3HD8Ltg"
                   target="_blank"
                   rel="noopener noreferrer"

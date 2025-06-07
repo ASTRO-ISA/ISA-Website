@@ -1,22 +1,25 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 // import { AccordionContent } from "@radix-ui/react-accordion";
 import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 const Signup = () => {
-
+  const { loginCheck } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    
+
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phoneNo: '',
-    password: '',
-    confirmPassword: '',
-    country: ''
+    name: "",
+    email: "",
+    phoneNo: "",
+    password: "",
+    confirmPassword: "",
+    country: "",
   });
 
   const handleChange = (e) => {
@@ -30,15 +33,10 @@ const Signup = () => {
       return;
     }
 
-    const accountInfo = new FormData();
-    for(let key in form){
-      accountInfo.append(key, form[key]); // saving account info in the FormData to send to API, since we have defined a single useState for all our form data, using for loop to assign values
-    }
-
     try {
       const response = await axios.post(
         "http://localhost:3000/api/v1/users/signup",
-        accountInfo,
+        form,
         {
           headers: {
             "Content-Type": "application/json",
@@ -48,10 +46,21 @@ const Signup = () => {
       );
 
       console.log("Account created!:", response.data);
-      alert("Account created!:");
+      // alert("Account created!:");
+      toast({
+        title: "Account created!:",
+        description: "Welcome!",
+      });
+      loginCheck();
+      navigate("/");
     } catch (err) {
       console.error("Something went wrong", err);
-      alert("Something went wrong");
+      // alert("Something went wrong");
+      toast({
+        title: "Something went wrong",
+        description: "error",
+        variant: "destructive",
+      });
     }
   };
 
@@ -61,12 +70,15 @@ const Signup = () => {
 
       <main className="container mx-auto px-4 pt-24 pb-16 max-w-xl">
         <div className="bg-space-purple/10 p-8 rounded-lg shadow-xl">
-          <h2 className="text-3xl font-bold text-center mb-6">Create Account</h2>
+          <h2 className="text-3xl font-bold text-center mb-6">
+            Create Account
+          </h2>
           <form onSubmit={handleSubmit} className="space-y-5">
-            
             {/* Full Name */}
             <div>
-              <label className="block text-sm text-gray-300 mb-1">Full Name</label>
+              <label className="block text-sm text-gray-300 mb-1">
+                Full Name
+              </label>
               <input
                 type="text"
                 name="name"
@@ -94,7 +106,9 @@ const Signup = () => {
 
             {/* Phone Number */}
             <div>
-              <label className="block text-sm text-gray-300 mb-1">Phone Number</label>
+              <label className="block text-sm text-gray-300 mb-1">
+                Phone Number
+              </label>
               <input
                 type="tel"
                 name="phoneNo"
@@ -108,8 +122,10 @@ const Signup = () => {
 
             {/* Password */}
             <div className="relative">
-            <label className="block text-sm text-gray-300 mb-1">Set Password</label>
-            <input
+              <label className="block text-sm text-gray-300 mb-1">
+                Set Password
+              </label>
+              <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={form.password}
@@ -117,19 +133,21 @@ const Signup = () => {
                 placeholder="••••••••"
                 required
                 className="w-full px-4 py-2 pr-10 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
-            />
-            <button
+              />
+              <button
                 type="button"
                 className="absolute right-3 top-9 text-gray-300 hover:text-white"
                 onClick={() => setShowPassword((prev) => !prev)}
-            >
+              >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+              </button>
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-sm text-gray-300 mb-1">Confirm Password</label>
+              <label className="block text-sm text-gray-300 mb-1">
+                Confirm Password
+              </label>
               <input
                 type="password"
                 name="confirmPassword"
@@ -143,7 +161,9 @@ const Signup = () => {
 
             {/* Country */}
             <div>
-              <label className="block text-sm text-gray-300 mb-1">Country</label>
+              <label className="block text-sm text-gray-300 mb-1">
+                Country
+              </label>
               <input
                 type="text"
                 name="country"
@@ -168,7 +188,9 @@ const Signup = () => {
             {/* Switch to Sign In */}
             <div className="text-center text-sm text-gray-400 mt-4">
               Already have an account?{" "}
-              <a href="/login" className="text-space-accent hover:underline">Sign In</a>
+              <a href="/login" className="text-space-accent hover:underline">
+                Sign In
+              </a>
             </div>
           </form>
         </div>
