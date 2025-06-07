@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,23 +28,22 @@ import Footer from "./components/Footer";
 const queryClient = new QueryClient();
 
 const App = () => {
-
   useEffect(() => {
     // Initialize GSAP animations
     gsap.config({
       autoSleep: 60,
-      force3D: true
+      force3D: true,
     });
-    
+
     // Create a timeline for page transitions
     const tl = gsap.timeline();
-    
+
     tl.from("body", {
       opacity: 0,
       duration: 0.5,
-      ease: "power2.inOut"
+      ease: "power2.inOut",
     });
-    
+
     // Clean up
     return () => {
       tl.kill();
@@ -56,9 +54,10 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
+        {/* <ToastContainer /> */}
         <Sonner />
         <BrowserRouter>
-        <Navbar />
+          <Navbar />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/community" element={<Community />} />
@@ -68,13 +67,12 @@ const App = () => {
             <Route path="/shop" element={<Shop />} />
             <Route path="/training" element={<Training />} />
             <Route path="/webinars" element={<Webinars />} />
-            <Route path="/login" element={<Login />}/>
-            <Route path="/signup" element={<CreateAccount />}/>
-            
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<CreateAccount />} />
 
-            <Route path="/blogs/:id" element={<BlogDetail />}/>
-            <Route path="/profile" element={<Profile />}/>
-            
+            <Route path="/blogs/:id" element={<BlogDetail />} />
+            <Route path="/profile" element={<Profile />} />
+
             {/* <Route path="/spline-models" element={<SplineModels />} />
             <Route path="/figma-design" element={<FigmaDesign />} />
             <Route path="/astronomy-resources" element={<AstronomyResources />} /> */}

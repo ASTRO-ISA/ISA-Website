@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
+  const { loginCheck } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -15,29 +17,32 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const loginInfo = new FormData();
-    for(let key in form){
-      loginInfo.append(key, form[key]);
-    }
-
-    try{
+    try {
       const response = await axios.post(
-        'http://localhost:3000/api/v1/users/login',
-        loginInfo,
+        "http://localhost:3000/api/v1/users/login",
+        form,
         {
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
-          withCredentials: true
+          withCredentials: true,
         }
-      )
+      );
 
-      console.log('Login success', response.data)
-      // alert('Login success')
-      navigate('/')
-    } catch (err){
-      console.log('Something went wrong', err)
-      alert('Something went wrong')
+      console.log("Login success", response.data);
+      toast({
+        title: "Login successful!",
+        description: "Welcome back!",
+      });
+      loginCheck();
+      navigate("/");
+    } catch (err) {
+      console.log("Something went wrong", err);
+      toast({
+        title: "Login failed",
+        description: "Invalid credentials",
+        variant: "destructive",
+      });
     }
     console.log("Login submitted:", form);
   };
@@ -55,7 +60,9 @@ const Login = () => {
 
           {/* Email */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Email
+            </label>
             <input
               type="email"
               name="email"
@@ -68,7 +75,9 @@ const Login = () => {
 
           {/* Password */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Password
+            </label>
             <input
               type="password"
               name="password"
