@@ -12,12 +12,14 @@ import BlogDetail from "./pages/blog/BlogDetail";
 import WriteBlog from "./pages/blog/WriteBlog";
 import Shop from "./pages/Shop";
 import Training from "./pages/Training";
-import Events from "./pages/Events";
+import Events from "./pages/event/Events";
 import Webinars from "./pages/Webinars";
 import Community from "./pages/Community";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import Profile from "./pages/Profile";
+import EventDetails from "./pages/event/EventDetail";
+import CreateEvent from "./pages/event/CreateEvent";
 // import SplineModels from "./pages/SplineModels";
 // import FigmaDesign from "./pages/FigmaDesign";
 // import AstronomyResources from "./pages/AstronomyResources";
@@ -69,10 +71,10 @@ const App = () => {
             <Route path="/webinars" element={<Webinars />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<CreateAccount />} />
-
             <Route path="/blogs/:id" element={<BlogDetail />} />
             <Route path="/profile" element={<Profile />} />
-
+            <Route path="/host-event" element={<CreateEvent />} />
+            <Route path="/events/:id" element={<EventDetails />} />
             {/* <Route path="/spline-models" element={<SplineModels />} />
             <Route path="/figma-design" element={<FigmaDesign />} />
             <Route path="/astronomy-resources" element={<AstronomyResources />} /> */}

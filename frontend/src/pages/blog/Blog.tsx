@@ -1,34 +1,33 @@
-
-// This is the main blog page where we will see all the featured blogs, recent blogs etc.
-
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { Calendar, Clock, ExternalLink} from "lucide-react";
+// this is the main blog page where we will see all the featured blogs, recent blogs etc.
+import { Calendar, Clock, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 
 const Blog = () => {
 
-  // client-server communication
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [featured, setFeatured] = useState({
-    _id: '',
-    thumbnail: '',
-    title: '',
-    description: '',
-    content: '',
+    _id: "",
+    thumbnail: "",
+    title: "",
+    description: "",
+    content: "",
     author: {
-      name: '',
-      country: ''
+      name: "",
+      country: ""
     },
-    createdAt: ''
+    createdAt: ""
   });
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+  const { toast } = useToast();
 
+  // to get all blogs
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
@@ -45,54 +44,61 @@ const Blog = () => {
     fetchBlogs();
   }, []);
 
+  // to get featured blog
   useEffect(() => {
-    const fetchBlogs = async () => {
+    const fetchBlog = async () => {
       try {
         setLoading(true);
         const res = await axios.get("http://localhost:3000/api/v1/blogs/featured");
         setFeatured(res.data);
       } catch (err) {
-        console.error('Error fetching blogs', err);
+        console.error("Error fetching blogs", err);
       } finally {
         setLoading(false);
       }
     };
   
-    fetchBlogs();
+    fetchBlog();
   }, []);
 
-  if(loading) return <p>Loading blogs for you...</p>
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-100 mb-4"></div>
+        <p className="text-gray-100">Loading blogs for you...</p>
+      </div>
+    );
+  }
   if(!blogs) return <p>Nothing to see here right now.</p>
 
   // to show the date in readable format
   const formatDate = (dateStr) =>
-    new Date(dateStr).toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
+    new Date(dateStr).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
     });
   
   // to set time in readable format
   const formatTime = (dateStr) =>
     new Date(dateStr).toLocaleTimeString('en-IN', {
-      hour: '2-digit',
-      minute: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
       hour12: true,
     });
 
   // to check if the user is logged in before writing the blog, if the user is not logged in, he cannot write blog
   const handleWriteClick = () => {
-    axios.get('http://localhost:3000/api/v1/users/me', {withCredentials: true})
-    .then(() => {navigate('/write')})
-    .catch(() => alert('Please Login to use this feature'))
+    if(isLoggedIn){ // checking using auth context isLoggedIn state
+      navigate("/write")
+    } else {
+      toast({
+        title: "Hold on!",
+        description: "Log in first to share your awesome thoughts!",
+        variant: "destructive"
+      })
+    }
   };
-
-  // get featured blog
-  // const featuredBlog = () => {
-  //   axios.get('http://localhost:3000/api/v1/blogs/featured')
-  //     .then((res) => setFeatured(res.data))
-  //     .catch((err) => console.error('Error finding featured blog:', err));
-  // };
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
@@ -158,19 +164,14 @@ const Blog = () => {
         <section className="mb-20">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold">Recent Blogs</h2>
-            {/* <Link
-            onClick={handleWriteClick}
-            // to="/write"
-            > */}
-              {/* Create blog button */}
+
+              {/* Create Blog Button */}
             <button
               onClick={handleWriteClick}
               className="bg-space-accent text-white px-4 py-2 rounded hover:bg-space-accent/80 transition"
             >
               Create&nbsp;<i className="fa-solid fa-plus fa-lg" style={{color: "white"}}></i>
             </button>
-            {/* </Link> */}
-            
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -180,7 +181,6 @@ const Blog = () => {
               key={blog._id}
               to={`/blogs/${blog._id}`}
               className="cosmic-card overflow-hidden group flex flex-col cursor-pointer"
-              // onClick={() => navigate(`/blogs/${blog.id}`)}
               >
                 <div className="h-48 w-full relative">
                   <img
