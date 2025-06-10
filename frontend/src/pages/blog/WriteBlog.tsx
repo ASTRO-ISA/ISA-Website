@@ -49,7 +49,6 @@ const WriteBlog = () => {
       toast({ title: "Blog published successfully!" });
     } catch (err) {
       console.error("Failed to publish blog", err);
-      // alert("Error publishing blog.");
       toast({ title: "Error publishing blog.", variant: "destructive" });
     }
   };
