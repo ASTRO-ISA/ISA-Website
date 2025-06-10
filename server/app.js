@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser')
 // routes
 const blogRouter = require('./routes/blogRoutes.js')
 const userRouter = require('./routes/userRoutes.js')
+const eventRouter = require('./routes/eventRoutes.js')
 
 // middlewares
 app.use(cors({
@@ -23,6 +24,7 @@ app.use(cookieParser())
 
 app.use('/api/v1/blogs', blogRouter)
 app.use('/api/v1/users', userRouter)
+app.use('/api/v1/events', eventRouter)
 
 app.get('/', (req, res) => {
   res.status(200).json({
