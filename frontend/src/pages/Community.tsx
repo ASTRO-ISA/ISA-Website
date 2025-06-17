@@ -1,6 +1,3 @@
-
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { MessageCircle, Instagram, Users, Award, BookOpen, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 // import StarBackground from "@/components/StarBackground";
@@ -102,47 +99,6 @@ const Community = () => {
             Connect with fellow space enthusiasts, participate in discussions, and collaborate on exciting projects.
           </p>
         </div>
-        
-        {/* Social Links */}
-        <section className="mb-16">
-          <div className="cosmic-card p-8 text-center">
-            <h2 className="text-2xl font-bold mb-6">Join Our Online Community</h2>
-            <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-              Connect with ISA Club members through our social platforms for daily updates, discussions, and astronomy content.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <a 
-                href="https://www.instagram.com/isa.astrospace?igsh=cGgyeDB3M2d4dDJ5"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-opacity px-6 py-3 rounded-lg"
-              >
-                <Instagram size={24} />
-                <span className="font-medium">Follow on Instagram</span>
-              </a>
-              
-              <a 
-                href="https://chat.whatsapp.com/L3cBfJnQuO3BAbTnr4FbUE?fbclid=PAZXh0bgNhZW0CMTEAAabtBxDh4K2fihtHj_B3jxL87pA6nBaZurvhwesU32G5CftYqkhHFxdlicg_aem_v3_CsBh8Vl8Pxnf3HD8Ltg"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-green-600 hover:bg-green-700 transition-colors px-6 py-3 rounded-lg"
-              >
-                <MessageCircle size={24} />
-                <span className="font-medium">Join WhatsApp Group</span>
-              </a>
-            </div>
-            
-            <div className="mt-8">
-              <img 
-                src="/images/6e2f90e0-d9db-42ef-9c2d-def808dc9cef.png"
-                alt="Community QR Code" 
-                className="h-32 w-auto mx-auto"
-              />
-              <p className="text-sm text-gray-400 mt-2">Scan to join our WhatsApp group</p>
-            </div>
-          </div>
-        </section>
         
         {/* Discussion Forum */}
         <section className="mb-16">
@@ -253,8 +209,8 @@ const Community = () => {
                 <h3 className="font-semibold text-lg">{member.name}</h3>
                 <p className="text-space-accent text-sm mb-3">{member.role}</p>
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
-                  <Award size={16} className="text-space-accent" />
-                  <span>{member.contributions} contributions</span>
+                  {/* <Award size={16} className="text-space-accent" /> */}
+                  {/* <span>{member.contributions} contributions</span> */}
                 </div>
               </div>
             ))}
@@ -268,7 +224,7 @@ const Community = () => {
         </section>
         
         {/* Resources */}
-        <section>
+        <section className="mb-16">
           <h2 className="text-2xl font-bold mb-8">Community Resources</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -306,6 +262,47 @@ const Community = () => {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Social Links */}
+        <section>
+          <div className="cosmic-card p-8 text-center">
+            <h2 className="text-2xl font-bold mb-6">Join Our Online Community</h2>
+            <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
+              Connect with ISA Club members through our social platforms for daily updates, discussions, and astronomy content.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+              <a 
+                href="https://www.instagram.com/isa.astrospace?igsh=cGgyeDB3M2d4dDJ5"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-opacity px-6 py-3 rounded-lg"
+              >
+                <Instagram size={24} />
+                <span className="font-medium">Follow on Instagram</span>
+              </a>
+              
+              <a 
+                href="https://chat.whatsapp.com/L3cBfJnQuO3BAbTnr4FbUE?fbclid=PAZXh0bgNhZW0CMTEAAabtBxDh4K2fihtHj_B3jxL87pA6nBaZurvhwesU32G5CftYqkhHFxdlicg_aem_v3_CsBh8Vl8Pxnf3HD8Ltg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 bg-green-600 hover:bg-green-700 transition-colors px-6 py-3 rounded-lg"
+              >
+                <MessageCircle size={24} />
+                <span className="font-medium">Join WhatsApp Group</span>
+              </a>
+            </div>
+            
+            <div className="mt-8">
+              <img 
+                src="/images/6e2f90e0-d9db-42ef-9c2d-def808dc9cef.png"
+                alt="Community QR Code" 
+                className="h-32 w-auto mx-auto"
+              />
+              <p className="text-sm text-gray-400 mt-2">Scan to join our WhatsApp group</p>
             </div>
           </div>
         </section>
