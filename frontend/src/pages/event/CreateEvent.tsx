@@ -1,6 +1,8 @@
 // components/EventForm.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 const CreateEvent = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +22,8 @@ const CreateEvent = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleChange = (e, idx = null) => {
     const { name, value } = e.target;
@@ -62,26 +66,33 @@ const CreateEvent = () => {
         data.append('thumbnail', thumbnailFile);
       }
 
-      const res = await axios.post('http://localhost:3000/api/v1/events/create', data, {
-        headers: { 'Content-Type': 'multipart/form-data' }, withCredentials: true
+      const res = await axios.post("http://localhost:3000/api/v1/events/create", data, {
+        headers: { "Content-Type": "multipart/form-data" }, withCredentials: true
       });
 
       setSuccessMsg('Event created successfully!');
       setFormData({
-        title: '',
-        description: '',
-        eventDate: '',
-        location: '',
+        title: "",
+        description: "",
+        eventDate: "",
+        location: "",
         attendeeCount: 0,
-        eventType: '',
-        hostedBy: [{ name: '' }],
-        presentedBy: '',
-        type: '',
-        status: '',
+        eventType: "",
+        hostedBy: [{ name: "" }],
+        presentedBy: "",
+        type: "",
+        status: "",
       });
       setThumbnailFile(null);
+      navigate("/events")
+      toast({
+        title: "Event created successfully!"
+      });
     } catch (error) {
       setErrorMsg(error.response?.data?.message || 'Something went wrong');
+      toast({
+        title: "Error creating event!"
+      });
     } finally {
       setIsSubmitting(false);
     }
