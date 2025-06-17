@@ -1,7 +1,19 @@
 
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+
 
 const CtaSection = () => {
+  const { isLoggedIn } = useAuth()
+  const navigate = useNavigate()
+  const handleButtonClick = () => {
+    if(isLoggedIn){
+      navigate('/events')
+    } else {
+      navigate('/events')
+    }
+  }
   return (
     <section className="py-20 bg-space-dark relative overflow-hidden">
       {/* Background effects */}
@@ -33,8 +45,8 @@ const CtaSection = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button className="bg-space-accent hover:bg-space-accent/80 text-white px-8 py-6 text-lg">
-              Become a Member
+            <Button onClick={handleButtonClick} className="bg-space-accent hover:bg-space-accent/80 text-white px-8 py-6 text-lg">
+              {isLoggedIn? "Explore Events" : "Become a Member"}
             </Button>
             <Button variant="outline" className="border-space-purple text-space-light hover:bg-space-purple/20 px-8 py-6 text-lg">
               Learn More
