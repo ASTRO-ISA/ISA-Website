@@ -41,7 +41,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
             <img
-              src="/images/b6dae26d-ef96-4680-9fc3-9b743f9ae50f.png"
+              src="/images/isa-logo.jpeg"
               alt="ISA Logo"
               className="h-10 w-auto"
             />
