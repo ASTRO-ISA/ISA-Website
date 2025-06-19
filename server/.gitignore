@@ -4,3 +4,4 @@ uploads/*
 !uploads/.gitkeep
 request.rest
 config.env
+.DS_Store

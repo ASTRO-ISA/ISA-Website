@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import StarBackground from "@/components/StarBackground";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
