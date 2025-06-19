@@ -17,7 +17,7 @@ import Webinars from "./pages/Webinars";
 import Community from "./pages/Community";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
-import Profile from "./pages/Profile";
+import Profile from "./pages/Dashboard";
 import EventDetails from "./pages/event/EventDetail";
 import CreateEvent from "./pages/event/CreateEvent";
 // import SplineModels from "./pages/SplineModels";

@@ -79,7 +79,7 @@ exports.login = async (req, res) => {
 
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
+    const user = await User.findById(req.user._id).select('-password');
     res.status(200).json({ status: 'success', user });
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });
