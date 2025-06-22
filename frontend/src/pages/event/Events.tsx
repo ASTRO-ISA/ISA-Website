@@ -117,6 +117,7 @@ const Events = () => {
               <div className="cosmic-card overflow-hidden group">
                 <div className="h-48 overflow-hidden">
                   <img 
+                    loading="lazy"
                     src={`http://localhost:3000/${event.thumbnail}`} 
                     alt={event.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
@@ -189,6 +190,7 @@ const Events = () => {
               <div className="cosmic-card overflow-hidden group">
                 <div className="h-48 overflow-hidden">
                   <img 
+                    loading="lazy"
                     src={launch.image?.image_url} 
                     alt={launch.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
@@ -240,7 +242,7 @@ const Events = () => {
         </section>
         
         {/* Astronomical Calendar */}
-        <section className="mb-20">
+        {/* <section className="mb-20">
           <h2 className="text-2xl font-bold mb-8">Launch Calendar</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -264,7 +266,7 @@ const Events = () => {
               </Link>
             ))}
           </div>
-        </section>
+        </section> */}
         
         
         
@@ -298,6 +300,7 @@ const Events = () => {
             </div>
             <div className="md:w-1/3">
               <img 
+                loading="lazy"
                 src="https://images.unsplash.com/photo-1509773896068-7fd415d91e2e?q=80&w=500" 
                 alt="Stargazing Event" 
                 className="rounded-lg h-auto w-full"

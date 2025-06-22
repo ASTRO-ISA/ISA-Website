@@ -9,8 +9,16 @@ import axios from "axios";
 
 const Blog = () => {
 
+  const [userBlogs, setUserBlogs] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingUserBlogs, setLoadingUserBlogs] = useState(true);
+  const [showAllUserBlogs, setShowAllUserBlogs] = useState(false);
+  const [loadingExternalBlogs, setLoadingExternalBlogs] = useState(true);
+  const [showAllExternalBlogs, setShowAllExternalBlogs] = useState(false);
+  const [articles, setArticles] = useState([]);
+  const [loadingArticles, setLoadingArticles] = useState(true);
+  const [showAllArticles, setShowAllArticles] = useState(false);
   const [featured, setFeatured] = useState({
     _id: "",
     thumbnail: "",
@@ -31,13 +39,13 @@ const Blog = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        setLoading(true);
+        setLoadingUserBlogs(true);
         const res = await axios.get("http://localhost:3000/api/v1/blogs");
-        setBlogs(res.data);
+        setUserBlogs(res.data);
       } catch (err) {
         console.error('Error fetching blogs', err);
       } finally {
-        setLoading(false);
+        setLoadingUserBlogs(false);
       }
     };
   
@@ -61,6 +69,40 @@ const Blog = () => {
     fetchBlog();
   }, []);
 
+  // to get external blogs
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        setLoadingExternalBlogs(true);
+        const res = await axios.get("http://localhost:3000/api/v2/blogs/external");
+        setBlogs(res.data);
+      } catch (err) {
+        console.error('Error fetching external blogs', err);
+      } finally {
+        setLoadingExternalBlogs(false);
+      }
+    };
+  
+    fetchBlogs();
+  }, []);
+
+    // to get external articles
+    useEffect(() => {
+      const fetchBlogs = async () => {
+        try {
+          setLoadingArticles(true);
+          const res = await axios.get("http://localhost:3000/api/v1/news/articles");
+          setArticles(res.data);
+        } catch (err) {
+          console.error('Error fetching external blogs', err);
+        } finally {
+          setLoadingArticles(false);
+        }
+      };
+    
+      fetchBlogs();
+    }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center h-64">
@@ -69,7 +111,7 @@ const Blog = () => {
       </div>
     );
   }
-  if(!blogs) return <p>Nothing to see here right now.</p>
+  if(!userBlogs) return <p>Nothing to see here right now.</p>
 
   // to show the date in readable format
   const formatDate = (dateStr) =>
@@ -106,9 +148,9 @@ const Blog = () => {
 
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Blogs</h1>
+          <h1 className="text-4xl font-bold mb-4">Blogs & News</h1>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Explore Insights from Scientists, Astronauts, and Industry Experts
+          Explore real-time discoveries and personal perspectives from scientists, astronomers, and industry insiders — all in one cosmic stream.
           </p>
         </div>
 
@@ -121,6 +163,7 @@ const Blog = () => {
             <div className="lg:col-span-3 relative">
               <div className="aspect-video lg:h-full">
                 <img
+                  loading="lazy"
                   src={`http://localhost:3000/uploads/${featured.thumbnail}`}
                   alt="Space Talk"
                   className="w-full h-full object-cover"
@@ -139,6 +182,7 @@ const Blog = () => {
                 </p>
                 <div className="flex items-center gap-2 mb-4">
                   <img
+                    loading="lazy"
                     src={`http://localhost:3000/uploads/${featured.thumbnail}`}
                     alt={featured.author.name}
                     className="w-12 h-12 rounded-full object-cover"
@@ -175,51 +219,221 @@ const Blog = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {blogs.map((blog) => (
+            {loadingUserBlogs ? (<p>Loading...</p>) : userBlogs.length === 0 ? (<p>Nothing to see here right now!</p>) : (
+              (showAllUserBlogs? userBlogs : userBlogs.slice(0, 3)).map((blog) => (
 
-              <Link
-              key={blog._id}
-              to={`/blogs/${blog._id}`}
-              className="cosmic-card overflow-hidden group flex flex-col cursor-pointer"
-              >
-                <div className="h-48 w-full relative">
-                  <img
-                    src={`http://localhost:3000/uploads/${blog.thumbnail}`}
-                    alt={blog.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                </div>
-                <div className="p-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-xl font-semibold mb-3">{blog.title}</h3>
-                    <p className="text-gray-400 text-sm mb-4">{blog.description}</p>
-
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center text-sm text-gray-400">
-                        <Calendar className="h-4 w-4 mr-2 text-space-accent" />
-                        <span>{formatDate(blog.createdAt)}</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-400">
-                        <Clock className="h-4 w-4 mr-2 text-space-accent" />
-                        <span>{formatTime(blog.createdAt)}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
+                <Link
+                key={blog._id}
+                to={`/blogs/${blog._id}`}
+                className="cosmic-card overflow-hidden group flex flex-col cursor-pointer"
+                >
+                  <div className="h-48 w-full relative">
                     <img
-                      src='/images/placeholder.svg'
-                      alt={blog.author}
-                      className="w-12 h-12 rounded-full object-cover"
+                      loading="lazy"
+                      src={`http://localhost:3000/uploads/${blog.thumbnail}`}
+                      alt={blog.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col justify-between">
                     <div>
-                      <h4 className="font-semibold">{blog.author?.name}</h4>
-                      <p className="text-sm text-gray-400">{blog.author?.country}</p>
+                      <h3 className="text-xl font-semibold mb-3">{blog.title}</h3>
+                      <p className="text-gray-400 text-sm mb-4">{blog.description}</p>
+  
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center text-sm text-gray-400">
+                          <Calendar className="h-4 w-4 mr-2 text-space-accent" />
+                          <span>{formatDate(blog.createdAt)}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-400">
+                          <Clock className="h-4 w-4 mr-2 text-space-accent" />
+                          <span>{formatTime(blog.createdAt)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <img
+                        loading="lazy"
+                        src='/images/placeholder.svg'
+                        alt={blog.author}
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
+                      <div>
+                        <h4 className="font-semibold">{blog.author?.name}</h4>
+                        <p className="text-sm text-gray-400">{blog.author?.country}</p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
+
+          {/* View all blogs button */}
+          {/* if there are no blpgs, no need to show the see all events button */}
+          {blogs.length > 3 && !showAllUserBlogs && (
+          <div className="text-center mt-10">
+            <button
+              onClick={() => setShowAllUserBlogs(true)}
+              className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
+            >
+              View All Blogs
+            </button>
+          </div>
+          )}
+
+        </section>
+
+        {/* Astronomical Blogs */}
+        <section className="mb-20">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold">Astronomical Blogs</h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  {loadingExternalBlogs ? (
+          <p>Loading...</p>
+        ) : blogs.length === 0 ? (
+          <p>Nothing to see here right now!</p>
+        ) : (
+          (showAllExternalBlogs ? blogs : blogs.slice(0, 3)).map((blog) => (
+            <Link
+              key={blog.id}
+              to={blog.url}
+              className="cosmic-card overflow-hidden group flex flex-col cursor-pointer"
+            >
+              <div className="h-48 w-full relative">
+                <img
+                  loading="lazy"
+                  src={blog.image_url}
+                  alt={blog.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              </div>
+              <div className="p-5 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">{blog.title}</h3>
+                  <p className="text-gray-400 text-sm mb-4">{blog.summary}</p>
+
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-sm text-gray-400">
+                      <Calendar className="h-4 w-4 mr-2 text-space-accent" />
+                      <span>{formatDate(blog.published_at)}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-400">
+                      <Clock className="h-4 w-4 mr-2 text-space-accent" />
+                      <span>{formatTime(blog.published_at)}</span>
                     </div>
                   </div>
                 </div>
-              </Link>
-            ))}
+                <div className="flex items-center gap-2">
+                  <img
+                    loading="lazy"
+                    src="/images/placeholder.svg"
+                    alt={blog.authors?.[0]?.name || 'Author'}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div>
+                    <h4 className="font-semibold">{blog.authors?.[0]?.name || 'Unknown'}</h4>
+                    <p className="text-sm text-gray-400">
+                      Published at: {formatDate(blog.published_at)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))
+        )}
           </div>
+
+          {/* View all blogs button */}
+          {/* if there are no events, no need to show the see all events button */}
+          {blogs.length > 3 && !showAllExternalBlogs && (
+          <div className="text-center mt-10">
+            <button
+              onClick={() => setShowAllExternalBlogs(true)}
+              className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
+            >
+              View All Blogs
+            </button>
+          </div>
+          )}
+          
+        </section>
+
+          {/* News */}
+          <section className="mb-20">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold">News</h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  {loadingArticles ? (
+          <p>Loading...</p>
+        ) : articles.length === 0 ? (
+          <p>Nothing to see here right now!</p>
+        ) : (
+          (showAllArticles ? articles : articles.slice(0, 3)).map((article) => (
+            <Link
+              key={article.id}
+              to={article.url}
+              className="cosmic-card overflow-hidden group flex flex-col cursor-pointer"
+            >
+              <div className="h-48 w-full relative">
+                <img
+                  loading="lazy"
+                  src={article.image_url}
+                  alt={article.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              </div>
+              <div className="p-5 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">{article.title}</h3>
+                  <p className="text-gray-400 text-sm mb-4">{article.summary}</p>
+
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-sm text-gray-400">
+                      <Calendar className="h-4 w-4 mr-2 text-space-accent" />
+                      <span>{formatDate(article.published_at)}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-400">
+                      <Clock className="h-4 w-4 mr-2 text-space-accent" />
+                      <span>{formatTime(article.published_at)}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <img
+                    loading="lazy"
+                    src="/images/placeholder.svg"
+                    alt={article.authors?.[0]?.name || 'Author'}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div>
+                    <h4 className="font-semibold">{article.authors?.[0]?.name || 'Unknown'}</h4>
+                    <p className="text-sm text-gray-400">
+                      Published at: {formatDate(article.published_at)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))
+          )}
+          </div>
+
+          {blogs.length > 3 && !showAllExternalBlogs && (
+          <div className="text-center mt-10">
+            <button
+              onClick={() => setShowAllArticles(true)}
+              className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
+            >
+              View All Articles
+            </button>
+          </div>
+          )}
+          
         </section>
 
         {/* Suggest a Blog Topic */}
@@ -264,6 +478,7 @@ const Blog = () => {
             </div>
             <div className="md:w-1/3">
               <img
+                loading="lazy"
                 src="https://images.unsplash.com/photo-1576633587382-13ddf37b1fc1?q=80&w=500"
                 alt="Space Speaker"
                 className="rounded-lg h-auto w-full"
@@ -272,8 +487,6 @@ const Blog = () => {
           </div>
         </section>
       </main>
-
-      {/* <Footer /> */}
     </div>
   );
 };
