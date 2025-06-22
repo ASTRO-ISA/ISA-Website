@@ -1,5 +1,4 @@
 const Blog = require('../models/blogModel')
-const axios = require('axios')
 
 exports.allBlogs = async (req, res) => {
     try {

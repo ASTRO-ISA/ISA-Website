@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Menu,
   X,
@@ -11,15 +11,14 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
+  const location = useLocation();
 
   // if the user is logged in, avatar will be shown and when clcking it, user dashboard will open
   const handleAvatarClick = () => {
@@ -64,43 +63,71 @@ const Navbar = () => {
           {/* remove the below Admin link once above commented code is enabled */}
           <Link
               to="/admin"
-              className="text-white hover:text-space-light transition-colors"
+              className={`transition-colors ${
+                location.pathname === '/admin'
+                  ? 'text-space-accent'
+                  : 'text-white hover:text-space-light'
+              }`}
             >
               Admin
             </Link>
-            <Link
+            <Link // testing the color change on path change
               to="/community"
-              className="text-white hover:text-space-light transition-colors"
-            >
+              className={`transition-colors ${
+                location.pathname === '/community'
+                  ? 'text-space-accent'
+                  : 'text-white hover:text-space-light'
+              }`}
+              >
               Community
             </Link>
             <Link
               to="/blogs"
-              className="text-white hover:text-space-light transition-colors"
+              className={`transition-colors ${
+                location.pathname === '/blogs'
+                  ? 'text-space-accent'
+                  : 'text-white hover:text-space-light'
+              }`}
             >
-              Blog
+              Blogs & News
             </Link>
             <Link
               to="/events"
-              className="text-white hover:text-space-light transition-colors"
+              className={`transition-colors ${
+                location.pathname === '/events'
+                  ? 'text-space-accent'
+                  : 'text-white hover:text-space-light'
+              }`}
             >
               Events
             </Link>
             <Link
               to="/shop"
-              className="text-white hover:text-space-light transition-colors"
+              className={`transition-colors ${
+                location.pathname === '/shop'
+                  ? 'text-space-accent'
+                  : 'text-white hover:text-space-light'
+              }`}
             >
               Shop
             </Link>
             <Link
               to="/training"
-              className="text-white hover:text-space-light transition-colors"
+              className={`transition-colors ${
+                location.pathname === '/training'
+                  ? 'text-space-accent'
+                  : 'text-white hover:text-space-light'
+              }`}
             >
-              Training
+              e-Learning
             </Link>
             <Link
               to="/webinars"
-              className="text-white hover:text-space-light transition-colors"
+              className={`transition-colors ${
+                location.pathname === '/webinars'
+                  ? 'text-space-accent'
+                  : 'text-white hover:text-space-light'
+              }`}
             >
               Webinars
             </Link>
@@ -183,13 +210,6 @@ const Navbar = () => {
             className="md:hidden"
           >
             <div className="flex flex-col space-y-4 pt-4 pb-6 px-2">
-              <Link
-                to="/"
-                className="text-white hover:text-space-light transition-colors py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
 
               {/* once the isAdmin is available, use the below block, this will make admin page visible only to admins */}
               {/* {isAdmin && 
@@ -204,79 +224,119 @@ const Navbar = () => {
               {/* remove the below Admin link once above commented code is enabled */}
               <Link
                 to="/admin"
-                className="text-white hover:text-space-light transition-colors py-2"
+                className={`transition-colors ${
+                  location.pathname === '/admin'
+                    ? 'text-space-accent'
+                    : 'text-white hover:text-space-light'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Admin
               </Link>
               <Link
                 to="/community"
-                className="text-white hover:text-space-light transition-colors py-2"
+                className={`transition-colors ${
+                  location.pathname === '/community'
+                    ? 'text-space-accent'
+                    : 'text-white hover:text-space-light'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Community
               </Link>
               <Link
-                to="/blog"
-                className="text-white hover:text-space-light transition-colors py-2"
+                to="/blogs"
+                className={`transition-colors ${
+                  location.pathname === '/blogs'
+                    ? 'text-space-accent'
+                    : 'text-white hover:text-space-light'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Blog
+                Blogs & News
               </Link>
               <Link
                 to="/events"
-                className="text-white hover:text-space-light transition-colors py-2"
+                className={`transition-colors ${
+                  location.pathname === '/events'
+                    ? 'text-space-accent'
+                    : 'text-white hover:text-space-light'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Events
               </Link>
               <Link
                 to="/shop"
-                className="text-white hover:text-space-light transition-colors py-2"
+                className={`transition-colors ${
+                  location.pathname === '/shop'
+                    ? 'text-space-accent'
+                    : 'text-white hover:text-space-light'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Shop
               </Link>
               <Link
                 to="/training"
-                className="text-white hover:text-space-light transition-colors py-2"
+                className={`transition-colors ${
+                  location.pathname === '/training'
+                    ? 'text-space-accent'
+                    : 'text-white hover:text-space-light'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Training
+                e-Learning
               </Link>
               <Link
                 to="/webinars"
-                className="text-white hover:text-space-light transition-colors py-2"
+                className={`transition-colors ${
+                  location.pathname === '/webinars'
+                    ? 'text-space-accent'
+                    : 'text-white hover:text-space-light'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Webinars
               </Link>
-              <Link
+              {/* <Link
                 to="/spline-models"
-                className="text-white hover:text-space-light transition-colors py-2 flex items-center gap-1"
+                className={`transition-colors ${
+                  location.pathname === '/community'
+                    ? 'text-space-accent'
+                    : 'text-white hover:text-space-light'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Rocket size={16} />
                 <span>3D Models</span>
-              </Link>
-              <Link
+              </Link> */}
+              {/* <Link
                 to="/figma-design"
-                className="text-white hover:text-space-light transition-colors py-2 flex items-center gap-1"
+                className={`transition-colors ${
+                  location.pathname === '/community'
+                    ? 'text-space-accent'
+                    : 'text-white hover:text-space-light'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Palette size={16} />
                 <span>Figma</span>
-              </Link>
-              <Link
+              </Link> */}
+              {/* <Link
                 to="/astronomy-resources"
-                className="text-white hover:text-space-light transition-colors py-2 flex items-center gap-1"
+                className={`transition-colors ${
+                  location.pathname === '/community'
+                    ? 'text-space-accent'
+                    : 'text-white hover:text-space-light'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <BookOpen size={16} />
                 <span>Resources</span>
-              </Link>
+              </Link> */}
 
-              <div className="flex items-center space-x-4 py-2">
+              {/* <div className="flex items-center space-x-4 py-2">
                 <a
                   href="https://www.instagram.com/isa.astrospace?igsh=cGgyeDB3M2d4dDJ5"
                   target="_blank"
@@ -293,20 +353,21 @@ const Navbar = () => {
                 >
                   <MessageCircle />
                 </a>
-              </div>
+              </div> */}
 
+              {!isLoggedIn && (
               <Button
                 asChild
-                className="bg-space-accent hover:bg-space-accent/80 text-white w-full"
+                className="bg-space-accent hover:bg-space-accent/80 text-white"
               >
-                <a
-                  href="https://chat.whatsapp.com/L3cBfJnQuO3BAbTnr4FbUE?fbclid=PAZXh0bgNhZW0CMTEAAabtBxDh4K2fihtHj_B3jxL87pA6nBaZurvhwesU32G5CftYqkhHFxdlicg_aem_v3_CsBh8Vl8Pxnf3HD8Ltg"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  to="/login"
+                  className="text-white hover:text-space-light transition-colors"
                 >
-                  Join Now
-                </a>
+                  Login
+                </Link>
               </Button>
+              )}
             </div>
           </motion.div>
         )}
