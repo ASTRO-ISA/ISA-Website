@@ -37,7 +37,7 @@ const Navbar = () => {
       // transition={{ type: 'spring', stiffness: 120, damping: 20 }}
       className="fixed top-0 left-0 right-0 z-50 bg-black border-b border-white/10"
     >
-      <div className="container mx-auto px-4 py-3">
+      <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
             <img
@@ -50,6 +50,24 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-2 space-x-5">
+
+          {/* once the isAdmin is available, use the below block, this will make admin page visible only to admins */}
+          {/* {isAdmin && 
+          <Link
+          to="/admin"
+          className="text-white hover:text-space-light transition-colors"
+          >
+          Admin
+        </Link>
+          } */}
+
+          {/* remove the below Admin link once above commented code is enabled */}
+          <Link
+              to="/admin"
+              className="text-white hover:text-space-light transition-colors"
+            >
+              Admin
+            </Link>
             <Link
               to="/community"
               className="text-white hover:text-space-light transition-colors"
@@ -171,6 +189,25 @@ const Navbar = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
+              </Link>
+
+              {/* once the isAdmin is available, use the below block, this will make admin page visible only to admins */}
+              {/* {isAdmin && 
+              <Link
+              to="/admin"
+              className="text-white hover:text-space-light transition-colors"
+              >
+              Admin
+            </Link>
+              } */}
+
+              {/* remove the below Admin link once above commented code is enabled */}
+              <Link
+                to="/admin"
+                className="text-white hover:text-space-light transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Admin
               </Link>
               <Link
                 to="/community"
