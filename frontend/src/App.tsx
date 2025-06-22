@@ -26,6 +26,7 @@ import CreateEvent from "./pages/event/CreateEvent";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import AdminDashboard from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,7 @@ const App = () => {
           <Navbar />
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/community" element={<Community />} />
             <Route path="/blogs" element={<Blog />} />
             <Route path="/write" element={<WriteBlog />} />
