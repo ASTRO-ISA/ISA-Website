@@ -154,14 +154,19 @@ const EventDetails = () => {
       <button
         onClick={() => handleRegister(userInfo?.user._id)}
         disabled={event.registeredUsers.includes(String(userInfo?.user._id))}
-        className="bg-space-purple/30 hover:bg-space-purple/50 text-white px-6 py-3 rounded-md transition"
+        className={`px-6 py-3 rounded-md transition
+          ${
+           event.registeredUsers.includes(String(userInfo.user._id))
+             ? 'bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed'
+             : 'bg-space-accent'
+           }`}
       >
         {event.registeredUsers.includes(String(userInfo?.user._id))
           ? "Already Registered"
           : "Register for this Event"}
       </button>
 
-      <div className="mt-6">
+      <div className="mt-6 mb-6">
         <Link to="/events" className="text-space-light hover:underline text-sm">
           ← Back to All Events
         </Link>

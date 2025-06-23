@@ -46,7 +46,6 @@ const Signup = () => {
       );
 
       console.log("Account created!:", response.data);
-      // alert("Account created!:");
       toast({
         title: "Account created!:",
         description: "Welcome!",
@@ -55,7 +54,6 @@ const Signup = () => {
       navigate("/");
     } catch (err) {
       console.error("Something went wrong", err);
-      // alert("Something went wrong");
       toast({
         title: "Something went wrong",
         description: "error",
