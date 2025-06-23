@@ -57,7 +57,6 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        {/* <ToastContainer /> */}
         <Sonner />
         <BrowserRouter>
           <Navbar />

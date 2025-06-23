@@ -6,14 +6,22 @@ const multer = require('multer')
 const router = express.Router()
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
-});
+  destination: (req, file, cb) => cb(null, 'uploads/'),
+  filename: (req, file, cb) =>
+    cb(null, Date.now() + path.extname(file.originalname))
+})
 
-const upload = multer({ storage });
+const upload = multer({ storage })
 
-router.post('/create', authenticateToken, upload.single('thumbnail'), eventController.createEvent)
-router.get('/', eventController.Events)
-router.get('/:id', eventController.getEvent)
+router.route('/').get(eventController.Events)
+router
+  .route('/create')
+  .post(
+    authenticateToken,
+    upload.single('thumbnail'),
+    eventController.createEvent
+  )
+router.route('/:id').get(eventController.getEvent)
+router.route('/register/:eventid/:userid').patch(eventController.registerEvent)
 
 module.exports = router
