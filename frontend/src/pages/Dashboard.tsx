@@ -91,7 +91,7 @@ const Dashboard = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
-  const { loginCheck, user } = useAuth();
+  const { loginCheck, userInfo: user } = useAuth();
 
   // Mock data - in real app would come from API
   const [userStats] = useState<UserStats>({

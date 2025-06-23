@@ -25,9 +25,11 @@ import { useAuth } from "@/context/AuthContext";
 
 const EventDetails = () => {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { userInfo } = useAuth();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
+  // const [userInfo, setUserInfo] = useState(user);
+  console.log("kdsjk", userInfo);
 
   // //registering a user for event
   const handleRegister = async (userId) => {
@@ -150,11 +152,11 @@ const EventDetails = () => {
       </div>
 
       <button
-        onClick={() => handleRegister(user?.user._id)}
-        disabled={event.registeredUsers.includes(String(user?.user._id))}
+        onClick={() => handleRegister(userInfo?.user._id)}
+        disabled={event.registeredUsers.includes(String(userInfo?.user._id))}
         className="bg-space-purple/30 hover:bg-space-purple/50 text-white px-6 py-3 rounded-md transition"
       >
-        {event.registeredUsers.includes(String(user?.user._id))
+        {event.registeredUsers.includes(String(userInfo?.user._id))
           ? "Already Registered"
           : "Register for this Event"}
       </button>

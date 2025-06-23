@@ -3,12 +3,18 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
 interface User {
-  name: string;
-  email: string;
+  user: {
+    _id: number;
+    name: string;
+    email: string;
+    role: string;
+    phoneNo: number;
+    country: string;
+  };
 }
 
 interface AuthContextType {
-  user: User | null;
+  userInfo: User | null;
   isLoggedIn: boolean;
   loginCheck: () => void;
   logout: () => Promise<void>;
@@ -19,7 +25,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [userInfo, setUserInfo] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const loginCheck = async () => {
@@ -28,10 +34,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         withCredentials: true,
       });
 
-      setUser(res.data);
+      setUserInfo(res.data);
       setIsLoggedIn(true);
     } catch (err) {
-      setUser(null);
+      setUserInfo(null);
       setIsLoggedIn(false);
     }
   };
@@ -41,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       await axios.get("http://localhost:3000/api/v1/users/logout", {
         withCredentials: true,
       });
-      setUser(null);
+      setUserInfo(null);
       setIsLoggedIn(false);
     } catch (err) {
       console.error("Logout failed", err);
@@ -52,8 +58,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     loginCheck();
   }, []);
 
+  console.log(userInfo);
+
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, loginCheck, logout }}>
+    <AuthContext.Provider value={{ userInfo, isLoggedIn, loginCheck, logout }}>
       {children}
     </AuthContext.Provider>
   );
