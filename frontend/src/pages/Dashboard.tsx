@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
-  User, 
-  BookOpen, 
-  Award, 
-  ShoppingBag, 
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  User,
+  BookOpen,
+  Award,
+  ShoppingBag,
   Calendar,
   Settings,
   BarChart3,
@@ -23,23 +23,23 @@ import {
   Bell,
   Edit,
   Camera,
-  LogOut
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+  LogOut,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 // import { useAuth } from '@/context/FirebaseAuthContext';
 // import { signOut, User as FirebaseUser } from 'firebase/auth';
 // import { auth } from '@/lib/firebase';
-import { useToast } from '@/hooks/use-toast';
-import axios from 'axios';
-import { useAuth } from '@/context/AuthContext';
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 interface Course {
   id: string;
@@ -74,7 +74,7 @@ interface Order {
     image: string;
   }>;
   total: number;
-  status: 'completed' | 'processing' | 'shipped';
+  status: "completed" | "processing" | "shipped";
 }
 
 interface UserStats {
@@ -88,9 +88,8 @@ interface UserStats {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  // const { user: authUser, loading } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const { loginCheck, user } = useAuth();
 
@@ -101,72 +100,75 @@ const Dashboard = () => {
     certificatesEarned: 3,
     totalStudyHours: 127,
     averageProgress: 68,
-    streakDays: 15
+    streakDays: 15,
   });
 
   const [enrolledCourses] = useState<Course[]>([
     {
-      id: '1',
-      title: 'Advanced Astrophysics: Black Holes and Neutron Stars',
-      instructor: 'Dr. Neil deGrasse Tyson',
+      id: "1",
+      title: "Advanced Astrophysics: Black Holes and Neutron Stars",
+      instructor: "Dr. Neil deGrasse Tyson",
       progress: 75,
       totalLessons: 24,
       completedLessons: 18,
-      duration: '12 weeks',
-      thumbnail: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=400',
-      category: 'Astrophysics',
-      enrolled: '2024-02-01',
-      lastAccessed: '2024-06-08'
+      duration: "12 weeks",
+      thumbnail:
+        "https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=400",
+      category: "Astrophysics",
+      enrolled: "2024-02-01",
+      lastAccessed: "2024-06-08",
     },
     {
-      id: '2',
-      title: 'Mars Exploration and Colonization',
-      instructor: 'Dr. Robert Zubrin',
+      id: "2",
+      title: "Mars Exploration and Colonization",
+      instructor: "Dr. Robert Zubrin",
       progress: 45,
       totalLessons: 16,
       completedLessons: 7,
-      duration: '8 weeks',
-      thumbnail: 'https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=400',
-      category: 'Space Exploration',
-      enrolled: '2024-03-15',
-      lastAccessed: '2024-06-07'
-    }
+      duration: "8 weeks",
+      thumbnail:
+        "https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=400",
+      category: "Space Exploration",
+      enrolled: "2024-03-15",
+      lastAccessed: "2024-06-07",
+    },
   ]);
 
   const [certificates] = useState<Certificate[]>([
     {
-      id: '1',
-      title: 'Planetary Science Specialization',
-      issuedDate: '2024-03-15',
-      instructor: 'Dr. Alan Stern',
-      credentialId: 'ISA-PS-2024-001',
-      category: 'Planetary Science'
+      id: "1",
+      title: "Planetary Science Specialization",
+      issuedDate: "2024-03-15",
+      instructor: "Dr. Alan Stern",
+      credentialId: "ISA-PS-2024-001",
+      category: "Planetary Science",
     },
     {
-      id: '2',
-      title: 'Astrophotography Mastery',
-      issuedDate: '2024-02-28',
-      instructor: 'Prof. Emily Chen',
-      credentialId: 'ISA-AP-2024-002',
-      category: 'Technology'
-    }
+      id: "2",
+      title: "Astrophotography Mastery",
+      issuedDate: "2024-02-28",
+      instructor: "Prof. Emily Chen",
+      credentialId: "ISA-AP-2024-002",
+      category: "Technology",
+    },
   ]);
 
   const [orders] = useState<Order[]>([
     {
-      id: 'ORD-2024-001',
-      date: '2024-06-05',
+      id: "ORD-2024-001",
+      date: "2024-06-05",
       items: [
         {
-          name: 'ISA Premium Membership - Annual',
+          name: "ISA Premium Membership - Annual",
           price: 199.99,
           quantity: 1,
-          image: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=100'
-        }
+          image:
+            "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=100",
+        },
       ],
       total: 199.99,
-      status: 'completed'
-    }
+      status: "completed",
+    },
   ]);
   // Redirect to login if not authenticated
   // useEffect(() => {
@@ -239,24 +241,15 @@ const Dashboard = () => {
 
   // User data from Firebase (real data)
   const userInfo = {
-    // name: user.name || 'Space Explorer',
-    // email: user.email || '',
-    // avatar: authUser.avatar || '/images/placeholder.svg',
-    // bio: 'Welcome to the ISA community! Start your space exploration journey.',
-    // location: 'Earth',
-    // joinDate: new Date().toLocaleDateString(),
-    // membershipType: 'Standard',
-    // interests: ['Astrophysics', 'Space Exploration', 'Astronomy', 'Science']
-
     // temporory
-    name: "Someone",
+    name: "dshflh",
     email: "someone@email.com",
     avatar: "/images/placeholder.svg",
     bio: "Welcome to the ISA community! Start your space exploration journey.",
     location: "Bhopal",
     joinDate: "17 08 2025",
     membershipType: "Standard",
-    interests: ['Astrophysics', 'Space Exploration', 'Astronomy', 'Science']
+    interests: ["Astrophysics", "Space Exploration", "Astronomy", "Science"],
   };
 
   const handleSaveProfile = () => {
@@ -268,23 +261,23 @@ const Dashboard = () => {
   };
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed':
-        return 'bg-green-500';
-      case 'processing':
-        return 'bg-yellow-500';
-      case 'shipped':
-        return 'bg-blue-500';
+      case "completed":
+        return "bg-green-500";
+      case "processing":
+        return "bg-yellow-500";
+      case "shipped":
+        return "bg-blue-500";
       default:
-        return 'bg-gray-500';
+        return "bg-gray-500";
     }
   };
 
@@ -298,9 +291,13 @@ const Dashboard = () => {
               <div className="flex flex-col lg:flex-row items-start gap-6">
                 <div className="relative">
                   <Avatar className="w-24 h-24">
-                    <AvatarImage src={userInfo.avatar} alt={userInfo.name} /> {/* use this after defining user info */}
+                    <AvatarImage src={userInfo.avatar} alt={userInfo.name} />{" "}
+                    {/* use this after defining user info */}
                     <AvatarFallback className="text-2xl bg-space-purple">
-                      {userInfo.name.split(' ').map(n => n[0]).join('')}
+                      {userInfo.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
                     </AvatarFallback>
                   </Avatar>
                   <Button
@@ -311,12 +308,16 @@ const Dashboard = () => {
                     <Camera className="w-4 h-4" />
                   </Button>
                 </div>
-                
+
                 <div className="flex-1">
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4">
                     <div>
-                      <h1 className="text-3xl font-bold mb-2">{userInfo.name}</h1>
-                      <p className="text-gray-400 mb-2">{userInfo.email}</p>
+                      <h1 className="text-3xl font-bold mb-2">
+                        {user ? user.user.name : userInfo.name}
+                      </h1>
+                      <p className="text-gray-400 mb-2">
+                        {user ? user.user.email : userInfo.email}
+                      </p>
                       <div className="flex items-center gap-4 text-sm text-gray-400">
                         <span>📍 {userInfo.location}</span>
                         <span>🗓️ Joined: 19 June 2025</span>
@@ -345,12 +346,16 @@ const Dashboard = () => {
                       </Button>
                     </div>
                   </div>
-                  
+
                   <p className="text-gray-300 mb-4">{userInfo.bio}</p>
-                  
+
                   <div className="flex flex-wrap gap-2">
                     {userInfo.interests.map((interest, index) => (
-                      <Badge key={index} variant="outline" className="border-space-purple/50">
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="border-space-purple/50"
+                      >
                         {interest}
                       </Badge>
                     ))}
@@ -366,43 +371,53 @@ const Dashboard = () => {
           <Card className="bg-space-purple/10 border-space-purple/30">
             <CardContent className="p-4 text-center">
               <BookOpen className="w-8 h-8 mx-auto mb-2 text-space-accent" />
-              <div className="text-2xl font-bold">{userStats.coursesEnrolled}</div>
+              <div className="text-2xl font-bold">
+                {userStats.coursesEnrolled}
+              </div>
               <div className="text-xs text-gray-400">Courses Enrolled</div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-space-purple/10 border-space-purple/30">
             <CardContent className="p-4 text-center">
               <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-400" />
-              <div className="text-2xl font-bold">{userStats.coursesCompleted}</div>
+              <div className="text-2xl font-bold">
+                {userStats.coursesCompleted}
+              </div>
               <div className="text-xs text-gray-400">Completed</div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-space-purple/10 border-space-purple/30">
             <CardContent className="p-4 text-center">
               <Award className="w-8 h-8 mx-auto mb-2 text-yellow-400" />
-              <div className="text-2xl font-bold">{userStats.certificatesEarned}</div>
+              <div className="text-2xl font-bold">
+                {userStats.certificatesEarned}
+              </div>
               <div className="text-xs text-gray-400">Certificates</div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-space-purple/10 border-space-purple/30">
             <CardContent className="p-4 text-center">
               <Clock className="w-8 h-8 mx-auto mb-2 text-blue-400" />
-              <div className="text-2xl font-bold">{userStats.totalStudyHours}</div>
+              <div className="text-2xl font-bold">
+                {userStats.totalStudyHours}
+              </div>
               <div className="text-xs text-gray-400">Study Hours</div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-space-purple/10 border-space-purple/30">
             <CardContent className="p-4 text-center">
               <TrendingUp className="w-8 h-8 mx-auto mb-2 text-purple-400" />
-              <div className="text-2xl font-bold">{userStats.averageProgress}%</div>
+              <div className="text-2xl font-bold">
+                {userStats.averageProgress}%
+              </div>
               <div className="text-xs text-gray-400">Avg Progress</div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-space-purple/10 border-space-purple/30">
             <CardContent className="p-4 text-center">
               <Trophy className="w-8 h-8 mx-auto mb-2 text-orange-400" />
@@ -413,7 +428,11 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-4"
+        >
           <TabsList className="grid w-full grid-cols-4 bg-space-purple/20">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="courses">Courses</TabsTrigger>
@@ -434,17 +453,25 @@ const Dashboard = () => {
                     <div className="flex items-center gap-3 p-3 bg-space-purple/20 rounded-lg">
                       <PlayCircle className="w-5 h-5 text-green-400" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium">Completed Lesson 18</p>
-                        <p className="text-xs text-gray-400">Advanced Astrophysics Course</p>
+                        <p className="text-sm font-medium">
+                          Completed Lesson 18
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          Advanced Astrophysics Course
+                        </p>
                       </div>
                       <span className="text-xs text-gray-400">2 hours ago</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-3 p-3 bg-space-purple/20 rounded-lg">
                       <Award className="w-5 h-5 text-yellow-400" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium">Earned Certificate</p>
-                        <p className="text-xs text-gray-400">Planetary Science Specialization</p>
+                        <p className="text-sm font-medium">
+                          Earned Certificate
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          Planetary Science Specialization
+                        </p>
                       </div>
                       <span className="text-xs text-gray-400">1 day ago</span>
                     </div>
@@ -459,30 +486,30 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4">
-                    <Button 
+                    <Button
                       className="h-20 flex-col gap-2 bg-space-accent/20 hover:bg-space-accent/30"
-                      onClick={() => navigate('/training')}
+                      onClick={() => navigate("/training")}
                     >
                       <BookOpen className="w-6 h-6" />
                       Browse Courses
                     </Button>
-                    <Button 
+                    <Button
                       className="h-20 flex-col gap-2 bg-space-accent/20 hover:bg-space-accent/30"
-                      onClick={() => navigate('/events')}
+                      onClick={() => navigate("/events")}
                     >
                       <Calendar className="w-6 h-6" />
                       View Events
                     </Button>
-                    <Button 
+                    <Button
                       className="h-20 flex-col gap-2 bg-space-accent/20 hover:bg-space-accent/30"
-                      onClick={() => navigate('/community')}
+                      onClick={() => navigate("/community")}
                     >
                       <MessageCircle className="w-6 h-6" />
                       Join Community
                     </Button>
-                    <Button 
+                    <Button
                       className="h-20 flex-col gap-2 bg-space-accent/20 hover:bg-space-accent/30"
-                      onClick={() => navigate('/shop')}
+                      onClick={() => navigate("/shop")}
                     >
                       <ShoppingBag className="w-6 h-6" />
                       Visit Shop
@@ -502,16 +529,21 @@ const Dashboard = () => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {enrolledCourses.map((course) => (
-                    <Card key={course.id} className="bg-space-purple/20 border-space-purple/40">
+                    <Card
+                      key={course.id}
+                      className="bg-space-purple/20 border-space-purple/40"
+                    >
                       <CardContent className="p-6">
-                        <img 
-                          src={course.thumbnail} 
+                        <img
+                          src={course.thumbnail}
                           alt={course.title}
                           className="w-full h-32 object-cover rounded-lg mb-4"
                         />
                         <h3 className="font-semibold mb-2">{course.title}</h3>
-                        <p className="text-sm text-gray-400 mb-4">By {course.instructor}</p>
-                        
+                        <p className="text-sm text-gray-400 mb-4">
+                          By {course.instructor}
+                        </p>
+
                         <div className="space-y-2 mb-4">
                           <div className="flex justify-between text-sm">
                             <span>Progress</span>
@@ -519,11 +551,16 @@ const Dashboard = () => {
                           </div>
                           <Progress value={course.progress} className="h-2" />
                           <div className="flex justify-between text-xs text-gray-400">
-                            <span>{course.completedLessons}/{course.totalLessons} lessons</span>
-                            <span>Last accessed: {formatDate(course.lastAccessed)}</span>
+                            <span>
+                              {course.completedLessons}/{course.totalLessons}{" "}
+                              lessons
+                            </span>
+                            <span>
+                              Last accessed: {formatDate(course.lastAccessed)}
+                            </span>
                           </div>
                         </div>
-                        
+
                         <Button className="w-full bg-space-accent hover:bg-space-accent/80">
                           Continue Learning
                         </Button>
@@ -544,21 +581,36 @@ const Dashboard = () => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {certificates.map((cert) => (
-                    <Card key={cert.id} className="bg-gradient-to-br from-space-purple/30 to-space-accent/20 border-space-accent/30">
+                    <Card
+                      key={cert.id}
+                      className="bg-gradient-to-br from-space-purple/30 to-space-accent/20 border-space-accent/30"
+                    >
                       <CardContent className="p-6 text-center">
                         <Award className="w-12 h-12 mx-auto mb-4 text-yellow-400" />
                         <h3 className="font-bold mb-2">{cert.title}</h3>
-                        <p className="text-sm text-gray-400 mb-1">Issued by {cert.instructor}</p>
-                        <p className="text-xs text-gray-500 mb-4">{formatDate(cert.issuedDate)}</p>
+                        <p className="text-sm text-gray-400 mb-1">
+                          Issued by {cert.instructor}
+                        </p>
+                        <p className="text-xs text-gray-500 mb-4">
+                          {formatDate(cert.issuedDate)}
+                        </p>
                         <Badge variant="outline" className="mb-4">
                           {cert.category}
                         </Badge>
                         <div className="flex gap-2">
-                          <Button size="sm" variant="outline" className="flex-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1"
+                          >
                             <Eye className="w-4 h-4 mr-1" />
                             View
                           </Button>
-                          <Button size="sm" variant="outline" className="flex-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1"
+                          >
                             <Download className="w-4 h-4 mr-1" />
                             Download
                           </Button>
@@ -584,7 +636,7 @@ const Dashboard = () => {
                     <>
                       <div className="space-y-2">
                         <Label htmlFor="name">Full Name</Label>
-                        <Input 
+                        <Input
                           id="name"
                           defaultValue={userInfo.name}
                           className="bg-space-purple/10 border-space-purple/30"
@@ -592,7 +644,7 @@ const Dashboard = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
-                        <Input 
+                        <Input
                           id="email"
                           type="email"
                           defaultValue={userInfo.email}
@@ -602,7 +654,7 @@ const Dashboard = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="location">Location</Label>
-                        <Input 
+                        <Input
                           id="location"
                           defaultValue={userInfo.location}
                           className="bg-space-purple/10 border-space-purple/30"
@@ -610,7 +662,7 @@ const Dashboard = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="bio">Bio</Label>
-                        <Textarea 
+                        <Textarea
                           id="bio"
                           defaultValue={userInfo.bio}
                           className="bg-space-purple/10 border-space-purple/30"
@@ -618,8 +670,13 @@ const Dashboard = () => {
                         />
                       </div>
                       <div className="flex gap-2">
-                        <Button onClick={handleSaveProfile}>Save Changes</Button>
-                        <Button variant="outline" onClick={() => setIsEditing(false)}>
+                        <Button onClick={handleSaveProfile}>
+                          Save Changes
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsEditing(false)}
+                        >
                           Cancel
                         </Button>
                       </div>
@@ -671,8 +728,8 @@ const Dashboard = () => {
                     <Download className="w-4 h-4 mr-2" />
                     Download Data
                   </Button>
-                  <Button 
-                    variant="destructive" 
+                  <Button
+                    variant="destructive"
                     className="w-full justify-start"
                     onClick={handleLogout}
                   >

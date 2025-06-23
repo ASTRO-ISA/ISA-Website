@@ -17,7 +17,7 @@ import { useAuth } from "@/context/AuthContext";
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user: userInfo } = useAuth();
   const location = useLocation();
 
   // if the user is logged in, avatar will be shown and when clcking it, user dashboard will open
@@ -49,44 +49,35 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-2 space-x-5">
+            {userInfo?.user.role === "admin" ? (
+              <Link
+                to="/admin"
+                className={`transition-colors ${
+                  location.pathname === "/admin"
+                    ? "text-space-accent"
+                    : "text-white hover:text-space-light"
+                }`}
+              >
+                Admin
+              </Link>
+            ) : null}
 
-          {/* once the isAdmin is available, use the below block, this will make admin page visible only to admins */}
-          {/* {isAdmin && 
-          <Link
-          to="/admin"
-          className="text-white hover:text-space-light transition-colors"
-          >
-          Admin
-        </Link>
-          } */}
-
-          {/* remove the below Admin link once above commented code is enabled */}
-          <Link
-              to="/admin"
-              className={`transition-colors ${
-                location.pathname === '/admin'
-                  ? 'text-space-accent'
-                  : 'text-white hover:text-space-light'
-              }`}
-            >
-              Admin
-            </Link>
             <Link // testing the color change on path change
               to="/community"
               className={`transition-colors ${
-                location.pathname === '/community'
-                  ? 'text-space-accent'
-                  : 'text-white hover:text-space-light'
+                location.pathname === "/community"
+                  ? "text-space-accent"
+                  : "text-white hover:text-space-light"
               }`}
-              >
+            >
               Community
             </Link>
             <Link
               to="/blogs"
               className={`transition-colors ${
-                location.pathname === '/blogs'
-                  ? 'text-space-accent'
-                  : 'text-white hover:text-space-light'
+                location.pathname === "/blogs"
+                  ? "text-space-accent"
+                  : "text-white hover:text-space-light"
               }`}
             >
               Blogs & News
@@ -94,9 +85,9 @@ const Navbar = () => {
             <Link
               to="/events"
               className={`transition-colors ${
-                location.pathname === '/events'
-                  ? 'text-space-accent'
-                  : 'text-white hover:text-space-light'
+                location.pathname === "/events"
+                  ? "text-space-accent"
+                  : "text-white hover:text-space-light"
               }`}
             >
               Events
@@ -104,9 +95,9 @@ const Navbar = () => {
             <Link
               to="/shop"
               className={`transition-colors ${
-                location.pathname === '/shop'
-                  ? 'text-space-accent'
-                  : 'text-white hover:text-space-light'
+                location.pathname === "/shop"
+                  ? "text-space-accent"
+                  : "text-white hover:text-space-light"
               }`}
             >
               Shop
@@ -114,9 +105,9 @@ const Navbar = () => {
             <Link
               to="/training"
               className={`transition-colors ${
-                location.pathname === '/training'
-                  ? 'text-space-accent'
-                  : 'text-white hover:text-space-light'
+                location.pathname === "/training"
+                  ? "text-space-accent"
+                  : "text-white hover:text-space-light"
               }`}
             >
               e-Learning
@@ -124,9 +115,9 @@ const Navbar = () => {
             <Link
               to="/webinars"
               className={`transition-colors ${
-                location.pathname === '/webinars'
-                  ? 'text-space-accent'
-                  : 'text-white hover:text-space-light'
+                location.pathname === "/webinars"
+                  ? "text-space-accent"
+                  : "text-white hover:text-space-light"
               }`}
             >
               Webinars
@@ -210,7 +201,6 @@ const Navbar = () => {
             className="md:hidden"
           >
             <div className="flex flex-col space-y-4 pt-4 pb-6 px-2">
-
               {/* once the isAdmin is available, use the below block, this will make admin page visible only to admins */}
               {/* {isAdmin && 
               <Link
@@ -225,9 +215,9 @@ const Navbar = () => {
               <Link
                 to="/admin"
                 className={`transition-colors ${
-                  location.pathname === '/admin'
-                    ? 'text-space-accent'
-                    : 'text-white hover:text-space-light'
+                  location.pathname === "/admin"
+                    ? "text-space-accent"
+                    : "text-white hover:text-space-light"
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -236,9 +226,9 @@ const Navbar = () => {
               <Link
                 to="/community"
                 className={`transition-colors ${
-                  location.pathname === '/community'
-                    ? 'text-space-accent'
-                    : 'text-white hover:text-space-light'
+                  location.pathname === "/community"
+                    ? "text-space-accent"
+                    : "text-white hover:text-space-light"
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -247,9 +237,9 @@ const Navbar = () => {
               <Link
                 to="/blogs"
                 className={`transition-colors ${
-                  location.pathname === '/blogs'
-                    ? 'text-space-accent'
-                    : 'text-white hover:text-space-light'
+                  location.pathname === "/blogs"
+                    ? "text-space-accent"
+                    : "text-white hover:text-space-light"
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -258,9 +248,9 @@ const Navbar = () => {
               <Link
                 to="/events"
                 className={`transition-colors ${
-                  location.pathname === '/events'
-                    ? 'text-space-accent'
-                    : 'text-white hover:text-space-light'
+                  location.pathname === "/events"
+                    ? "text-space-accent"
+                    : "text-white hover:text-space-light"
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -269,9 +259,9 @@ const Navbar = () => {
               <Link
                 to="/shop"
                 className={`transition-colors ${
-                  location.pathname === '/shop'
-                    ? 'text-space-accent'
-                    : 'text-white hover:text-space-light'
+                  location.pathname === "/shop"
+                    ? "text-space-accent"
+                    : "text-white hover:text-space-light"
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -280,9 +270,9 @@ const Navbar = () => {
               <Link
                 to="/training"
                 className={`transition-colors ${
-                  location.pathname === '/training'
-                    ? 'text-space-accent'
-                    : 'text-white hover:text-space-light'
+                  location.pathname === "/training"
+                    ? "text-space-accent"
+                    : "text-white hover:text-space-light"
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -291,9 +281,9 @@ const Navbar = () => {
               <Link
                 to="/webinars"
                 className={`transition-colors ${
-                  location.pathname === '/webinars'
-                    ? 'text-space-accent'
-                    : 'text-white hover:text-space-light'
+                  location.pathname === "/webinars"
+                    ? "text-space-accent"
+                    : "text-white hover:text-space-light"
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -356,17 +346,17 @@ const Navbar = () => {
               </div> */}
 
               {!isLoggedIn && (
-              <Button
-                asChild
-                className="bg-space-accent hover:bg-space-accent/80 text-white"
-              >
-                <Link
-                  to="/login"
-                  className="text-white hover:text-space-light transition-colors"
+                <Button
+                  asChild
+                  className="bg-space-accent hover:bg-space-accent/80 text-white"
                 >
-                  Login
-                </Link>
-              </Button>
+                  <Link
+                    to="/login"
+                    className="text-white hover:text-space-light transition-colors"
+                  >
+                    Login
+                  </Link>
+                </Button>
               )}
             </div>
           </motion.div>
