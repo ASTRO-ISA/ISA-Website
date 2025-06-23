@@ -17,7 +17,7 @@ import { useAuth } from "@/context/AuthContext";
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { isLoggedIn, user: userInfo } = useAuth();
+  const { isLoggedIn, userInfo } = useAuth();
   const location = useLocation();
 
   // if the user is logged in, avatar will be shown and when clcking it, user dashboard will open
@@ -49,7 +49,7 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-2 space-x-5">
-            {userInfo?.user.role === "admin" ? (
+            {userInfo?.user.role === "user" ? (
               <Link
                 to="/admin"
                 className={`transition-colors ${
