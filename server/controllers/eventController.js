@@ -1,5 +1,6 @@
 const Event = require('../models/eventModel')
 const User = require('../models/userModel')
+const sendEmail = require('../utils/sendEmail')
 
 // const currentDate = new Date()
 
@@ -91,6 +92,14 @@ exports.registerEvent = async (req, res) => {
       { $addToSet: { registeredUsers: userid } },
       { new: true }
     ).populate('registeredUsers', 'name email')
+
+    // sending confirmation email
+    const text = `Hi ${user.name},
+    You have successfully registered for "${event.title}" on ${new Date(event.eventDate).toDateString()} at ${event.location}.
+    See you there!
+    – ISA`;
+
+    await sendEmail(user.email, `Registered for ${event.title}`, text);
 
     res.status(200).json({
       success: true,
