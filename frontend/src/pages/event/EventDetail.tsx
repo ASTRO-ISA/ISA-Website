@@ -4,36 +4,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useEffect } from "react";
-import { lightFormat } from "date-fns";
-
-const EventDetails = () => {
-    const {id} = useParams()
-    const [event, setEvent] = useState(null)
-    const [loading, setLoading] = useState(true)
- 
-    // get event from database
-    useEffect(() => {
-        const res = axios
-        .get(`http://localhost:3000/api/v1/events/${id}`)
-        .then((res) => {
-            setEvent(res.data)
-            setLoading(false)
-        })
-        .catch((err) => {
-            console.error('Error fetching event', err)
-            setLoading(false)
-        })
-    }, [id])
-
-    if(loading){
-        return (
-          <div className="min-h-screen flex flex-col items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-100 mb-4"></div>
-            <p className="text-gray-100">Loading event for you...</p>
-          </div>
-        );
-    }
-    if(!event) return <p className="min-h-screen flex flex-col items-center justify-center h-64">Event not found.</p>
+import { useAuth } from "@/context/AuthContext";
 
 //   const event = {
 //     title: "Geminid Meteor Shower Observation Night",
@@ -52,21 +23,73 @@ const EventDetails = () => {
 //       "Join us for a night of stargazing to observe one of the year's best meteor showers with professional telescopes and guidance.",
 //   };
 
-    // to show the date in readable format
-    const formatDate = (dateStr) =>
-        new Date(dateStr).toLocaleDateString("en-IN", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        });
-      
-      // to set time in readable format
-      const formatTime = (dateStr) =>
-        new Date(dateStr).toLocaleTimeString('en-IN', {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        });
+const EventDetails = () => {
+  const { id } = useParams();
+  const { user } = useAuth();
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // //registering a user for event
+  const handleRegister = async (userId) => {
+    const res = axios
+      .patch(`http://localhost:3000/api/v1/events/register/${id}/${userId}`)
+      .then((res) => {
+        fetchEvent();
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error regstering user for event", err);
+        setLoading(false);
+      });
+  };
+
+  // get event from database
+  const fetchEvent = () => {
+    const res = axios
+      .get(`http://localhost:3000/api/v1/events/${id}`)
+      .then((res) => {
+        setEvent(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching event", err);
+        setLoading(false);
+      });
+  };
+  useEffect(() => {
+    fetchEvent();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-100 mb-4"></div>
+        <p className="text-gray-100">Loading event for you...</p>
+      </div>
+    );
+  }
+  if (!event)
+    return (
+      <p className="min-h-screen flex flex-col items-center justify-center h-64">
+        Event not found.
+      </p>
+    );
+
+  // to show the date in readable format
+  const formatDate = (dateStr) =>
+    new Date(dateStr).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+  // to set time in readable format
+  const formatTime = (dateStr) =>
+    new Date(dateStr).toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
 
   return (
     <div className="min-h-screen bg-space-dark text-white pt-20 px-4 md:px-16">
@@ -95,7 +118,7 @@ const EventDetails = () => {
           </div>
           <div className="flex items-center text-gray-400">
             <Users className="h-5 w-5 mr-2 text-space-accent" />
-            {event.attendees} attending
+            {event.registeredUsers.length} attending
           </div>
           <div className="flex items-center text-gray-400">
             <Video className="h-5 w-5 mr-2 text-space-accent" />
@@ -112,11 +135,11 @@ const EventDetails = () => {
               rel="noopener noreferrer"
               className="text-space-accent hover:underline"
             >
-                <ul>
+              <ul>
                 {event.hostedBy.map((item, index) => (
-                    <li key={index}>{item.name}</li>
+                  <li key={index}>{item.name}</li>
                 ))}
-                </ul>
+              </ul>
             </a>
           </div>
           <div>
@@ -126,8 +149,14 @@ const EventDetails = () => {
         </div>
       </div>
 
-      <button className="bg-space-purple/30 hover:bg-space-purple/50 text-white px-6 py-3 rounded-md transition">
-        Register for this Event
+      <button
+        onClick={() => handleRegister(user?.user._id)}
+        disabled={event.registeredUsers.includes(String(user?.user._id))}
+        className="bg-space-purple/30 hover:bg-space-purple/50 text-white px-6 py-3 rounded-md transition"
+      >
+        {event.registeredUsers.includes(String(user?.user._id))
+          ? "Already Registered"
+          : "Register for this Event"}
       </button>
 
       <div className="mt-6">

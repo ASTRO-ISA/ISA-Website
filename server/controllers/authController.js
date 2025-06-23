@@ -35,7 +35,6 @@ const createSendToken = (user, statusCode, res) => {
 exports.signup = async (req, res) => {
   try {
     const newUser = await User.create({
-      
       name: req.body.name,
       email: req.body.email,
       phoneNo: req.body.phoneNo,
@@ -43,8 +42,7 @@ exports.signup = async (req, res) => {
       // confirmPassword: req.body.confirmPassword, // no need to save confirm pass in db
       country: req.body.country
     })
-    
-    
+
     createSendToken(newUser, 201, res)
   } catch (error) {
     res.status(500).json({ status: 'Fail', message: error.message })
@@ -79,18 +77,20 @@ exports.login = async (req, res) => {
 
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password');
-    res.status(200).json({ status: 'success', user });
+    const user = await User.findById(req.user.id).select('-password')
+
+    res.status(200).json({ status: 'success', user })
   } catch (err) {
-    res.status(500).json({ status: 'error', message: err.message });
+    res.status(500).json({ status: 'error', message: err.message })
   }
 }
 
 exports.logout = async (req, res) => {
-  res.cookie('jwt', '', { // setting the cookie to empty
+  res.cookie('jwt', '', {
+    // setting the cookie to empty
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    expires: new Date(0),
+    expires: new Date(0)
   })
-  res.status(200).json({ status: 'success', message: 'Logged out' });
+  res.status(200).json({ status: 'success', message: 'Logged out' })
 }
