@@ -3,16 +3,18 @@ const path = require('path')
 const multer = require('multer')
 const blogController = require('../controllers/blogController')
 const authenticateToken = require('../middlewares/authenticateToken')
+const createStorage = require('../utils/cloudinaryStorage')
 
 const router = express.Router()
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename: (req, file, cb) =>
-    cb(null, Date.now() + path.extname(file.originalname))
-})
+// old storage which used to save the images in local uploads folder
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => cb(null, 'uploads/'),
+//   filename: (req, file, cb) =>
+//     cb(null, Date.now() + path.extname(file.originalname))
+// })
 
-const upload = multer({ storage })
+const upload = multer({ storage: createStorage('blog-thumbnails')})
 
 router.route('/').get(blogController.allBlogs)
 // router.route().get('/', blogController.externalBlogs)

@@ -4,22 +4,35 @@ import { useState } from "react";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import imageCompression from "browser-image-compression";
 
 const WriteBlog = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [thumbnail, setThumbnail] = useState("");
+  const [thumbnail, setThumbnail] = useState<File | null>(null); // since we are trying to set a file to thumbnail afeter compressing it
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleThumbnailChange = (e) => {
-    setThumbnail(e.target.files[0]);
+  const handleThumbnailChange = async (e) => {
+    const image = e.target.files[0];
+    const options = {
+      maxSizeMB: 1,
+      useWebWorker: true,
+    }
+    try {
+      const compressedFile = await imageCompression(image, options);
+      setThumbnail(compressedFile);
+    } catch (err) {
+      console.error("Image compression failed:", err);
+    }
   };
 
   // Submit Form
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
@@ -41,13 +54,16 @@ const WriteBlog = () => {
       console.log("Blog published:", response.data);
       setContent("");
       setDescription("");
-      setThumbnail("");
+      setThumbnail(null);
       setTitle("");
-      setTimeout(() => {
-        navigate("/blogs");
-      }, 1000);
+      setLoading(false);
+      navigate("/blogs");
+      // setTimeout(() => {
+      //   navigate("/blogs");
+      // }, 1000);
       toast({ title: "Blog published successfully!" });
     } catch (err) {
+      setLoading(false);
       console.error("Failed to publish blog", err);
       toast({ title: "Error publishing blog.", variant: "destructive" });
     }
@@ -131,6 +147,7 @@ const WriteBlog = () => {
             </button>
           </div>
         </form>
+        {loading && <p className="text-center text-gray-300">Uploading...</p>}
       </main>
     </div>
   );
