@@ -29,18 +29,18 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     select: false
   },
-  confirmPassword: {
-    type: String,
-    minlength: 8,
-    required: [true, 'Confirm Password is required'],
-    validate: {
-      // this only work on save ans create
-      validator: function (el) {
-        return el === this.password
-      },
-      message: 'passwords are not same'
-    }
-  },
+  // confirmPassword: {
+  //   type: String,
+  //   minlength: 8,
+  //   required: [true, 'Confirm Password is required'],
+  //   validate: {
+  //     // this only work on save ans create
+  //     validator: function (el) {
+  //       return el === this.password
+  //     },
+  //     message: 'passwords are not same'
+  //   }
+  // },
   country: {
     type: String,
     default: 'India',
