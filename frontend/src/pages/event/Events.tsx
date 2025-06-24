@@ -144,7 +144,7 @@ const Events = () => {
                 <div className="h-48 overflow-hidden">
                   <img 
                     loading="lazy"
-                    src={`http://localhost:3000/${event.thumbnail}`} 
+                    src={event.thumbnail} 
                     alt={event.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
