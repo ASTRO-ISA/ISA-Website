@@ -38,6 +38,7 @@ exports.signup = async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       phoneNo: req.body.phoneNo,
+      role: req.body.role,
       password: req.body.password,
       // confirmPassword: req.body.confirmPassword, // no need to save confirm pass in db
       country: req.body.country
@@ -77,7 +78,7 @@ exports.login = async (req, res) => {
 
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password')
+    const user = await User.findById(req.user._id).select('-password')
 
     res.status(200).json({ status: 'success', user })
   } catch (err) {
