@@ -230,7 +230,7 @@ const Blog = () => {
                   <div className="h-48 w-full relative">
                     <img
                       loading="lazy"
-                      src={`http://localhost:3000/uploads/${blog.thumbnail}`}
+                      src={blog.thumbnail}
                       alt={blog.title}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
