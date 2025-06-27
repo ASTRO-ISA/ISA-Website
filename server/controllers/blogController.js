@@ -10,7 +10,7 @@ exports.allBlogs = async (req, res) => {
 
     res.status(200).json(allBlogs)
   } catch (err) {
-    res.status(500).json({ message: 'Server Error' })
+    res.status(500).json({ message: 'Server Error', error: err.message })
   }
 }
 
@@ -32,7 +32,7 @@ exports.createBlog = async (req, res) => {
   } catch (err) {
     res
       .status(500)
-      .json({ error: 'Failed to save blog.', details: err.message })
+      .json({ message: 'Failed to save blog.', error: err.message })
   }
 }
 
@@ -47,7 +47,9 @@ exports.featuredBlog = async (req, res) => {
     }
     res.status(200).json(featuredBlog)
   } catch (err) {
-    res.status(500).json({ message: 'server error in featured' })
+    res
+      .status(500)
+      .json({ message: 'server error in featured', error: err.message })
   }
 }
 
@@ -61,6 +63,8 @@ exports.readBlog = async (req, res) => {
     }
     res.status(200).json(blog)
   } catch (err) {
-    res.status(500).json({ message: 'server error in readblog' })
+    res
+      .status(500)
+      .json({ message: 'server error in readblog', error: err.message })
   }
 }

@@ -2,10 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TabsContent } from "@radix-ui/react-tabs";
 import React, { useEffect, useState } from "react";
 
-const suggestions = [
-  { title: "How rockets work", userEmail: "astro@example.com" },
-  { title: "AI in Space", userEmail: "vinod@example.com" },
-];
+
 
 import axios from "axios";
 
