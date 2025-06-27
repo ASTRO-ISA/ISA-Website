@@ -40,7 +40,7 @@ exports.signup = async (req, res) => {
       phoneNo: req.body.phoneNo,
       role: req.body.role,
       password: req.body.password,
-      // confirmPassword: req.body.confirmPassword, // no need to save confirm pass in db
+      confirmPassword: req.body.confirmPassword,
       country: req.body.country
     })
 
