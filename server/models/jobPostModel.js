@@ -13,12 +13,18 @@ const jobPostSchema = new mongoose.Schema({
     type: String,
     validate: [validator.isURL, 'Please enter a valid URL']
   },
-  //   document: {
-  //     type: Buffer,
-  //     contentType: String
-  //   },
+  documentUrl: {
+    type: String,
+  },
+  documentPublicId: {
+    type: String,
+  },
   description: {
     type: String
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 })
 
