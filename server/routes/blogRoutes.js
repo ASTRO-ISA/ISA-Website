@@ -3,7 +3,7 @@ const path = require('path')
 const multer = require('multer')
 const blogController = require('../controllers/blogController')
 const authenticateToken = require('../middlewares/authenticateToken')
-const createStorage = require('../utils/cloudinaryStorage')
+const { imageStorage } = require('../utils/cloudinaryStorage')
 
 const router = express.Router()
 
@@ -14,7 +14,7 @@ const router = express.Router()
 //     cb(null, Date.now() + path.extname(file.originalname))
 // })
 
-const upload = multer({ storage: createStorage('blog-thumbnails')})
+const uploadImage = multer({ storage: imageStorage('blog-thumbnails')})
 
 router.route('/').get(blogController.allBlogs)
 // router.route().get('/', blogController.externalBlogs)
@@ -22,7 +22,7 @@ router
   .route('/create')
   .post(
     authenticateToken,
-    upload.single('thumbnail'),
+    uploadImage.single('thumbnail'),
     blogController.createBlog
   )
 router.route('/featured').get(blogController.featuredBlog)
