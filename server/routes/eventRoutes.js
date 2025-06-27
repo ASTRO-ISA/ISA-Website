@@ -4,24 +4,16 @@ const eventController = require('../controllers/eventController')
 const authenticateToken = require('../middlewares/authenticateToken')
 const multer = require('multer')
 const router = express.Router()
-const createStorage = require('../utils/cloudinaryStorage')
+const { imageStorage } = require('../utils/cloudinaryStorage')
 
-const upload = multer({ storage: createStorage('event-banners')})
-
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => cb(null, 'uploads/'),
-//   filename: (req, file, cb) =>
-//     cb(null, Date.now() + path.extname(file.originalname))
-// })
-
-// const upload = multer({ storage })
+const uploadImage = multer({ storage: imageStorage('event-banners')})
 
 router.route('/').get(eventController.Events)
 router
   .route('/create')
   .post(
     authenticateToken,
-    upload.single('thumbnail'),
+    uploadImage.single('thumbnail'),
     eventController.createEvent
   )
 router.route('/:id').get(eventController.getEvent)
