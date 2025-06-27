@@ -212,6 +212,7 @@ const Navbar = () => {
               } */}
 
               {/* remove the below Admin link once above commented code is enabled */}
+              {userInfo?.user.role === "admin" ? (
               <Link
                 to="/admin"
                 className={`transition-colors ${
@@ -219,10 +220,10 @@ const Navbar = () => {
                     ? "text-space-accent"
                     : "text-white hover:text-space-light"
                 }`}
-                onClick={() => setMobileMenuOpen(false)}
               >
                 Admin
               </Link>
+            ) : null}
               <Link
                 to="/community"
                 className={`transition-colors ${

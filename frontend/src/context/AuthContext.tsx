@@ -58,8 +58,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     loginCheck();
   }, []);
 
-  console.log(userInfo);
-
   return (
     <AuthContext.Provider value={{ userInfo, isLoggedIn, loginCheck, logout }}>
       {children}

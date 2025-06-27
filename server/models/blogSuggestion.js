@@ -19,8 +19,7 @@ const blogSuggestionSchema = new mongoose.Schema({
     default: 'pending'
   },
   response: {
-    type: String,
-    default: 'No response from Admin'
+    type: String
   },
   createdAt: {
     type: Date,

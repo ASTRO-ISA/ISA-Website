@@ -8,12 +8,12 @@ import { useToast } from "@/hooks/use-toast";
 // import StarBackground from "@/components/StarBackground";
 
 const Events = () => {
-  const [events, setEvents] = useState([])
-  const [launches, setLaunches] = useState([])
+  const [events, setEvents] = useState([]);
+  const [launches, setLaunches] = useState([]);
   const [showAll, setShowAll] = useState(false);
-  const [loading, setLoading] = useState(true)
-  const { isLoggedIn } = useAuth()
-  const navigate = useNavigate()
+  const [loading, setLoading] = useState(true);
+  const { isLoggedIn, userInfo } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
    // to check if the user is logged in before writing the blog, if the user is not logged in, he cannot write blog
@@ -26,6 +26,31 @@ const Events = () => {
         description: "Log in first to host an event.",
       })
     }
+  };
+
+  // //registering a user for event
+  const handleRegister = async (userId, eventId) => {
+    const res = axios
+      .patch(`http://localhost:3000/api/v1/events/register/${eventId}/${userId}`)
+      .then((res) => {
+
+        // setting a particular event as registered, since we are registering from the events page so to update the button to 'alredy registerd'
+        setEvents(prevEvents =>
+          prevEvents.map(event =>
+            event._id === eventId
+              ? {
+                  ...event,
+                  registeredUsers: [...event.registeredUsers, String(userId)],
+                }
+              : event
+          )
+        );
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error regstering user for event", err);
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -109,16 +134,17 @@ const Events = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Upcoming events */}
             {loading? (<p>Loading...</p>) : events.length === 0? (<p>Nothing to see here right now!</p>) : (
-            (showAll ? events : events.slice(0, 6)).map((event) => ( // for time being using just events
-              <Link
+            (showAll ? events : events.slice(0, 3)).map((event) => ( // for time being using just events
+              
+              <div className="cosmic-card overflow-hidden group">
+                <Link
               to={`/events/${event._id}`}
               key={event._id}
               >
-              <div className="cosmic-card overflow-hidden group">
                 <div className="h-48 overflow-hidden">
                   <img 
                     loading="lazy"
-                    src={`http://localhost:3000/${event.thumbnail}`} 
+                    src={event.thumbnail} 
                     alt={event.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
@@ -141,18 +167,29 @@ const Events = () => {
                     </div>
                     <div className="flex items-center text-sm text-gray-400">
                       <Users className="h-4 w-4 mr-2 text-space-accent" />
-                      <span>{event.attendees} attending</span>
+                      <span>{event.registeredUsers.length} attending</span>
                     </div>
                   </div>
                   
-                  <p className="text-gray-400 text-sm mb-4">{event?.description?.split(" ").slice(0, 20).join(" ")}</p>
-                  
-                  <button className="w-full bg-space-purple/30 hover:bg-space-purple/50 text-white py-2 rounded transition-colors">
-                    Register Now
-                  </button>
+                  <p className="text-gray-400 text-sm">{event?.description?.split(" ").slice(0, 20).join(" ")}...</p>
                 </div>
+                </Link>
+                <button
+                onClick={() => handleRegister(userInfo?.user._id, event._id)}
+                disabled={event.registeredUsers.includes(String(userInfo?.user._id))}
+                className={`w-full py-2 transition-colors
+                 ${
+                  event.registeredUsers.includes(String(userInfo.user._id))
+                    ? 'bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed'
+                    : 'bg-space-accent'
+                  }`}
+                >
+                {event.registeredUsers.includes(String(userInfo?.user._id))
+                  ? "Registered"
+                  : "Register for this Event"}
+                </button>
               </div>
-              </Link>
+              
             ))
           )}
             
