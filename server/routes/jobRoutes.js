@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const authenticateToken = require('./../middlewares/authenticateToken')
 const restrictTo = require('./../middlewares/restrictTo')
+const multer = require('multer')
+const { documentStorage } = require('../utils/cloudinaryStorage')
 const {
   getAllJobs,
   createJob,
@@ -9,10 +11,24 @@ const {
   updateJob
 } = require('../controllers/JobPostController')
 
+const uploadDocument = multer({ storage: documentStorage('job-attachments') })
+
 router.use(authenticateToken)
 router.use(restrictTo('admin'))
 
-router.route('/').get(getAllJobs).post(createJob)
-router.route('/:id').delete(deleteJob).patch(updateJob)
+router
+  .route('/')
+  .get(getAllJobs)
+  .post(
+    uploadDocument.single('document'),
+    createJob
+  )
+router
+  .route('/:id')
+  .delete(deleteJob)
+  .patch(
+    uploadDocument.single('document'),
+    updateJob
+  )
 
 module.exports = router
