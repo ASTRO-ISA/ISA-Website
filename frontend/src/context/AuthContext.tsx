@@ -42,6 +42,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+
+  
+
   const logout = async () => {
     try {
       await axios.get("http://localhost:3000/api/v1/users/logout", {
