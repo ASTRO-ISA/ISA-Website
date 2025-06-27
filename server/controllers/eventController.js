@@ -4,6 +4,9 @@ const sendEmail = require('../utils/sendEmail')
 
 // const currentDate = new Date()
 
+
+
+
 exports.createEvent = async (req, res) => {
   try {
     const {
