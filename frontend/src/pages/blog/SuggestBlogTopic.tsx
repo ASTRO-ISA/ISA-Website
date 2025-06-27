@@ -43,18 +43,7 @@ const SuggestBlogTopic = () => {
             </p>
 
             <form className="space-y-4">
-              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder="Your Name"
-                  className="px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
-                />
-                <input
-                  type="email"
-                  placeholder="Your Email"
-                  className="px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
-                />
-              </div> */}
+
               <input
                 type="text"
                 name="title"
