@@ -1,7 +1,9 @@
 import axios from "axios";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const SuggestBlogTopic = () => {
+  const { toast } = useToast();
   const [blogSuggest, setBlogSuggest] = useState({
     title: "",
     description: "",
@@ -22,13 +24,14 @@ const SuggestBlogTopic = () => {
           withCredentials: true,
         }
       );
-      alert("Posted successfully!");
       setBlogSuggest({
         title: "",
         description: "",
-      });
+      })
+      toast({ title: 'suggesion posted successfully' })
     } catch (error) {
       console.error("Post failed", error);
+      toast({ title: 'something went wrong'})
     }
   };
 
