@@ -3,11 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Menu,
   X,
-  Instagram,
-  MessageCircle,
-  Rocket,
-  Palette,
-  BookOpen,
+  // Instagram,
+  // MessageCircle,
+  // Rocket,
+  // Palette,
+  // BookOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -49,7 +49,7 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-2 space-x-5">
-            {userInfo?.user.role === "user" ? (
+            {userInfo?.user.role === "admin" ? (
               <Link
                 to="/admin"
                 className={`transition-colors ${
@@ -201,17 +201,6 @@ const Navbar = () => {
             className="md:hidden"
           >
             <div className="flex flex-col space-y-4 pt-4 pb-6 px-2">
-              {/* once the isAdmin is available, use the below block, this will make admin page visible only to admins */}
-              {/* {isAdmin && 
-              <Link
-              to="/admin"
-              className="text-white hover:text-space-light transition-colors"
-              >
-              Admin
-            </Link>
-              } */}
-
-              {/* remove the below Admin link once above commented code is enabled */}
               {userInfo?.user.role === "admin" ? (
               <Link
                 to="/admin"
@@ -220,6 +209,7 @@ const Navbar = () => {
                     ? "text-space-accent"
                     : "text-white hover:text-space-light"
                 }`}
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Admin
               </Link>
