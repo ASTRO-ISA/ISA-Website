@@ -9,11 +9,18 @@ import SuggestedBlogTopic from "./blog/SuggestedBlogTopic";
 
 export default function AdminDashboard() {
     const [events, setEvents] = useState([]);
+    const [jobs, setJobs] = useState([]);
     const [editingEventId, setEditingEventId] = useState(null);
-    const [formData, setFormData] = useState({
+    const [editingJobId, setEditingJobId] = useState(null);
+    const [eventFormData, setEventFormData] = useState({
         title: "",
         description: "",
-        eventDate: "",
+        date: "",
+    });
+    const [jobFormData, setJobFormData] = useState({
+        title: "",
+        description: "",
+        date: "",
     });
     const [activeTab, setActiveTab] = useState("events");
 
@@ -29,46 +36,97 @@ export default function AdminDashboard() {
         }
     };
 
+    // Fetch jobs from API
+    const handleFetchJobs = async () => {
+        try {
+            const response = await axios.get("http://localhost:3000/api/v1/jobs/", {
+                withCredentials: true,
+            });
+            setJobs(response.data.data);
+        } catch (error) {
+            console.error("Error fetching jobs:", error.message);
+        }
+    };
+
     useEffect(() => {
         handleEvents();
+        handleFetchJobs();
     }, []);
 
-    // Handle Edit Button Click
-    const handleEditClick = (event) => {
-        setEditingEventId(event._id); // Set the event being edited
-        setFormData({
+    // Handle Edit Button Click for Events
+    const handleEditEventClick = (event) => {
+        setEditingEventId(event._id);
+        setEventFormData({
             title: event.title,
             description: event.description,
-            eventDate: event.eventDate.split("T")[0], // Format date for input field
+            date: event.eventDate.split("T")[0],
         });
     };
 
-    // Handle Input Change
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Handle Edit Button Click for Jobs
+    const handleEditJobClick = (job) => {
+        setEditingJobId(job._id);
+        setJobFormData({
+            title: job.title,
+            description: job.description,
+            date: job.jobDate.split("T")[0],
+        });
+    };
+
+    // Handle Input Change for Events
+    const handleEventChange = (e) => {
+        setEventFormData({ ...eventFormData, [e.target.name]: e.target.value });
+    };
+
+    // Handle Input Change for Jobs
+    const handleJobChange = (e) => {
+        setJobFormData({ ...jobFormData, [e.target.name]: e.target.value });
     };
 
     // Submit Updated Event Details
-    const handleSubmit = async (e) => {
+    const handleSubmitEvent = async (e) => {
         e.preventDefault();
         try {
             await axios.put(
                 `http://localhost:3000/api/v1/events/${editingEventId}`,
-                formData,
+                eventFormData,
                 { withCredentials: true }
             );
             alert("Event updated successfully!");
-            setEditingEventId(null); // Exit edit mode
-            handleEvents(); // Refresh events list
+            setEditingEventId(null);
+            handleEvents();
         } catch (error) {
             console.error("Error updating event:", error.message);
         }
     };
 
-    // Cancel Editing
-    const handleCancel = () => {
+    // Submit Updated Job Details
+    const handleSubmitJob = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.put(
+                `http://localhost:3000/api/v1/jobs/${editingJobId}`,
+                jobFormData,
+                { withCredentials: true }
+            );
+            alert("Job updated successfully!");
+            setEditingJobId(null);
+            handleFetchJobs();
+        } catch (error) {
+            console.error("Error updating job:", error.message);
+        }
+    };
+
+    // Cancel Editing for Events
+    const handleCancelEvent = () => {
         setEditingEventId(null);
-        setFormData({ title: "", description: "", eventDate: "" });
+        setEventFormData({ title: "", description: "", date: "" });
+    };
+
+    // Cancel Editing for Jobs
+    const handleCancelJob = () => {
+        setEditingJobId(null);
+        setJobFormData({ title: "", description: "", date: "" });
     };
 
     // Handle Delete Event
@@ -78,9 +136,22 @@ export default function AdminDashboard() {
                 withCredentials: true,
             });
             alert("Event deleted successfully!");
-            handleEvents(); // Refresh events list
+            handleEvents();
         } catch (error) {
             console.error("Error deleting event:", error.message);
+        }
+    };
+
+    // Handle Delete Job
+    const handleDeleteJob = async (_id) => {
+        try {
+            await axios.delete(`http://localhost:3000/api/v1/jobs/${_id}`, {
+                withCredentials: true,
+            });
+            alert("Job deleted successfully!");
+            handleFetchJobs();
+        } catch (error) {
+            console.error("Error deleting job:", error.message);
         }
     };
 
@@ -118,14 +189,14 @@ export default function AdminDashboard() {
                                                 className="p-4 border border-space-purple/30 rounded bg-space-purple/20"
                                             >
                                                 {editingEventId === event._id ? (
-                                                    <form onSubmit={handleSubmit} className="space-y-2">
+                                                    <form onSubmit={handleSubmitEvent} className="space-y-2">
                                                         <label>
                                                             Title:
                                                             <input
                                                                 type="text"
                                                                 name="title"
-                                                                value={formData.title}
-                                                                onChange={handleChange}
+                                                                value={eventFormData.title}
+                                                                onChange={handleEventChange}
                                                                 className="w-full p-2 rounded bg-gray-800 text-white"
                                                             />
                                                         </label>
@@ -133,8 +204,8 @@ export default function AdminDashboard() {
                                                             Description:
                                                             <textarea
                                                                 name="description"
-                                                                value={formData.description}
-                                                                onChange={handleChange}
+                                                                value={eventFormData.description}
+                                                                onChange={handleEventChange}
                                                                 className="w-full p-2 rounded bg-gray-800 text-white"
                                                             ></textarea>
                                                         </label>
@@ -142,9 +213,9 @@ export default function AdminDashboard() {
                                                             Date:
                                                             <input
                                                                 type="date"
-                                                                name="eventDate"
-                                                                value={formData.eventDate}
-                                                                onChange={handleChange}
+                                                                name="date"
+                                                                value={eventFormData.date}
+                                                                onChange={handleEventChange}
                                                                 className="w-full p-2 rounded bg-gray-800 text-white"
                                                             />
                                                         </label>
@@ -152,7 +223,7 @@ export default function AdminDashboard() {
                                                             <Button type="submit" >
                                                                 Save
                                                             </Button>
-                                                            <Button type="button" onClick={handleCancel}>
+                                                            <Button type="button" onClick={handleCancelEvent}>
                                                                 Cancel
                                                             </Button>
                                                         </div>
@@ -166,7 +237,7 @@ export default function AdminDashboard() {
                                                         <div className="flex gap-2 mt-2">
                                                             <Button
                                                                 size="sm"
-                                                                onClick={() => handleEditClick(event)}
+                                                                onClick={() => handleEditEventClick(event)}
                                                                 variant="outline"
                                                             >
                                                                 <Pencil className="w-4 h-4 mr-1" /> Edit
@@ -174,6 +245,94 @@ export default function AdminDashboard() {
                                                             <Button
                                                                 size="sm"
                                                                 onClick={() => handleDeleteEvent(event._id)}
+                                                                variant="destructive"
+                                                            >
+                                                                <Trash2 className="w-4 h-4 mr-1" /> Delete
+                                                            </Button>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Manage Jobs */}
+                    <TabsContent value="training" className="space-y-6">
+                        <Card className="bg-space-purple/10 border-space-purple/30">
+                            <CardHeader>
+                                <CardTitle>Available Jobs</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {jobs.length === 0 ? (
+                                    <p className="text-gray-400">No jobs found.</p>
+                                ) : (
+                                    <ul className="space-y-4">
+                                        {jobs.map((job) => (
+                                            <li
+                                                key={job._id}
+                                                className="p-4 border border-space-purple/30 rounded bg-space-purple/20"
+                                            >
+                                                {editingJobId === job._id ? (
+                                                    <form onSubmit={handleSubmitJob} className="space-y-2">
+                                                        <label>
+                                                            Title:
+                                                            <input
+                                                                type="text"
+                                                                name="title"
+                                                                value={jobFormData.title}
+                                                                onChange={handleJobChange}
+                                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                            />
+                                                        </label>
+                                                        <label>
+                                                            Description:
+                                                            <textarea
+                                                                name="description"
+                                                                value={jobFormData.description}
+                                                                onChange={handleJobChange}
+                                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                            ></textarea>
+                                                        </label>
+                                                        <label>
+                                                            Date:
+                                                            <input
+                                                                type="date"
+                                                                name="date"
+                                                                value={jobFormData.date}
+                                                                onChange={handleJobChange}
+                                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                            />
+                                                        </label>
+                                                        <div className="flex gap-2">
+                                                            <Button type="submit" >
+                                                                Save
+                                                            </Button>
+                                                            <Button type="button" onClick={handleCancelJob}>
+                                                                Cancel
+                                                            </Button>
+                                                        </div>
+                                                    </form>
+                                                ) : (
+                                                    <>
+                                                        <p className="font-semibold">{job.title}</p>
+                                                        <p className="text-sm text-gray-400">
+                                                            {job.description}
+                                                        </p>
+                                                        <div className="flex gap-2 mt-2">
+                                                            <Button
+                                                                size="sm"
+                                                                onClick={() => handleEditJobClick(job)}
+                                                                variant="outline"
+                                                            >
+                                                                <Pencil className="w-4 h-4 mr-1" /> Edit
+                                                            </Button>
+                                                            <Button
+                                                                size="sm"
+                                                                onClick={() => handleDeleteJob(job._id)}
                                                                 variant="destructive"
                                                             >
                                                                 <Trash2 className="w-4 h-4 mr-1" /> Delete

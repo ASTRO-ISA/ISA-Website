@@ -24,11 +24,11 @@ router
     upload.single('thumbnail'),
     eventController.createEvent
   )
-router.route('/:id').get(eventController.getEvent)
-router.route('/register/:eventid/:userid').patch(eventController.registerEvent)
-
-router.use(authenticateToken)
-router.use(restrictTo('admin'))
+  router.route('/register/:eventid/:userid').patch(eventController.registerEvent)
+  router.route('/:id').get(eventController.getEvent)
+  
+  router.use(authenticateToken)
+  router.use(restrictTo('admin'))
 router.patch('/:id', eventController.updateEvent);
 router.delete('/:id', eventController.deleteEvent);
 
