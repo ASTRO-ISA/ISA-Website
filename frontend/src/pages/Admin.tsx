@@ -3,11 +3,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import axios from "axios";
-
-import { Pencil, Trash2 } from "lucide-react";
+import {
+    // ClipboardList,
+    // Calendar,
+    // Briefcase,
+    Trash2,
+    Pencil,
+    Plus,
+  } from "lucide-react";
 import SuggestedBlogTopic from "./blog/SuggestedBlogTopic";
 
 export default function AdminDashboard() {
+    const jobs = [
+        { id: 1, title: 'Frontend Dev', company: 'SpaceX', location: 'Remote' },
+        { id: 2, title: 'Mission Planner', company: 'ISRO', location: 'India' },
+      ];
+
     const [events, setEvents] = useState([]);
     const [editingEventId, setEditingEventId] = useState(null);
     const [formData, setFormData] = useState({
@@ -50,6 +61,7 @@ export default function AdminDashboard() {
 
     // Submit Updated Event Details
     const handleSubmit = async (e) => {
+        console.log('edit event id', editingEventId);
         e.preventDefault();
         try {
             await axios.put(
@@ -84,6 +96,18 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleDeleteJob = (id) => {
+        console.log('Delete job', id);
+      };
+    
+      const handleUpdateJob = (job) => {
+        console.log('Edit job', job);
+      };
+    
+      const handleCreateJob = () => {
+        console.log('Create job');
+      };
+
     return (
         <div className="min-h-screen bg-space-dark text-white">
             <main className="container mx-auto px-4 pt-24 pb-16">
@@ -109,7 +133,7 @@ export default function AdminDashboard() {
                             </CardHeader>
                             <CardContent>
                                 {events.length === 0 ? (
-                                    <p className="text-gray-400">No events found.</p>
+                                <p className="text-gray-400">No events found.</p>
                                 ) : (
                                     <ul className="space-y-4">
                                         {events.map((event) => (
@@ -117,6 +141,7 @@ export default function AdminDashboard() {
                                                 key={event._id}
                                                 className="p-4 border border-space-purple/30 rounded bg-space-purple/20"
                                             >
+                                                {/* this is to edit event */}
                                                 {editingEventId === event._id ? (
                                                     <form onSubmit={handleSubmit} className="space-y-2">
                                                         <label>
@@ -126,7 +151,7 @@ export default function AdminDashboard() {
                                                                 name="title"
                                                                 value={formData.title}
                                                                 onChange={handleChange}
-                                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                                className="w-full p-2 rounded bg-gray-800 text-white mb-4"
                                                             />
                                                         </label>
                                                         <label>
@@ -135,7 +160,8 @@ export default function AdminDashboard() {
                                                                 name="description"
                                                                 value={formData.description}
                                                                 onChange={handleChange}
-                                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                                rows={5}
+                                                                className="w-full p-2 rounded bg-gray-800 text-white mb-4"
                                                             ></textarea>
                                                         </label>
                                                         <label>
@@ -158,7 +184,9 @@ export default function AdminDashboard() {
                                                         </div>
                                                     </form>
                                                 ) : (
-                                                    <>
+                                                    <>  
+
+                                                        {/* this is for the event view */}
                                                         <p className="font-semibold">{event.title}</p>
                                                         <p className="text-sm text-gray-400">
                                                             {new Date(event.eventDate).toLocaleDateString()}
@@ -186,6 +214,51 @@ export default function AdminDashboard() {
                                     </ul>
                                 )}
                             </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Manage Jobs */}
+                    <TabsContent value="training" className="space-y-6">
+                        <Card className="bg-space-purple/10 border-space-purple/30">
+                        <CardHeader className="flex flex-row justify-between items-center">
+                            <CardTitle>Job Posts</CardTitle>
+                            <Button onClick={handleCreateJob}>
+                            <Plus className="w-4 h-4 mr-1" /> Create Job
+                            </Button>
+                        </CardHeader>
+                        <CardContent>
+                            {jobs.length === 0 ? (
+                            <p className="text-gray-400">No job posts available.</p>
+                            ) : (
+                            <ul className="space-y-4">
+                                {jobs.map((job) => (
+                                <li
+                                    key={job.id}
+                                    className="p-4 border border-space-purple/30 rounded bg-space-purple/20"
+                                >
+                                    <p className="font-semibold">{job.title}</p>
+                                    <p className="text-sm text-gray-400">{job.company} | {job.location}</p>
+                                    <div className="flex gap-2 mt-2">
+                                    <Button
+                                        size="sm"
+                                        onClick={() => handleUpdateJob(job)}
+                                        variant="outline"
+                                    >
+                                        <Pencil className="w-4 h-4 mr-1" /> Edit
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        onClick={() => handleDeleteJob(job.id)}
+                                        variant="destructive"
+                                    >
+                                        <Trash2 className="w-4 h-4 mr-1" /> Delete
+                                    </Button>
+                                    </div>
+                                </li>
+                                ))}
+                            </ul>
+                            )}
+                        </CardContent>
                         </Card>
                     </TabsContent>
 
