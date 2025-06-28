@@ -5,6 +5,7 @@ const authenticateToken = require('../middlewares/authenticateToken')
 const multer = require('multer')
 const router = express.Router()
 const { imageStorage } = require('../utils/cloudinaryStorage')
+const restrictTo = require('../middlewares/restrictTo')
 
 const uploadImage = multer({ storage: imageStorage('event-banners')})
 
@@ -18,9 +19,9 @@ router
   )
 router.route('/:id').get(eventController.getEvent)
 router.route('/register/:eventid/:userid').patch(eventController.registerEvent)
-
+router.use(authenticateToken)
 router.use(restrictTo('admin'))
-router.put('/:id', authenticateToken,eventController.updateEvent);
-router.delete('/:id', authenticateToken, eventController.deleteEvent);
+router.put('/:id',eventController.updateEvent);
+router.delete('/:id' , eventController.deleteEvent);
 
 module.exports = router
