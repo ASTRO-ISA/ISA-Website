@@ -3,25 +3,40 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import axios from "axios";
-import { Trash2, Pencil, Plus } from "lucide-react";
+import { Trash2, Pencil } from "lucide-react";
 import SuggestedBlogTopic from "./blog/SuggestedBlogTopic";
 
 export default function AdminDashboard() {
-    const [jobs, setJobs] = useState([]);
     const [events, setEvents] = useState([]);
+    const [jobs, setJobs] = useState([]);
+    const [activeTab, setActiveTab] = useState("events");
+
+    // States for editing events and jobs
     const [editingEventId, setEditingEventId] = useState(null);
     const [editingJobId, setEditingJobId] = useState(null);
-    const [EventformData, setEventformData] = useState({
+
+    // Form Data for Events and Jobs
+    const [eventFormData, setEventFormData] = useState({
         title: "",
         description: "",
         eventDate: "",
     });
-    const [jobsFormData, setJobsFormData] = useState({
+    const [jobFormData, setJobFormData] = useState({
         title: "",
         role: "",
         description: "",
         applyLink: "",
         documentUrl: "",
+    });
+    const [newEventFormData, setNewEventFormData] = useState({
+      title:"",
+      description:"",
+      eventDate:"",
+      location:"",
+      eventType:"",
+      presentedBy:"",
+      type:"",
+      status:""
     });
     const [newJobFormData, setNewJobFormData] = useState({
         title: "",
@@ -30,12 +45,11 @@ export default function AdminDashboard() {
         applyLink: "",
         documentUrl: "",
     });
-    const [activeTab, setActiveTab] = useState("events");
 
-    // Fetch events and jobs from API
-    const handleEvents = async () => {
+    // Fetch Events and Jobs
+    const fetchEvents = async () => {
         try {
-            const response = await axios.get("http://localhost:3000/api/v1/events/", {
+            const response = await axios.get("http://localhost:3000/api/v1/events", {
                 withCredentials: true,
             });
             setEvents(response.data);
@@ -44,7 +58,7 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleJobs = async () => {
+    const fetchJobs = async () => {
         try {
             const response = await axios.get("http://localhost:3000/api/v1/jobs", {
                 withCredentials: true,
@@ -56,36 +70,47 @@ export default function AdminDashboard() {
     };
 
     useEffect(() => {
-        handleEvents();
-        handleJobs();
+        fetchEvents();
+        fetchJobs();
     }, []);
 
     // Event Handlers
+    const handleEventFormChange = (e) => {
+        setEventFormData((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value,
+        }));
+    };
+
+    const handleNewEventFormChange = (e) => {
+        let name = e.target.name;
+        let value = e.target.value
+        setNewEventFormData((prev) => ({
+            ...prev,
+            [name]:value
+        }));
+    };
+
     const handleEditEventClick = (event) => {
         setEditingEventId(event._id);
-        setEventformData({
+        setEventFormData({
             title: event.title,
             description: event.description,
             eventDate: event.eventDate.split("T")[0],
         });
     };
 
-    const handleEventChange = (e) => {
-        setEventformData({ ...EventformData, [e.target.name]: e.target.value });
-    };
-
-    const handleEventSubmit = async (e) => {
+    const handleUpdateEvent = async (e) => {
         e.preventDefault();
         try {
             await axios.put(
                 `http://localhost:3000/api/v1/events/${editingEventId}`,
-                EventformData,
+                eventFormData,
                 { withCredentials: true }
             );
             alert("Event updated successfully!");
             setEditingEventId(null);
-            setEventformData({ title: "", description: "", eventDate: "" });
-            handleEvents();
+            fetchEvents();
         } catch (error) {
             console.error("Error updating event:", error.message);
         }
@@ -93,7 +118,27 @@ export default function AdminDashboard() {
 
     const handleCancelEventEdit = () => {
         setEditingEventId(null);
-        setEventformData({ title: "", description: "", eventDate: "" });
+        setEventFormData({ title: "", description: "", eventDate: "" });
+    };
+
+    const handleCreateEvent = async () => {
+        try {
+            await axios.post("http://localhost:3000/api/v1/events/create", newEventFormData, {
+                withCredentials: true,
+            });
+            alert("Event created successfully!");
+            setNewEventFormData({  title:"",
+      description:"",
+      eventDate:"",
+      location:"",
+      eventType:"",
+      presentedBy:"",
+      type:"",
+      status:"" });
+            fetchEvents();
+        } catch (error) {
+            console.error("Error creating event:", error.message);
+        }
     };
 
     const handleDeleteEvent = async (id) => {
@@ -102,7 +147,7 @@ export default function AdminDashboard() {
                 withCredentials: true,
             });
             alert("Event deleted successfully!");
-            handleEvents();
+            fetchEvents();
         } catch (error) {
             console.error("Error deleting event:", error.message);
         }
@@ -110,16 +155,22 @@ export default function AdminDashboard() {
 
     // Job Handlers
     const handleJobFormChange = (e) => {
-        setJobsFormData({ ...jobsFormData, [e.target.name]: e.target.value });
+        setJobFormData((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value,
+        }));
     };
 
     const handleNewJobFormChange = (e) => {
-        setNewJobFormData({ ...newJobFormData, [e.target.name]: e.target.value });
+        setNewJobFormData((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value,
+        }));
     };
 
     const handleEditJobClick = (job) => {
-        setEditingJobId(job.id);
-        setJobsFormData({
+        setEditingJobId(job._id);
+        setJobFormData({
             title: job.title,
             role: job.role,
             description: job.description,
@@ -131,13 +182,14 @@ export default function AdminDashboard() {
     const handleUpdateJob = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:3000/api/v1/jobs/${editingJobId}`, jobsFormData, {
-                withCredentials: true,
-            });
+            await axios.patch(
+                `http://localhost:3000/api/v1/jobs/${editingJobId}`,
+                jobFormData,
+                { withCredentials: true }
+            );
             alert("Job updated successfully!");
             setEditingJobId(null);
-            setJobsFormData({ title: "", role: "", description: "", applyLink: "", documentUrl: "" });
-            handleJobs();
+            fetchJobs();
         } catch (error) {
             console.error("Error updating job:", error.message);
         }
@@ -145,7 +197,7 @@ export default function AdminDashboard() {
 
     const handleCancelJobEdit = () => {
         setEditingJobId(null);
-        setJobsFormData({ title: "", role: "", description: "", applyLink: "", documentUrl: "" });
+        setJobFormData({ title: "", role: "", description: "", applyLink: "", documentUrl: "" });
     };
 
     const handleCreateJob = async () => {
@@ -155,7 +207,7 @@ export default function AdminDashboard() {
             });
             alert("Job created successfully!");
             setNewJobFormData({ title: "", role: "", description: "", applyLink: "", documentUrl: "" });
-            handleJobs();
+            fetchJobs();
         } catch (error) {
             console.error("Error creating job:", error.message);
         }
@@ -167,7 +219,7 @@ export default function AdminDashboard() {
                 withCredentials: true,
             });
             alert("Job deleted successfully!");
-            handleJobs();
+            fetchJobs();
         } catch (error) {
             console.error("Error deleting job:", error.message);
         }
@@ -176,117 +228,174 @@ export default function AdminDashboard() {
     return (
         <div className="min-h-screen bg-space-dark text-white">
             <main className="container mx-auto px-4 pt-24 pb-16">
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold mb-4">Admin</h1>
-                    <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                        Manage Content, Events, and Opportunities
-                    </p>
-                </div>
-
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
                     <TabsList className="grid w-full grid-cols-3 bg-space-purple/20">
                         <TabsTrigger value="events">Manage Events</TabsTrigger>
-                        <TabsTrigger value="training">Manage Jobs</TabsTrigger>
+                        <TabsTrigger value="jobs">Manage Jobs</TabsTrigger>
                         <TabsTrigger value="suggestions">Blog Suggestions</TabsTrigger>
                     </TabsList>
 
                     {/* Manage Events */}
-                    <TabsContent value="events" className="space-y-6">
-    <Card className="bg-space-purple/10 border-space-purple/30">
-        <CardHeader>
-            <CardTitle>Manage Events</CardTitle>
-        </CardHeader>
-        <CardContent>
-            {events.length === 0 ? (
-                <p className="text-gray-400">No events available.</p>
-            ) : (
-                <ul className="space-y-4">
-                    {events.map((event) => (
-                        <li
-                            key={event._id}
-                            className="p-4 border bg-space-purple/20 rounded"
-                        >
-                            {editingEventId === event._id ? (
-                                <form onSubmit={handleEventSubmit} className="space-y-2">
-                                    <label>
-                                        Title:
-                                        <input
-                                            type="text"
-                                            name="title"
-                                            value={EventformData.title}
-                                            onChange={handleEventChange}
-                                            className="w-full p-2 rounded bg-gray-800 text-white"
-                                            required
-                                        />
-                                    </label>
-                                    <label>
-                                        Description:
-                                        <textarea
-                                            name="description"
-                                            value={EventformData.description}
-                                            onChange={handleEventChange}
-                                            rows={4}
-                                            className="w-full p-2 rounded bg-gray-800 text-white"
-                                            required
-                                        ></textarea>
-                                    </label>
-                                    <label>
-                                        Event Date:
-                                        <input
-                                            type="date"
-                                            name="eventDate"
-                                            value={EventformData.eventDate}
-                                            onChange={handleEventChange}
-                                            className="w-full p-2 rounded bg-gray-800 text-white"
-                                            required
-                                        />
-                                    </label>
-                                    <div className="flex gap-2">
-                                        <Button type="submit">Save</Button>
-                                        <Button
-                                            type="button"
-                                            onClick={handleCancelEventEdit}
-                                            variant="outline"
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </div>
+                      
+   <TabsContent value="events" className="space-y-6">
+                        <Card className="bg-space-purple/10 border-space-purple/30">
+                            <CardHeader>
+                                <CardTitle>Create New Event</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        handleCreateEvent();
+                                    }}
+                                    className="space-y-4"
+                                >
+                                    <input
+                                        type="text"
+                                        name="title"
+                                        value={newEventFormData.title}
+                                        onChange={handleNewEventFormChange}
+                                        placeholder="Event Title"
+                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                        required
+                                    />
+                                    <textarea
+                                        name="description"
+                                        value={newEventFormData.description}
+                                        onChange={handleNewEventFormChange}
+                                        placeholder="Event Description"
+                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                        required
+                                    ></textarea>
+                                    <input
+                                        type="date"
+                                        name="eventDate"
+                                        value={newEventFormData.eventDate}
+                                        onChange={handleNewEventFormChange}
+                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                        required
+                                    />
+                                     <textarea
+                                        name="location"
+                                        value={newEventFormData.location}
+                                        onChange={handleNewEventFormChange}
+                                        placeholder="location"
+                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                        required
+                                    ></textarea>
+                                     <textarea
+                                        name="eventType"
+                                        value={newEventFormData.eventType}
+                                        onChange={handleNewEventFormChange}
+                                        placeholder="Event type"
+                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                        required
+                                    ></textarea>
+                                     <textarea
+                                        name="presentedBy"
+                                        value={newEventFormData.presentedBy}
+                                        onChange={handleNewEventFormChange}
+                                        placeholder="presentedBy"
+                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                        required
+                                    ></textarea>
+                                     <textarea
+                                        name="type"
+                                        value={newEventFormData.type}
+                                        onChange={handleNewEventFormChange}
+                                        placeholder="type"
+                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                        required
+                                    ></textarea>
+                                     <textarea
+                                        name="status"
+                                        value={newEventFormData.status}
+                                        onChange={handleNewEventFormChange}
+                                        placeholder="status"
+                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                        required
+                                    ></textarea>
+                                    <Button type="submit" className="w-full">
+                                        Create Event
+                                    </Button>
                                 </form>
-                            ) : (
-                                <>
-                                    <p className="font-semibold">{event.title}</p>
-                                    <p>{event.description}</p>
-                                    <p className="text-sm text-gray-400">
-                                        {new Date(event.eventDate).toLocaleDateString()}
-                                    </p>
-                                    <div className="flex gap-2 mt-2">
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleEditEventClick(event)}
-                                            variant="outline"
-                                        >
-                                            <Pencil className="w-4 h-4 mr-1" /> Edit
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleDeleteEvent(event._id)}
-                                            variant="destructive"
-                                        >
-                                            <Trash2 className="w-4 h-4 mr-1" /> Delete
-                                        </Button>
-                                    </div>
-                                </>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </CardContent>
-    </Card>
-</TabsContent>
+                            </CardContent>
+                        </Card>
 
+                        <ul className="space-y-4">
+                            {events.map((event) => (
+                                <li key={event._id} className="p-4 border bg-space-purple/20 rounded">
+                                    {editingEventId === event._id ? (
+                                        <form onSubmit={handleUpdateEvent} className="space-y-2">
+                                            <input
+                                                type="text"
+                                                name="title"
+                                                value={eventFormData.title}
+                                                onChange={handleEventFormChange}
+                                                placeholder="Event Title"
+                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                required
+                                            />
+                                            <textarea
+                                                name="description"
+                                                value={eventFormData.description}
+                                                onChange={handleEventFormChange}
+                                                placeholder="Event Description"
+                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                required
+                                            ></textarea>
+                                            <input
+                                                type="date"
+                                                name="eventDate"
+                                                value={eventFormData.eventDate}
+                                                onChange={handleEventFormChange}
+                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                required
+                                            />
+                                            <div className="flex gap-2">
+                                                <Button type="submit">Save</Button>
+                                                <Button
+                                                    type="button"
+                                                    onClick={handleCancelEventEdit}
+                                                    variant="outline"
+                                                >
+                                                    Cancel
+                                                </Button>
+                                            </div>
+                                        </form>
+                                    ) : (
+                                        <>
+                                            <p className="font-semibold">{event.title}</p>
+                                            <p>{event.description}</p>
+                                            <p className="text-sm text-gray-400">
+                                                {new Date(event.eventDate).toLocaleDateString()}
+                                            </p>
+                                            <div className="flex gap-2 mt-2">
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => handleEditEventClick(event)}
+                                                    variant="outline"
+                                                >
+                                                    <Pencil className="w-4 h-4 mr-1" /> Edit
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => handleDeleteEvent(event._id)}
+                                                    variant="destructive"
+                                                >
+                                                    <Trash2 className="w-4 h-4 mr-1" /> Delete
+                                                </Button>
+                                            </div>
+                                        </>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </TabsContent>
+
+                  
                     {/* Manage Jobs */}
-                    <TabsContent value="training" className="space-y-6">
+                    <TabsContent value="jobs" className="space-y-6">
                         <Card className="bg-space-purple/10 border-space-purple/30">
                             <CardHeader>
                                 <CardTitle>Create New Job</CardTitle>
@@ -349,38 +458,101 @@ export default function AdminDashboard() {
                                 </form>
                             </CardContent>
                         </Card>
-                        {/* Job Listing */}
+
                         <ul className="space-y-4">
                             {jobs.map((job) => (
-                                <li key={job.id} className="p-4 border bg-space-purple/20 rounded">
-                                    <p className="font-semibold">{job.title}</p>
-                                    <p>{job.role}</p>
-                                    <p>{job.description}</p>
-                                    <p>{job.applyLink}</p>
-                                    <p>{job.documentUrl}</p>
-                                    <div className="flex gap-2 mt-2">
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleEditJobClick(job)}
-                                            variant="outline"
-                                        >
-                                            <Pencil className="w-4 h-4 mr-1" /> Edit
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleDeleteJob(job.id)}
-                                            variant="destructive"
-                                        >
-                                            <Trash2 className="w-4 h-4 mr-1" /> Delete
-                                        </Button>
-                                    </div>
+                                <li key={job._id} className="p-4 border bg-space-purple/20 rounded">
+                                    {editingJobId === job._id ? (
+                                        <form onSubmit={handleUpdateJob} className="space-y-2">
+                                            <input
+                                                type="text"
+                                                name="title"
+                                                value={jobFormData.title}
+                                                onChange={handleJobFormChange}
+                                                placeholder="Job Title"
+                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                required
+                                            />
+                                            <input
+                                                type="text"
+                                                name="role"
+                                                value={jobFormData.role}
+                                                onChange={handleJobFormChange}
+                                                placeholder="Job Role"
+                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                required
+                                            />
+                                            <textarea
+                                                name="description"
+                                                value={jobFormData.description}
+                                                onChange={handleJobFormChange}
+                                                placeholder="Job Description"
+                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                required
+                                            ></textarea>
+                                            <input
+                                                type="url"
+                                                name="applyLink"
+                                                value={jobFormData.applyLink}
+                                                onChange={handleJobFormChange}
+                                                placeholder="Apply Link"
+                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                required
+                                            />
+                                            <input
+                                                type="url"
+                                                name="documentUrl"
+                                                value={jobFormData.documentUrl}
+                                                onChange={handleJobFormChange}
+                                                placeholder="Document URL"
+                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                required
+                                            />
+                                            <div className="flex gap-2">
+                                                <Button type="submit">Save</Button>
+                                                <Button
+                                                    type="button"
+                                                    onClick={handleCancelJobEdit}
+                                                    variant="outline"
+                                                >
+                                                    Cancel
+                                                </Button>
+                                            </div>
+                                        </form>
+                                    ) : (
+                                        <>
+                                            <p className="font-semibold">{job.title}</p>
+                                            <p>{job.role}</p>
+                                            <p>{job.description}</p>
+                                            <p>{job.applyLink}</p>
+                                            <p>{job.documentUrl}</p>
+                                            <div className="flex gap-2 mt-2">
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => handleEditJobClick(job)}
+                                                    variant="outline"
+                                                >
+                                                    <Pencil className="w-4 h-4 mr-1" /> Edit
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => handleDeleteJob(job._id)}
+                                                    variant="destructive"
+                                                >
+                                                    <Trash2 className="w-4 h-4 mr-1" /> Delete
+                                                </Button>
+                                            </div>
+                                        </>
+                                    )}
                                 </li>
                             ))}
                         </ul>
                     </TabsContent>
 
                     {/* Blog Suggestions */}
-                    <SuggestedBlogTopic />
+                    <TabsContent value="suggestions" className="space-y-6">
+                        <SuggestedBlogTopic />
+                    </TabsContent>
                 </Tabs>
             </main>
         </div>
