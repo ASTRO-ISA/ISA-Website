@@ -22,7 +22,14 @@ router.route('/register/:eventid/:userid').patch(eventController.registerEvent)
 
 router.use(authenticateToken)
 router.use(restrictTo('admin'))
+router.put('/:id',eventController.updateEvent);
+router.delete('/:id' , eventController.deleteEvent);
+
+
+router.use(authenticateToken)
+router.use(restrictTo('admin'))
 router.put('/:id', eventController.updateEvent)
 router.delete('/:id', eventController.deleteEvent)
+
 
 module.exports = router
