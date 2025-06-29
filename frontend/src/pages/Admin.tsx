@@ -28,28 +28,18 @@ export default function AdminDashboard() {
         description: "",
         eventDate: "",
     });
-    const [jobsFormData, setJobsFormData] = useState({
-        title: "",
-        role: "",
-        description: "",
-        applyLink: "",
-        documentUrl: "",
-    });
     const [newJobFormData, setNewJobFormData] = useState({
         title: "",
         role: "",
         description: "",
         applyLink: "",
-        documentUrl: "",
+        document: "",
     });
     const [activeTab, setActiveTab] = useState("events");
     const { toast } = useToast();
-    const [pic, setPic] = useState("");
     const [images, setImages] = useState([]);
-    // const [lightboxOpen, setLightboxOpen] = useState(false);
-    // const [currentIndex, setCurrentIndex] = useState(0);
     const [open, setOpen] = useState(false);
-  const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(0);
 
     // Fetch events and jobs from API
     const handleEvents = async () => {
@@ -127,77 +117,44 @@ export default function AdminDashboard() {
         }
     };
 
-    // const handleGalleryUpload = async (e) => {
-    //     const file = e.target.files[0];
-    //     if (!file) return;
-    //     const formData = new FormData();
-    //     formData.append('image', file);
-      
-    //     try {
-    //       const res = await axios
-    //         .post('http://localhost:3000/api/v1/gallery',
-    //         formData,
-    //         {
-    //         withCredentials: true
-    //         });
-    //         console.log(res.data.pic)
-    //         setPic(res.data.pic)
-    //         toast({title: 'Image uploaded successfully!'})
-    //     } catch (error) {
-    //       console.error('Error uploading image:', error.message);
-    //     }
-    //   };
-
-    // const fetchGallery = async () => {
-    //     const response = await axios.get("http://localhost:3000/api/v1/gallery");
-    //     setImages(response.data);
-    // };
-
-    // useEffect(() => {
-    //     fetchGallery();
-    // }, []);
-
-    // const handleDeleteJob = (id) => {
-    //     console.log('Delete job', id);
-    //   };
-    
-    //   const handleUpdateJob = (job) => {
-    //     console.log('Edit job', job);
-    //   };
-    
-    //   const handleCreateJob = () => {
-    //     console.log('Create job');
-    //   };
-
-    // Job Handlers
-    const handleJobFormChange = (e) => {
-        setJobsFormData({ ...jobsFormData, [e.target.name]: e.target.value });
-    };
-
     const handleNewJobFormChange = (e) => {
-        setNewJobFormData({ ...newJobFormData, [e.target.name]: e.target.value });
+        const { name, value, files } = e.target;
+        if (name === "document") {
+            const file = files[0];
+            if (
+                file &&
+                !["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"].includes(file.type)
+            ) {
+                alert("Only PDF, DOCX, and DOC files are allowed.");
+                return;
+            }
+            setNewJobFormData({ ...newJobFormData, document: file });
+        } else {
+            setNewJobFormData({ ...newJobFormData, [name]: value });
+        }
     };
 
     const handleEditJobClick = (job) => {
         setEditingJobId(job.id);
-        setJobsFormData({
+        setNewJobFormData({
             title: job.title,
             role: job.role,
             description: job.description,
             applyLink: job.applyLink,
-            documentUrl: job.documentUrl,
+            document: job.document,
         });
     };
 
+    // not being used
     const handleUpdateJob = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:3000/api/v1/jobs/${editingJobId}`, jobsFormData, {
+            await axios.put(`http://localhost:3000/api/v1/jobs/${editingJobId}`, newJobFormData, {
                 withCredentials: true,
             });
             alert("Job updated successfully!");
             setEditingJobId(null);
-            setJobsFormData({ title: "", role: "", description: "", applyLink: "", documentUrl: "" });
+            setNewJobFormData({ title: "", role: "", description: "", applyLink: "", document: "" });
             handleJobs();
         } catch (error) {
             console.error("Error updating job:", error.message);
@@ -206,16 +163,25 @@ export default function AdminDashboard() {
 
     const handleCancelJobEdit = () => {
         setEditingJobId(null);
-        setJobsFormData({ title: "", role: "", description: "", applyLink: "", documentUrl: "" });
+        setNewJobFormData({ title: "", role: "", description: "", applyLink: "", document: "" });
     };
 
     const handleCreateJob = async () => {
         try {
-            await axios.post("http://localhost:3000/api/v1/jobs", newJobFormData, {
+            const formData = new FormData();
+            formData.append("title", newJobFormData.title);
+            formData.append("role", newJobFormData.role);
+            formData.append("description", newJobFormData.description);
+            formData.append("applyLink", newJobFormData.applyLink);
+            formData.append("document", newJobFormData.document); // assuming you store the File object in `document`
+    
+            await axios.post("http://localhost:3000/api/v1/jobs", formData, {
                 withCredentials: true,
+                headers: { "Content-Type": "multipart/form-data" },
             });
+    
             alert("Job created successfully!");
-            setNewJobFormData({ title: "", role: "", description: "", applyLink: "", documentUrl: "" });
+            setNewJobFormData({ title: "", role: "", description: "", applyLink: "", document: null });
             handleJobs();
         } catch (error) {
             console.error("Error creating job:", error.message);
@@ -234,12 +200,7 @@ export default function AdminDashboard() {
         }
     };
 
-    //   const jobs = [
-    //     { id: 1, title: 'Frontend Dev', company: 'SpaceX', location: 'Remote' },
-    //     { id: 2, title: 'Mission Planner', company: 'ISRO', location: 'India' },
-    //   ];
-
-      useEffect(() => {
+        useEffect(() => {
         const fetchImages = async () => {
           const res = await axios.get("http://localhost:3000/api/v1/gallery", {
             withCredentials: true,
@@ -288,102 +249,7 @@ export default function AdminDashboard() {
                 </TabsList>
                 </div>
 
-                    {/* Manage Events
-                    <TabsContent value="events" className="space-y-6">
-    <Card className="bg-space-purple/10 border-space-purple/30">
-        <CardHeader>
-            <CardTitle>Manage Events</CardTitle>
-        </CardHeader>
-        <CardContent>
-            {events.length === 0 ? (
-                <p className="text-gray-400">No events available.</p>
-            ) : (
-                <ul className="space-y-4">
-                    {events.map((event) => (
-                        <li
-                            key={event._id}
-                            className="p-4 border bg-space-purple/20 rounded"
-                        >
-                            {editingEventId === event._id ? (
-                                <form onSubmit={handleEventSubmit} className="space-y-2">
-                                    <label>
-                                        Title:
-                                        <input
-                                            type="text"
-                                            name="title"
-                                            value={EventformData.title}
-                                            onChange={handleEventChange}
-                                            className="w-full p-2 rounded bg-gray-800 text-white"
-                                            required
-                                        />
-                                    </label>
-                                    <label>
-                                        Description:
-                                        <textarea
-                                            name="description"
-                                            value={EventformData.description}
-                                            onChange={handleEventChange}
-                                            rows={4}
-                                            className="w-full p-2 rounded bg-gray-800 text-white"
-                                            required
-                                        ></textarea>
-                                    </label>
-                                    <label>
-                                        Event Date:
-                                        <input
-                                            type="date"
-                                            name="eventDate"
-                                            value={EventformData.eventDate}
-                                            onChange={handleEventChange}
-                                            className="w-full p-2 rounded bg-gray-800 text-white"
-                                            required
-                                        />
-                                    </label>
-                                    <div className="flex gap-2">
-                                        <Button type="submit">Save</Button>
-                                        <Button
-                                            type="button"
-                                            onClick={handleCancelEventEdit}
-                                            variant="outline"
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </div>
-                                </form>
-                            ) : (
-                                <>
-                                    <p className="font-semibold">{event.title}</p>
-                                    <p>{event.description}</p>
-                                    <p className="text-sm text-gray-400">
-                                        {new Date(event.eventDate).toLocaleDateString()}
-                                    </p>
-                                    <div className="flex gap-2 mt-2">
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleEditEventClick(event)}
-                                            variant="outline"
-                                        >
-                                            <Pencil className="w-4 h-4 mr-1" /> Edit
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleDeleteEvent(event._id)}
-                                            variant="destructive"
-                                        >
-                                            <Trash2 className="w-4 h-4 mr-1" /> Delete
-                                        </Button>
-                                    </div>
-                                </>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </CardContent>
-    </Card>
-</TabsContent> */}
-
-                    <TabsContent value="events" className="space-y-6">
+    <TabsContent value="events" className="space-y-6">
     <Card className="bg-space-purple/10 border-space-purple/30">
         <CardHeader>
             <CardTitle>Manage Events</CardTitle>
@@ -523,17 +389,16 @@ export default function AdminDashboard() {
                                         value={newJobFormData.applyLink}
                                         onChange={handleNewJobFormChange}
                                         placeholder="Apply Link"
-                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                        className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
                                         required
                                     />
+                                    <label htmlFor="document" className="block mt-2">The allowd formats are pdf, docx and doc</label>
                                     <input
-                                        type="url"
-                                        name="documentUrl"
-                                        value={newJobFormData.documentUrl}
-                                        onChange={handleNewJobFormChange}
-                                        placeholder="Document URL"
-                                        className="w-full p-2 rounded bg-gray-800 text-white"
-                                        required
+                                    type="file"
+                                    name="document"
+                                    onChange={handleNewJobFormChange}
+                                    className="w-full p-2 rounded bg-gray-800 text-white"
+                                    required
                                     />
                                     <Button type="submit" className="w-full">
                                         Create Job
@@ -544,7 +409,7 @@ export default function AdminDashboard() {
                         {/* Job Listing */}
                         <ul className="space-y-4">
                             {jobs.map((job) => (
-                                <li key={job.id} className="p-4 border bg-space-purple/20 rounded">
+                                <li key={job._id} className="p-4 border bg-space-purple/20 rounded">
                                     <p className="font-semibold">{job.title}</p>
                                     <p>{job.role}</p>
                                     <p>{job.description}</p>
