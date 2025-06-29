@@ -16,17 +16,25 @@ exports.getAllJobs = async (req, res) => {
 
 exports.createJob = async (req, res) => {
   try {
-    if (!req.body.title)
+    if (!req.body)
       return res
         .status(400)
         .json({ status: 'fail', message: 'No data provided' })
 
-    const response = await JobPost.create(req.body)
-    res.status(201).json({ status: 'success', data: response })
+    const cldDocument = req.file.path
+
+    const newJob = await JobPost.create({
+      title: req.body.title,
+      role: req.body.role,
+      applyLink: req.body.applyLink,
+      documentUrl: cldDocument,
+      description: req.body.description,
+    })
+    res.status(201).json({ status: 'success', data: newJob })
   } catch (error) {
     res
       .status(500)
-      .json({ status: 'fail', message: 'Server Error', error: error.message })
+      .json({ status: 'fail', message: 'Server Error in createJob', error: error.message })
   }
 }
 

@@ -49,7 +49,7 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-2 space-x-5">
-            {userInfo?.user.role === "user" ? (
+            {userInfo?.user.role === "admin" ? (
               <Link
                 to="/admin"
                 className={`transition-colors ${
