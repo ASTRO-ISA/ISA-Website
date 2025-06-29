@@ -13,6 +13,7 @@ const eventRouter = require('./routes/eventRoutes.js')
 const extApiRouter = require('./routes/extApiRoutes.js')
 const blogSuggestionRouter = require('./routes/blogSuggestionRoutes.js')
 const jobRouter = require('./routes/jobRoutes.js')
+const galleryRouter = require('./routes/galleryRoutes.js')
 
 // middlewares
 app.use(
@@ -35,6 +36,7 @@ app.use('/api/v1/events', eventRouter)
 app.use('/api/v1/launches', extApiRouter)
 app.use('/api/v2/blogs', extApiRouter)
 app.use('/api/v1/news', extApiRouter)
+app.use('/api/v1/gallery', galleryRouter)
 
 app.get('/', (req, res) => {
   res.status(200).json({
