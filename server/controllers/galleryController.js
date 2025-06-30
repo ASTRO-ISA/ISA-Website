@@ -7,7 +7,7 @@ exports.uploadPics = async (req, res) => {
         const newPic = new Gallery({
             caption: req.body.caption,
             imageUrl: cldImage,
-            createdAt: req.body.createdAt
+            publicId: req.file.filename
         })
         await newPic.save()
         res.status(201).json({message:'Image uploaded successfully', pic: newPic})
@@ -25,7 +25,7 @@ exports.deletePics = async (req, res) => {
     }
 
     await cloudinary.uploader.destroy(image.publicId)
-    await Gallery.findByIdAndDelete(id)
+    await image.deleteOne()
 
     res.status(204).json({ message: 'Deleted successfully' })
   } catch (err) {
