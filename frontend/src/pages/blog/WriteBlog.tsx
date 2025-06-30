@@ -23,7 +23,8 @@ const WriteBlog = () => {
     }
     try {
       const compressedFile = await imageCompression(image, options);
-      setThumbnail(compressedFile);
+      const fileWithName = new File([compressedFile], image.name, { type: compressedFile.type });
+      setThumbnail(fileWithName);
     } catch (err) {
       console.error("Image compression failed:", err);
     }
@@ -32,6 +33,14 @@ const WriteBlog = () => {
   // Submit Form
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (title.length === 0) {
+      toast({ title: "Title required.", variant: "destructive" });
+      return;
+    }
+    if (content.length < 1000) {
+      toast({ title: "Content must be at least 1000 characters.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     const formData = new FormData();
     formData.append("title", title);
@@ -44,9 +53,6 @@ const WriteBlog = () => {
         "http://localhost:3000/api/v1/blogs/create",
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
           withCredentials: true,
         }
       );
@@ -58,9 +64,6 @@ const WriteBlog = () => {
       setTitle("");
       setLoading(false);
       navigate("/blogs");
-      // setTimeout(() => {
-      //   navigate("/blogs");
-      // }, 1000);
       toast({ title: "Blog published successfully!" });
     } catch (err) {
       setLoading(false);
@@ -88,6 +91,7 @@ const WriteBlog = () => {
             </label>
             <input
               type="file"
+              name="thumbnail"
               accept="image/*"
               placeholder="Choose a file"
               onChange={handleThumbnailChange}
@@ -112,7 +116,7 @@ const WriteBlog = () => {
           {/* Blog Content */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Content
+              Content (min 1000 characters)
             </label>
             <textarea
               placeholder="Start writing your blog..."
@@ -121,6 +125,7 @@ const WriteBlog = () => {
               rows={10}
               className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
             ></textarea>
+            <p className="text-gray-500 text-xs">{content.length}</p>
           </div>
 
           {/* Blog Description */}
@@ -131,10 +136,11 @@ const WriteBlog = () => {
             <textarea
               placeholder="A brief description..."
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value.slice(0, 180))}
               rows={3}
               className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
             ></textarea>
+            <p className="text-gray-500 text-xs">{180 - description.length}/180</p>
           </div>
 
           {/* Submit Button */}
