@@ -31,6 +31,7 @@ const Blog = () => {
     },
     createdAt: "",
   });
+  const [noFeatured, setNoFeatured] = useState(false);
 
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
@@ -61,9 +62,15 @@ const Blog = () => {
         const res = await axios.get(
           "http://localhost:3000/api/v1/blogs/featured"
         );
-        setFeatured(res.data);
+        if(!res.data){
+          setNoFeatured(true);
+        }
+        else {
+          setFeatured(res.data);
+        }
       } catch (err) {
         console.error("Error fetching blogs", err);
+        setNoFeatured(true);
       } finally {
         setLoading(false);
       }
@@ -168,50 +175,55 @@ const Blog = () => {
         <section className="mb-16">
           <h2 className="text-2xl font-bold mb-8">Featured Blog</h2>
 
+          {noFeatured ? (<p>No featured for the moment.</p>) : (
+
           <div className="cosmic-card p-0 overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-5">
-              <div className="lg:col-span-3 relative">
-                <div className="aspect-video lg:h-full">
-                  <img
-                    loading="lazy"
-                    src={`http://localhost:3000/uploads/${featured.thumbnail}`}
-                    alt="Space Talk"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40" />
-                </div>
-              </div>
-              <div className="lg:col-span-2 p-6 flex flex-col justify-center">
-                <Link to={`/blogs/${featured._id}`}>
-                  <h3 className="text-2xl font-bold mb-3">
-                    A Blog with NASA Scientist: Mars Exploration Updates
-                  </h3>
-                </Link>
-                <p className="text-gray-400 mb-6">{featured.description}</p>
-                <div className="flex items-center gap-2 mb-4">
-                  <img
-                    loading="lazy"
-                    src={`http://localhost:3000/uploads/${featured.thumbnail}`}
-                    alt={featured.author.name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                  <div>
-                    <h4 className="font-semibold">{featured.author.name}</h4>
-                    <p className="text-sm text-gray-400">
-                      NASA Mars Exploration Program
-                    </p>
-                  </div>
-                </div>
-                {/* <a
-                  href="#"
-                  className="inline-flex items-center text-space-accent hover:underline"
-                >
-                  Read full blog
-                  <ExternalLink className="ml-1 h-4 w-4" />
-                </a> */}
+          <div className="grid grid-cols-1 lg:grid-cols-5">
+            <div className="lg:col-span-3 relative">
+              <div className="aspect-video lg:h-full">
+                <img
+                  loading="lazy"
+                  src={`http://localhost:3000/uploads/${featured.thumbnail}`}
+                  alt="Space Talk"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/40" />
               </div>
             </div>
+            <div className="lg:col-span-2 p-6 flex flex-col justify-center">
+              <Link to={`/blogs/${featured._id}`}>
+                <h3 className="text-2xl font-bold mb-3">
+                  A Blog with NASA Scientist: Mars Exploration Updates
+                </h3>
+              </Link>
+              <p className="text-gray-400 mb-6">{featured.description}</p>
+              <div className="flex items-center gap-2 mb-4">
+                <img
+                  loading="lazy"
+                  src={`http://localhost:3000/uploads/${featured.thumbnail}`}
+                  alt={featured.author.name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <h4 className="font-semibold">{featured.author.name}</h4>
+                  <p className="text-sm text-gray-400">
+                    NASA Mars Exploration Program
+                  </p>
+                </div>
+              </div>
+              {/* <a
+                href="#"
+                className="inline-flex items-center text-space-accent hover:underline"
+              >
+                Read full blog
+                <ExternalLink className="ml-1 h-4 w-4" />
+              </a> */}
+            </div>
           </div>
+          </div>
+
+          )}
+          
         </section>
 
         {/* Recent Blogs */}

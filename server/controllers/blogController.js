@@ -16,7 +16,6 @@ exports.allBlogs = async (req, res) => {
 
 exports.createBlog = async (req, res) => {
   try {
-    // console.log(req.file)
     const imageUrl = req.file.path // we arae saving the url which we are getting from createBlog route
     const newBlog = new Blog({
       thumbnail: imageUrl,
@@ -32,7 +31,7 @@ exports.createBlog = async (req, res) => {
   } catch (err) {
     res
       .status(500)
-      .json({ message: 'Failed to save blog.', error: err.message })
+      .json({ message: 'Failed to save blog.', error: err })
   }
 }
 

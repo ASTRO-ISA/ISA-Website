@@ -26,7 +26,7 @@ import CreateEvent from "./pages/event/CreateEvent";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import AdminDashboard from "./pages/Admin";
+import AdminDashboard from "./pages/admin/Admin";
 
 const queryClient = new QueryClient();
 
