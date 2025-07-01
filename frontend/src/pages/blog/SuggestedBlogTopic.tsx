@@ -40,7 +40,6 @@ const SuggestedBlogTopic = () => {
           }
         );
 
-        console.log(res);
         setSuggestions(res.data.data || []);
         const initialFormData = {};
         res.data.data.forEach((s) => {

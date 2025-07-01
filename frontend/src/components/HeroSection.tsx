@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -30,7 +31,7 @@ const HeroSection = () => {
   return (
     <div 
       ref={heroRef}
-      className="relative min-h-[600px] sm:min-h-[600px] md:min-h-screen lg:min-h-screen flex flex-col items-center justify-center overflow-hidden bg-space-dark"
+      className="relative mb-16 min-h-[600px] sm:min-h-[600px] md:min-h-screen lg:min-h-screen flex flex-col items-center justify-center overflow-hidden bg-space-dark"
     >
       {/* Background elements */}
       <div className="absolute inset-0 bg-space-gradient"></div>
@@ -68,18 +69,18 @@ const HeroSection = () => {
             Bridging the gap between passion and profession by providing resources, networking, and hands-on projects for space enthusiasts.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-center">
+            
             <Button 
               asChild
               className="bg-space-accent hover:bg-space-accent/80 text-white px-8 py-6 text-lg"
             >
-              <a 
-                href="/login"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Join ISA Club
-              </a>
+            <Link
+            to="/about"
+            >
+              About Us
+            </Link>
             </Button>
+            
             <Button 
               asChild
               variant="outline" 

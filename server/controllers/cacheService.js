@@ -1,15 +1,29 @@
 const axios = require('axios')
+require('dotenv').config()
 
 let cache = {
+  potd: null,
   launches: null,
   blogs: null,
   articles: null
 }
 
 let timestamps = {
+  potd: null,
   launches: null,
   blogs: null,
   articles: null
+}
+
+const pictureOfTheDay = async () => {
+  try {
+    const res = await axios.get(`https://api.nasa.gov/planetary/apod?api_key=${process.env.POTD_API_KEY}`)
+    cache.potd = res.data
+    timestamps.potd = new Date()
+    // console.log('launches cache updated')
+  } catch (err) {
+    console.error('failed to fetch potd:', err.message)
+  }
 }
 
 const fetchLaunches = async () => {
@@ -46,6 +60,7 @@ const fetchArticles = async () => {
 };
 
 // run at sever start
+pictureOfTheDay()
 fetchLaunches()
 fetchBlogs()
 fetchArticles()
@@ -56,6 +71,7 @@ setInterval(fetchBlogs, 10 * 60 * 1000)
 setInterval(fetchArticles, 10 * 60 * 1000)
 
 module.exports = {
+  pictureOfTheDay: () => cache.potd,
   getLaunches: () => cache.launches,
   getBlogs: () => cache.blogs,
   getArticles: () => cache.articles,

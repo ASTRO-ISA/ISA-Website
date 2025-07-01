@@ -1,5 +1,6 @@
 
 import { Instagram, MessageCircle, Mail, Phone, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -52,14 +53,14 @@ const Footer = () => {
           <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
             <h3 className="text-lg font-semibold mb-4 ">Quick Links</h3>
             <ul className="space-y-2">
-              <li><a href="/" className="text-gray-400 hover:text-white transition-colors">Home</a></li>
-              <li><a href="/community" className="text-gray-400 hover:text-white transition-colors">Community</a></li>
-              <li><a href="/blog" className="text-gray-400 hover:text-white transition-colors">Blogs & News</a></li>
-              <li><a href="/events" className="text-gray-400 hover:text-white transition-colors">Events</a></li>
-              <li><a href="/shop" className="text-gray-400 hover:text-white transition-colors">Shop</a></li>
-              <li><a href="/training" className="text-gray-400 hover:text-white transition-colors">e-Learning</a></li>
-              <li><a href="/webinars" className="text-gray-400 hover:text-white transition-colors">Webinars</a></li>
-              
+              <li><Link to="/" className="text-gray-400 hover:text-white transition-colors">Home</Link></li>
+              <li><Link to="/community" className="text-gray-400 hover:text-white transition-colors">Community</Link></li>
+              <li><Link to="/blog" className="text-gray-400 hover:text-white transition-colors">Blogs & News</Link></li>
+              <li><Link to="/events" className="text-gray-400 hover:text-white transition-colors">Events</Link></li>
+              <li><Link to="/shop" className="text-gray-400 hover:text-white transition-colors">Shop</Link></li>
+              <li><Link to="/training" className="text-gray-400 hover:text-white transition-colors">Training</Link></li>
+              <li><Link to="/webinars" className="text-gray-400 hover:text-white transition-colors">Webinars</Link></li>
+              <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors">About</Link></li>
             </ul>
           </div>
 
