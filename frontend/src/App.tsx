@@ -27,6 +27,7 @@ import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AdminDashboard from "./pages/admin/Admin";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,7 @@ const App = () => {
             <Route path="/blogs/:id" element={<BlogDetail />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/host-event" element={<CreateEvent />} />
+            <Route path="/about" element={<About />} />
             <Route path="/events/:id" element={<EventDetails />} />
             {/* <Route path="/spline-models" element={<SplineModels />} />
             <Route path="/figma-design" element={<FigmaDesign />} />

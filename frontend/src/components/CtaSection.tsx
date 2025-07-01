@@ -1,8 +1,7 @@
-
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-
+import { Link } from 'react-router-dom';
 
 const CtaSection = () => {
   const { isLoggedIn } = useAuth()
@@ -11,7 +10,7 @@ const CtaSection = () => {
     if(isLoggedIn){
       navigate('/events')
     } else {
-      navigate('/events')
+      navigate('/login')
     }
   }
   return (
@@ -49,11 +48,13 @@ const CtaSection = () => {
               {isLoggedIn? "Explore Events" : "Become a Member"}
             </Button>
             <Button variant="outline" className="border-space-purple text-space-light hover:bg-space-purple/20 px-8 py-6 text-lg">
-              Learn More
+              <Link to="about">
+               Learn More
+              </Link>
             </Button>
           </div>
           
-          <div className="mt-12 flex flex-col md:flex-row items-center justify-center gap-8">
+          {/* <div className="mt-12 flex flex-col md:flex-row items-center justify-center gap-8">
             <div className="flex items-center">
               <img 
                 src="/images/6e2f90e0-d9db-42ef-9c2d-def808dc9cef.png" 
@@ -65,7 +66,7 @@ const CtaSection = () => {
             <p className="text-gray-400">
               In collaboration with LNCT Group of Colleges and various space organizations
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

@@ -169,7 +169,7 @@ const AdminJobs = () => {
               name="title"
               value={newJobFormData.title}
               onChange={handleNewJobFormChange}
-              placeholder="Job Title"
+              placeholder="Job Title*"
               className="w-full p-2 rounded bg-gray-800 text-white"
               required
             />
@@ -199,7 +199,7 @@ const AdminJobs = () => {
               className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
               required
             />
-            <label htmlFor="document" className="block mt-2">
+            <label htmlFor="document" className="block mt-2 text-gray-400 text-sm mb-3">
               The allowed formats are pdf, docx and doc
             </label>
             <input
@@ -268,11 +268,13 @@ const AdminJobs = () => {
                 </div>
               ) : (
                 <>
+                  <div className="w-full max-w-[100%] break-words">
                   <p className="font-semibold">{job.title}</p>
                   <p>{job.role}</p>
                   <p>{job.description}</p>
-                  <p>{job.applyLink}</p>
-                  <div className="flex gap-2 mt-2">
+                  <p className="text-blue-400 underline break-words">{job.applyLink}</p>
+                  
+                  <div className="flex flex-wrap gap-2 mt-2">
                     <Button
                       size="sm"
                       onClick={() => handleEditJobClick(job)}
@@ -288,6 +290,7 @@ const AdminJobs = () => {
                       <Trash2 className="w-4 h-4 mr-1" /> Delete
                     </Button>
                   </div>
+                </div>
                 </>
               )}
             </li>

@@ -3,6 +3,7 @@ import FeaturesSection from "@/components/FeaturesSection";
 import EventsCalendar from "@/components/EventsCalendar";
 import GallerySection from "@/components/GallerySection";
 import CtaSection from "@/components/CtaSection";
+import POTDSection from "@/components/POTDSection";
 // import StarBackground from "@/components/StarBackground";
 // import InteractiveModel from "@/components/InteractiveModel";
 
@@ -11,6 +12,7 @@ const Index = () => {
     <div className="min-h-screen bg-space-dark text-white">
       {/* <StarBackground /> */}
       <HeroSection />
+      <POTDSection />
       <FeaturesSection />
       <EventsCalendar />
       {/* <InteractiveModel /> */}
