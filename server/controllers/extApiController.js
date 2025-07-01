@@ -1,6 +1,14 @@
 // const axios = require('axios')
 const cacheService = require('./cacheService')
 
+exports.pictureOfTheDay = (req, res) => {
+  const data = cacheService.pictureOfTheDay()
+  if (!data) {
+    return res.status(503).json({ message: 'Data not ready, please try later' })
+  }
+  res.json(data)
+}
+
 exports.upcomingLaunches = (req, res) => {
   const data = cacheService.getLaunches()
   if (!data) {

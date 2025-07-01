@@ -36,6 +36,7 @@ app.use('/api/v1/events', eventRouter)
 app.use('/api/v1/launches', extApiRouter)
 app.use('/api/v2/blogs', extApiRouter)
 app.use('/api/v1/news', extApiRouter)
+app.use('/api/v1/picture', extApiRouter)
 app.use('/api/v1/gallery', galleryRouter)
 
 app.get('/', (req, res) => {
