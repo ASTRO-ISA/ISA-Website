@@ -2,6 +2,8 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
+import Captions from "yet-another-react-lightbox/plugins/captions";
+import "yet-another-react-lightbox/plugins/captions.css";
 // const images = [
 //   {
 //     src: "/images/262db6f8-4cbd-4487-98e3-a795fa8f33ae.png",
@@ -77,7 +79,7 @@ const GallerySection = () => {
           </div>
         ))}
       </div>
-      <Lightbox open={open} close={() => setOpen(false)} index={index} slides={images.map(img => ({ src: img.src }))} />
+      <Lightbox open={open} close={() => setOpen(false)} index={index} slides={images.map(img => ({ src: img.src }))} plugins={[Captions]} />
 
         {/* <div className="text-center mt-12">
           <button className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors">
