@@ -64,14 +64,14 @@ const Navbar = () => {
             ) : null}
 
             <Link // testing the color change on path change
-              to="/community"
+              to="/about"
               className={`transition-colors ${
-                location.pathname === "/community"
+                location.pathname === "/about"
                   ? "text-space-accent"
                   : "text-white hover:text-space-light"
               }`}
             >
-              Community
+              About
             </Link>
             <Link
               to="/blogs"

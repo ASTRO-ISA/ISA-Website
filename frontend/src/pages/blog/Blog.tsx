@@ -173,7 +173,7 @@ const Blog = () => {
 
         {/* Featured Blog */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold mb-8">Featured Blog</h2>
+          <h2 className="text-2xl font-bold mb-8">Featured</h2>
 
           {noFeatured ? (<p>No featured for the moment.</p>) : (
 
@@ -348,11 +348,11 @@ const Blog = () => {
                   </div>
                   <div className="p-5 flex-1 flex flex-col justify-between">
                     <div>
-                      <h3 className="text-xl font-semibold mb-3">
+                      <h3 className="text-xl font-semibold mb-3 line-clamp-2 min-h-[3rem]">
                         {blog.title}
                       </h3>
-                      <p className="text-gray-400 text-sm mb-4">
-                        {blog.summary}
+                      <p className="text-gray-400 text-sm mb-4 line-clamp-3 min-h-[3rem]">
+                      {blog.summary}
                       </p>
 
                       <div className="space-y-2 mb-4">
@@ -367,19 +367,10 @@ const Blog = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <img
-                        loading="lazy"
-                        src="/images/placeholder.svg"
-                        alt={blog.authors?.[0]?.name || "Author"}
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
                       <div>
-                        <h4 className="font-semibold">
-                          {blog.authors?.[0]?.name || "Unknown"}
+                        <h4 className="text-sm text-gray-400">
+                          Courtesy: {blog.authors?.[0]?.name || "Unknown"}
                         </h4>
-                        <p className="text-sm text-gray-400">
-                          Published at: {formatDate(blog.published_at)}
-                        </p>
                       </div>
                     </div>
                   </div>
@@ -405,7 +396,7 @@ const Blog = () => {
         {/* News */}
         <section className="mb-20">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold">News</h2>
+            <h2 className="text-2xl font-bold">News Articles</h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -431,10 +422,10 @@ const Blog = () => {
                     </div>
                     <div className="p-5 flex-1 flex flex-col justify-between">
                       <div>
-                        <h3 className="text-xl font-semibold mb-3">
+                        <h3 className="text-xl font-semibold mb-3 line-clamp-2 min-h-[3rem]">
                           {article.title}
                         </h3>
-                        <p className="text-gray-400 text-sm mb-4">
+                        <p className="text-gray-400 text-sm mb-4 line-clamp-3 min-h-[3rem]">
                           {article.summary}
                         </p>
 
@@ -450,21 +441,12 @@ const Blog = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <img
-                          loading="lazy"
-                          src="/images/placeholder.svg"
-                          alt={article.authors?.[0]?.name || "Author"}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                        <div>
-                          <h4 className="font-semibold">
-                            {article.authors?.[0]?.name || "Unknown"}
-                          </h4>
-                          <p className="text-sm text-gray-400">
-                            Published at: {formatDate(article.published_at)}
-                          </p>
-                        </div>
+                      <div>
+                        <h4 className="text-sm text-gray-400">
+                          Courtesy: {article.authors?.[0]?.name || "Unknown"}
+                        </h4>
                       </div>
+                    </div>
                     </div>
                   </Link>
                 )
