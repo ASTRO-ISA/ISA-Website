@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import "yet-another-react-lightbox/styles.css";
-import UserJobs from "./userJobs";
+import UserJobs from "./UserJobs";
 import Courses from "./Courses";
 import ResearchPaper from "./ResearchPaper";
 
