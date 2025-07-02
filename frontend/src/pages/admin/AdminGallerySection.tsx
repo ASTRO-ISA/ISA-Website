@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash } from "lucide-react";
 import Lightbox from "yet-another-react-lightbox";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+import Spinner from "@/components/ui/Spinner";
 
 const AdminGallerySection = () => {
   const { toast } = useToast();
@@ -12,6 +13,9 @@ const AdminGallerySection = () => {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [featuredLoading, setFeaturedLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [captionInputValue, setCaptionInputValue] = useState("");
@@ -20,7 +24,8 @@ const AdminGallerySection = () => {
   const [featuredPreviewUrl, setFeaturedPreviewUrl] = useState(null);
   const [featuredCaption, setFeaturedCaption] = useState("");
   const [featuredAuthor, setFeaturedAuthor] = useState("");
-  const [featuredImageData, setFeaturedImageData] = useState(null);
+  const [featuredImageData, setFeaturedImageData] = useState([]);
+  const featuredFileInputRef = useRef(null);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -34,7 +39,6 @@ const AdminGallerySection = () => {
         });
         return;
       }
-  
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
     }
@@ -52,25 +56,21 @@ const AdminGallerySection = () => {
         });
         return;
       }
-  
       setFeaturedFile(file);
       setFeaturedPreviewUrl(URL.createObjectURL(file));
     }
   };
 
   const handleUpload = async () => {
-    if (!selectedFile)return;
-    if(!captionInputValue){
-      toast({
-        title: 'Please write a caption',
-        variant: 'destructive'
-      })
+    if (!selectedFile) return;
+    if (!captionInputValue) {
+      toast({ title: 'Please write a caption', variant: 'destructive' });
+      return;
     }
 
     const formData = new FormData();
     formData.append("image", selectedFile);
     formData.append("caption", captionInputValue);
-
     setLoading(true);
 
     try {
@@ -86,14 +86,10 @@ const AdminGallerySection = () => {
       setCaptionInputValue("");
       setSelectedFile(null);
       setPreviewUrl(null);
-      toast({
-        title: "Image Uploaded Successfully."
-      })
+      toast({ title: "Image Uploaded Successfully." });
     } catch (err) {
       console.error("Error uploading image", err);
-      toast({
-        title: "Error uploading image"
-      })
+      toast({ title: "Error uploading image" });
     } finally {
       setLoading(false);
     }
@@ -101,22 +97,30 @@ const AdminGallerySection = () => {
 
   const handleDelete = async (id) => {
     try {
+      setDeletingId(id);
       await axios.delete(`http://localhost:3000/api/v1/gallery/${id}`, {
         withCredentials: true,
       });
       setImages((prev) => prev.filter((img) => img._id !== id));
-      toast({
-        title: "Deleted Successfully."
-      })
+      toast({ title: "Deleted Successfully." });
+      setDeletingId(null);
     } catch (err) {
       console.error("Error deleting image", err);
-      toast({
-        title: "Error deleting image"
-      })
+      toast({ title: "Error deleting image" });
+      setDeletingId(null);
     }
   };
 
   const handleFeaturedUpload = async () => {
+    if (featuredImageData.length > 0) {
+      toast({
+        title: "Featured image already exists.",
+        description: "Please delete the previous featured image before uploading a new one.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!featuredFile) {
       toast({
         title: "Missing Fields",
@@ -125,6 +129,7 @@ const AdminGallerySection = () => {
       });
       return;
     }
+
     if (!featuredAuthor) {
       toast({
         title: "Missing Fields",
@@ -133,49 +138,48 @@ const AdminGallerySection = () => {
       });
       return;
     }
+
     const formData = new FormData();
     formData.append("image", featuredFile);
     formData.append("caption", featuredCaption);
     formData.append("author", featuredAuthor);
 
-    setLoading(true);
+    setFeaturedLoading(true);
     try {
       const res = await axios.post("http://localhost:3000/api/v1/gallery/featured", formData, {
         withCredentials: true,
       });
-      setFeaturedImageData(res.data.pic);
+      setFeaturedImageData([res.data.pic]);
       setFeaturedFile(null);
       setFeaturedPreviewUrl(null);
       setFeaturedCaption("");
       setFeaturedAuthor("");
-      toast({
-        title: "Featured image uploaded successfully."
-      })
+      if (featuredFileInputRef.current) {
+        featuredFileInputRef.current.value = "";
+      }
+      toast({ title: "Featured image uploaded successfully." });
     } catch (err) {
       console.error("Error uploading featured image", err);
-      toast({
-        title: "Error uploading featured image"
-      })
+      toast({ title: "Error uploading featured image" });
     } finally {
-      setLoading(false);
+      setFeaturedLoading(false);
     }
   };
 
   const handleDeleteFeatured = async () => {
-    if (!featuredImageData?._id) return;
+    if (!featuredImageData[0]?._id) return;
     try {
-      await axios.delete(`http://localhost:3000/api/v1/gallery/featured/${featuredImageData._id}`, {
+      setDeleting(true);
+      await axios.delete(`http://localhost:3000/api/v1/gallery/featured/${featuredImageData[0]._id}`, {
         withCredentials: true,
       });
-      setFeaturedImageData(null);
-      toast({
-        title: "Featured image deleted successfully."
-      })
+      setFeaturedImageData([]);
+      toast({ title: "Featured image deleted successfully." });
+      setDeleting(false);
     } catch (err) {
       console.error("Error deleting featured image", err);
-      toast({
-        title: "Error deleting featured image"
-      })
+      toast({ title: "Error deleting featured image" });
+      setDeleting(false);
     }
   };
 
@@ -197,7 +201,7 @@ const AdminGallerySection = () => {
       const res = await axios.get("http://localhost:3000/api/v1/gallery/featured", {
         withCredentials: true,
       });
-      setFeaturedImageData(res.data);
+      setFeaturedImageData(res.data || []);
     } catch (err) {
       console.error("Error fetching featured image:", err);
     }
@@ -215,7 +219,7 @@ const AdminGallerySection = () => {
       </CardHeader>
       <CardContent>
 
-        {/* --- Regular Upload Section --- */}
+        {/* Regular Upload Section */}
         <h3 className="font-semibold text-lg mb-2">Uploaded images will appear in gallery</h3>
         <p className="text-gray-500 text-sm mb-3">You can upload 'png', 'jpg' and 'jpeg'</p>
         <div className="mb-8">
@@ -225,7 +229,6 @@ const AdminGallerySection = () => {
           <input
             type="file"
             id="gallery-upload"
-            placeholder="Caption*"
             style={{ display: "none" }}
             accept=".png, .jpg, .jpeg"
             onChange={handleFileSelect}
@@ -240,16 +243,17 @@ const AdminGallerySection = () => {
                 onChange={(e) => setCaptionInputValue(e.target.value)}
                 className="block w-full p-2 rounded bg-gray-800 text-white mb-2"
               />
-              <Button onClick={handleUpload} disabled={loading}>Upload</Button>
+              <Button onClick={handleUpload} disabled={loading}>{loading ? <Spinner /> : "Upload"}</Button>
             </div>
           )}
         </div>
         <hr className="w-full mb-5"/>
 
-        {/* --- Featured Upload Section --- */}
+        {/* Featured Upload Section */}
         <div className="mb-8">
           <h3 className="font-semibold text-lg mb-2">Upload Featured Picture</h3>
-          <input type="file" onChange={handleFeaturedSelect} accept=".png, .jpg, .jpeg" />
+          <p className="text-gray-500 text-sm mb-3">Please delete the previous featured image before uploading a new one</p>
+          <input type="file" onChange={handleFeaturedSelect} accept=".png, .jpg, .jpeg" ref={featuredFileInputRef} />
           {featuredPreviewUrl && (
             <img src={featuredPreviewUrl} alt="Featured Preview" className="w-48 h-48 object-cover mt-2 rounded" />
           )}
@@ -267,25 +271,27 @@ const AdminGallerySection = () => {
             onChange={(e) => setFeaturedAuthor(e.target.value)}
             className="w-full p-2 rounded bg-gray-800 text-white mt-2 mb-2"
           />
-          <Button onClick={handleFeaturedUpload} disabled={loading}>Upload Featured</Button>
+          <Button onClick={handleFeaturedUpload} disabled={featuredLoading}>{featuredLoading ? <Spinner /> : "Upload Featured"}</Button>
         </div>
 
         <hr className="w-full mb-5"/>
 
-        {/* --- Featured Display & Delete --- */}
-        {featuredImageData && (
+        {/* Featured Display */}
+        {featuredImageData?.length > 0 ? (
           <div className="mb-6">
             <h3 className="font-semibold text-lg mb-2">Current Featured Image</h3>
             <img src={featuredImageData[0].imageUrl} alt="Featured" className="w-48 h-48 object-cover rounded" />
             <p className="text-sm text-white mt-1">{featuredImageData[0].caption}</p>
             <p className="text-xs text-gray-400">By: {featuredImageData[0].author}</p>
-            <Button onClick={handleDeleteFeatured} variant="destructive" className="mt-2">Delete Featured</Button>
+            <Button onClick={handleDeleteFeatured} disabled={deleting} variant="destructive" className="mt-2">{deleting ? <Spinner/> : "Delete Featured"}</Button>
           </div>
+        ) : (
+          <p className="text-gray-400 mb-6">No featured image uploaded yet.</p>
         )}
 
         <hr className="w-full mb-5"/>
 
-        {/* --- Regular Gallery --- */}
+        {/* Regular Gallery */}
         <h3 className="font-semibold text-lg mb-2">Gallery</h3>
         {images.length === 0 ? (
           <p className="text-gray-400">No gallery images found.</p>
@@ -308,8 +314,7 @@ const AdminGallerySection = () => {
                     className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110 cursor-pointer"
                   />
                   <div className="absolute top-2 right-2 pointer-events-auto">
-                    <Button size="icon" variant="destructive" onClick={() => handleDelete(image._id)}>
-                      <Trash className="w-4 h-4" />
+                    <Button size="icon" variant="destructive" onClick={() => handleDelete(image._id)}>{deletingId === image._id ? <Spinner /> : <Trash className="w-4 h-4" />}
                     </Button>
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 pointer-events-none">
