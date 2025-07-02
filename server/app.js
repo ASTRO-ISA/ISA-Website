@@ -14,6 +14,7 @@ const extApiRouter = require('./routes/extApiRoutes.js')
 const blogSuggestionRouter = require('./routes/blogSuggestionRoutes.js')
 const jobRouter = require('./routes/jobRoutes.js')
 const galleryRouter = require('./routes/galleryRoutes.js')
+const researchPaperRouter = require('./routes/researchPaperRoutes.js')
 
 // middlewares
 app.use(
@@ -28,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/uploads', express.static('uploads'))
 app.use(cookieParser())
 
+app.use('/api/v1/researchPaper', researchPaperRouter)
 app.use('/api/v1/jobs', jobRouter)
 app.use('/api/v1/suggestBlog', blogSuggestionRouter)
 app.use('/api/v1/blogs', blogRouter)
