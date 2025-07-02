@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Star, Users, Award } from "lucide-react";
+import { Calendar, Star, Users, Award, Instagram, MessageCircle } from "lucide-react";
 
 const About = () => {
   const teamMembers = [
@@ -63,9 +63,9 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-space-dark text-white pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-space-purple/20 via-space-dark to-space-accent/20 text-white pt-20">
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-space-dark via-space-purple/20 to-space-dark">
+      <section className="py-10">
         <div className="container mx-auto px-4 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 50 }}
@@ -85,6 +85,295 @@ const About = () => {
           </motion.p>
         </div>
       </section>
+
+      {/* ISA Overview*/}
+      <section className="py-20 text-white">
+      <div className="container mx-auto px-4">
+
+        {/* Rocketry & Astronomy Sections */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+          {/* Rocketry */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <Card className="cosmic-card bg-gradient-to-br from-space-purple/20 to-space-dark p-6 h-full hover:scale-105 transition-transform duration-300">
+              <CardContent>
+                <h3 className="text-2xl font-bold mb-2">Rocketry Division (Technical)</h3>
+                <p className="text-space-light mb-4">
+                The Rocketry Division of ISA focuses on the technical and engineering aspects of space exploration. This section is ideal for students who are interested in hands-on experience with:
+                </p>
+                <ul className="list-disc list-inside space-y-2 text-space-light">
+                  <li>Designing and building model rockets</li>
+                  <li>Understanding propulsion systems, aerodynamics, and payload integration
+                  </li>
+                  <li>Conducting static and dynamic rocket launches
+                  </li>
+                  <li>Participating in national and international rocketry competitions
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Astronomy */}
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <Card className="cosmic-card bg-gradient-to-br from-space-purple/20 to-space-dark p-6 h-full hover:scale-105 transition-transform duration-300">
+              <CardContent>
+                <h3 className="text-2xl font-bold mb-2">Astronomy Division (Space Knowledge & Exploration)</h3>
+                <p className="text-space-light mb-4">
+                The Astronomy Division of ISA is designed for those who are curious about the universe and want to dive deep into:
+                </p>
+                <ul className="list-disc list-inside space-y-2 text-space-light">
+                  <li>Observation-based astronomy</li>
+                  <li>Learning about celestial objects, constellations, and planetary science</li>
+                  <li>Space research projects and data analysis (e.g., moon mapping, black holes, galaxies)</li>
+                  <li>Organizing and attending stargazing events and space talks</li>
+                  <li>Conducting awareness programs and public lectures</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+
+        {/* What ISA Offers */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h3 className="text-3xl font-bold text-center mb-10">What ISA Offers</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {[
+              "Workshops & webinars with scientists and engineers",
+              "Certified space education programs",
+              "Internship & research opportunities",
+              "Hackathons, Rocket Launches and Astronomy nights",
+              "Career roadmap guidance for space aspirants",
+              "Community platform for space discussion and collaboration",
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-space-purple/20 p-4 rounded-xl border border-space-accent/30 text-center flex items-center justify-center hover:shadow-lg transition-shadow"
+              >
+                <p className="text-space-light">{item}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+
+      {/* timeline- not using right now or not needed */} 
+      {/* <section className="py-16 bg-gradient-to-r from-transparent via-space-purple/10 to-transparent">
+        <div className="container mx-auto px-4">
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-4xl font-bold text-center mb-12"
+          >
+            Our Journey
+          </motion.h2>
+          
+          <div className="relative max-w-6xl mx-auto"> */}
+            {/* Timeline Line */}
+            {/* <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-space-accent via-space-purple to-space-accent"></div>
+            
+            <div className="space-y-12">
+              {milestones.map((milestone, index) => (
+                <motion.div
+                  key={milestone.year}
+                  initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
+                >
+                  <div className={`w-5/12 ${index % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
+                    <Card className="cosmic-card p-6 hover:scale-105 transition-transform duration-300">
+                      <CardContent>
+                        <Badge className="bg-space-accent text-white mb-2">{milestone.year}</Badge>
+                        <h3 className="text-xl font-bold text-white mb-2">{milestone.title}</h3>
+                        <p className="text-space-light">{milestone.description}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  
+                  <div className="w-2/12 flex justify-center">
+                    <div className="w-4 h-4 bg-space-accent rounded-full border-4 border-space-dark shadow-lg shadow-space-accent/50"></div>
+                  </div>
+                  
+                  <div className="w-5/12"></div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section> */}
+
+      {/* Meet Our Team */}
+      <section className="py-16">
+      <div className="container mx-auto px-4">
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-3xl md:text-4xl font-bold text-center mb-10"
+        >
+          Meet Our Development Team
+        </motion.h2>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+          {teamMembers.map((member, index) => (
+            <motion.div
+              key={member.name}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -4 }}
+              className="text-center"
+            >
+              <div className="relative mb-3">
+                <div
+                  className={`w-28 h-28 mx-auto rounded-full overflow-hidden border-2 ${
+                    member.isAI
+                      ? 'border-space-accent shadow-md shadow-space-accent/40'
+                      : 'border-space-purple'
+                  }`}
+                >
+                  {member.isAI ? (
+                    <div className="w-full h-full bg-gradient-to-br from-space-accent via-space-purple to-space-dark flex items-center justify-center">
+                      <div className="text-3xl">🤖</div>
+                    </div>
+                  ) : (
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                {member.isAI && (
+                  <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-space-accent text-white text-xs px-2 py-0.5">
+                    AI Developer
+                  </Badge>
+                )}
+              </div>
+
+              <h3 className="text-base font-semibold text-white">{member.name}</h3>
+              <p className="text-sm text-space-accent">{member.role}</p>
+            </motion.div>
+          ))}
+      </div>
+      </div>
+      </section>
+
+      {/* Club Department Team */}
+      <section className="py-16">
+    <div className="container mx-auto px-4">
+      <motion.h2
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+        className="text-3xl md:text-4xl font-bold text-center mb-10"
+      >
+        Club Department Team
+      </motion.h2>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+        {clubDepartments.map((member, index) => (
+          <motion.div
+            key={member.name}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -4 }}
+            className="text-center"
+          >
+            <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
+              <img
+                src={member.image}
+                alt={member.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <h3 className="text-base font-semibold text-white">{member.name}</h3>
+            <p className="text-sm text-space-accent">{member.role}</p>
+            <div className="flex justify-center space-x-1 mt-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star key={star} size={14} className="text-space-accent fill-current" />
+              ))}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+      </div>
+      </section>
+
+      {/* Social Links */}
+      <section className="py-20">
+  <div className="container mx-auto px-4">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      viewport={{ once: true }}
+      className="text-center max-w-3xl mx-auto"
+    >
+      <h2 className="text-3xl md:text-4xl font-bold mb-6">
+        Join Our Online Community
+      </h2>
+      <p className="text-xl text-space-light mb-8 max-w-2xl mx-auto">
+        Connect with ISA Club members through our social platforms for daily updates, discussions, and astronomy content.
+      </p>
+
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">
+        <a
+          href="https://www.instagram.com/isa.astrospace"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 bg-gradient-to-r from-space-purple to-pink-600 hover:opacity-90 transition-opacity px-6 py-3 rounded-lg text-white font-medium shadow-md"
+        >
+          <Instagram size={20} />
+          Follow on Instagram
+        </a>
+
+        <a
+          href="https://chat.whatsapp.com/L3cBfJnQuO3BAbTnr4FbUE?fbclid=PAZXh0bgNhZW0CMTEAAabtBxDh4K2fihtHj_B3jxL87pA6nBaZurvhwesU32G5CftYqkhHFxdlicg_aem_v3_CsBh8Vl8Pxnf3HD8Ltg"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 bg-green-600 hover:bg-green-700 transition-colors px-6 py-3 rounded-lg text-white font-medium shadow-md"
+        >
+          <MessageCircle size={20} />
+          Join WhatsApp Group
+        </a>
+      </div>
+
+      {/* <div className="mt-6">
+        <img
+          src="/images/6e2f90e0-d9db-42ef-9c2d-def808dc9cef.png"
+          alt="Community QR Code"
+          className="h-32 w-auto mx-auto border border-space-purple rounded-lg shadow-md"
+        />
+        <p className="text-sm text-space-light mt-2">Scan to join our WhatsApp group</p>
+      </div> */}
+    </motion.div>
+  </div>
+</section>
 
       {/* Mission Statement */}
       <section className="py-16">
@@ -122,165 +411,8 @@ const About = () => {
         </div>
       </section>
 
-      {/* Timeline */}
-      <section className="py-16 bg-gradient-to-r from-transparent via-space-purple/10 to-transparent">
-        <div className="container mx-auto px-4">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-4xl font-bold text-center mb-12"
-          >
-            Our Journey
-          </motion.h2>
-          
-          <div className="relative max-w-6xl mx-auto">
-            {/* Timeline Line */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-space-accent via-space-purple to-space-accent"></div>
-            
-            <div className="space-y-12">
-              {milestones.map((milestone, index) => (
-                <motion.div
-                  key={milestone.year}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
-                >
-                  <div className={`w-5/12 ${index % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
-                    <Card className="cosmic-card p-6 hover:scale-105 transition-transform duration-300">
-                      <CardContent>
-                        <Badge className="bg-space-accent text-white mb-2">{milestone.year}</Badge>
-                        <h3 className="text-xl font-bold text-white mb-2">{milestone.title}</h3>
-                        <p className="text-space-light">{milestone.description}</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                  
-                  <div className="w-2/12 flex justify-center">
-                    <div className="w-4 h-4 bg-space-accent rounded-full border-4 border-space-dark shadow-lg shadow-space-accent/50"></div>
-                  </div>
-                  
-                  <div className="w-5/12"></div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Meet Our Team */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-4xl font-bold text-center mb-12"
-          >
-            Meet Our Development Team
-          </motion.h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {teamMembers.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -5 }}
-                className="group"
-              >
-                <Card className="cosmic-card h-full hover:border-space-accent/50 transition-all duration-300">
-                  <CardContent className="p-6 text-center">
-                    <div className="relative mb-6">
-                      <div className={`w-48 h-48 mx-auto rounded-full overflow-hidden border-4 ${
-                        member.isAI ? 'border-space-accent shadow-lg shadow-space-accent/50' : 'border-space-purple'
-                      }`}>
-                        {member.isAI ? (
-                          <div className="w-full h-full bg-gradient-to-br from-space-accent via-space-purple to-space-dark flex items-center justify-center">
-                            <div className="text-6xl">🤖</div>
-                          </div>
-                        ) : (
-                          <img
-                            src={member.image}
-                            alt={member.name}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                      </div>
-                      {member.isAI && (
-                        <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-space-accent text-white">
-                          AI Developer
-                        </Badge>
-                      )}
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-2">{member.name}</h3>
-                    <p className="text-space-accent font-semibold mb-3">{member.role}</p>
-                    <p className="text-space-light text-sm leading-relaxed">{member.bio}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Club Department Team */}
-      <section className="py-16 bg-gradient-to-r from-transparent via-space-purple/10 to-transparent">
-        <div className="container mx-auto px-4">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-4xl font-bold text-center mb-12"
-          >
-            Club Department Team
-          </motion.h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {clubDepartments.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -5 }}
-                className="group"
-              >
-                <Card className="cosmic-card h-full hover:border-space-accent/50 transition-all duration-300">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-48 h-48 mx-auto mb-6 rounded-full overflow-hidden border-4 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
-                      <img
-                        src={member.image}
-                        alt={member.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-2">{member.name}</h3>
-                    <p className="text-space-accent font-semibold mb-3">{member.role}</p>
-                    <p className="text-space-light text-sm leading-relaxed">{member.bio}</p>
-                    <div className="flex justify-center space-x-2 mt-4">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star key={star} size={16} className="text-space-accent fill-current" />
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Call to Action */}
-      <section className="py-20 bg-gradient-to-br from-space-purple/20 via-space-dark to-space-accent/20">
+      <section className="py-20">
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
