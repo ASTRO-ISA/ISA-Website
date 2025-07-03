@@ -16,6 +16,7 @@ interface User {
 interface AuthContextType {
   userInfo: User | null;
   isLoggedIn: boolean;
+  isAdmin: boolean;
   loginCheck: () => void;
   logout: () => Promise<void>;
 }
@@ -42,9 +43,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-
-  
-
   const logout = async () => {
     try {
       await axios.get("http://localhost:3000/api/v1/users/logout", {
@@ -62,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ userInfo, isLoggedIn, loginCheck, logout }}>
+    <AuthContext.Provider value={{ userInfo, isLoggedIn, isAdmin: userInfo?.user.role === "admin", loginCheck, logout }}>
       {children}
     </AuthContext.Provider>
   );
