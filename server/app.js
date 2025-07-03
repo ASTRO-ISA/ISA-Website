@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/uploads', express.static('uploads'))
 app.use(cookieParser())
 
-app.use('/api/v1/researchPaper', researchPaperRouter)
+app.use('/api/v1/researchPapers', researchPaperRouter)
 app.use('/api/v1/jobs', jobRouter)
 app.use('/api/v1/suggestBlog', blogSuggestionRouter)
 app.use('/api/v1/blogs', blogRouter)
