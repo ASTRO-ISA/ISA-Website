@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import "yet-another-react-lightbox/styles.css";
 import UserJobs from "./UserJobs";
 import Courses from "./Courses";
-import ResearchPaper from "./ResearchPaper";
+import ResearchPaper from "./researchParper/ResearchPaper";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("jobs");

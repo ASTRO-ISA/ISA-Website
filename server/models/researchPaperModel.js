@@ -7,7 +7,7 @@ const researchPaperSchema = new mongoose.Schema(
       required: [true, 'Research paper title is required'],
       unique: true
     },
-    publishedBy: {
+    authors: {
       type: String,
       required: [true, 'Publisher name is required']
     },
