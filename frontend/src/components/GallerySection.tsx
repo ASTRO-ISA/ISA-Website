@@ -4,28 +4,6 @@ import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import "yet-another-react-lightbox/plugins/captions.css";
-// const images = [
-//   {
-//     src: "/images/262db6f8-4cbd-4487-98e3-a795fa8f33ae.png",
-//     alt: "ISA Club Activities",
-//     caption: "Club Members During Workshop"
-//   },
-//   {
-//     src: "/images/51dc2c27-82d2-40f1-a203-b0c090ea514d.png",
-//     alt: "ISA Presentations",
-//     caption: "Space Science Presentation"
-//   },
-//   {
-//     src: "/images/582ac169-4b33-4482-a21a-eb007829c86b.png",
-//     alt: "ISA Group Photo",
-//     caption: "ISA Club Group Photo"
-//   },
-//   {
-//     src: "/images/0dc13df5-c34b-4f8c-bcb1-725295edb6eb.png",
-//     alt: "ISA Workshop",
-//     caption: "Student Workshop Session"
-//   }
-// ];
 
 const GallerySection = () => {
 
@@ -70,7 +48,7 @@ const GallerySection = () => {
 
         {/* gallery with react lightbox */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {images.slice(0, 4).map((image, i) => (
+        {[...images].reverse().slice(0, 4).map((image, i) => (
           <div key={i} onClick={() => { setOpen(true); setIndex(i); }} className="group overflow-hidden rounded-lg relative animate-fade-in cursor-pointer" style={{ animationDelay: `${i * 0.1}s` }}>
             <img src={image.src} alt={image.alt} className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
