@@ -15,10 +15,10 @@ exports.getAllPapers = async (req, res) => {
 
 exports.uploadPaper = async (req, res) => {
   try {
-    const { title, publishedBy, abstract } = req.body
+    const { title, authors, abstract } = req.body
     const uploadedBy = req.user._id
 
-    if (!title || !publishedBy || !abstract || !uploadedBy) {
+    if (!title || !authors || !abstract || !uploadedBy) {
       return res
         .status(400)
         .json({ status: 'fail', message: 'some or all data missing' })
@@ -32,7 +32,7 @@ exports.uploadPaper = async (req, res) => {
 
     const newPaper = await ResearchPaper.create({
       title,
-      publishedBy,
+      authors,
       abstract,
       paperUrl: req.file.path,
       paperPublicId: req.file.filename,
