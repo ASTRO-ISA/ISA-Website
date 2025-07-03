@@ -3,14 +3,6 @@ import { BookOpen, Calendar, ShoppingBag, Video, Users, Rocket } from 'lucide-re
 
 const features = [
   {
-    icon: ShoppingBag,
-    title: 'Space Marketplace',
-    description: 'A dedicated e-commerce platform for space-related products, books, and specialized equipment.',
-    color: 'bg-blue-500/10',
-    borderColor: 'border-blue-500/30',
-    textColor: 'text-blue-400'
-  },
-  {
     icon: BookOpen,
     title: 'Training & Certification',
     description: 'Courses, workshops, and certifications in space science, satellite programming, and astrophysics.',
@@ -49,6 +41,14 @@ const features = [
     color: 'bg-teal-500/10',
     borderColor: 'border-teal-500/30',
     textColor: 'text-teal-400'
+  },
+  {
+    icon: ShoppingBag,
+    title: 'Space Marketplace',
+    description: 'A dedicated e-commerce platform for space-related products, books, and specialized equipment.',
+    color: 'bg-blue-500/10',
+    borderColor: 'border-blue-500/30',
+    textColor: 'text-blue-400'
   }
 ];
 
