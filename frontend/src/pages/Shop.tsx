@@ -1,8 +1,3 @@
-
-import StarBackground from "@/components/StarBackground";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-
 const Shop = () => {
   const products = [
     {
@@ -67,10 +62,9 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
-      {/* <StarBackground /> */}
-      {/* <Navbar /> */}
       
       <main className="container mx-auto px-4 pt-24 pb-16">
+        <h1>Coming Soon</h1>
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Space Marketplace</h1>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
@@ -127,8 +121,6 @@ const Shop = () => {
           </button>
         </div>
       </main>
-      
-      {/* <Footer /> */}
     </div>
   );
 };

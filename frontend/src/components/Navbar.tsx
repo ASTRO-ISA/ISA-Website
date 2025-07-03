@@ -93,7 +93,8 @@ const Navbar = () => {
             >
               Events
             </Link>
-            <Link
+            {/* shop - not needed right now */}
+            {/* <Link
               to="/shop"
               className={`transition-colors ${
                 location.pathname === "/shop"
@@ -102,7 +103,7 @@ const Navbar = () => {
               }`}
             >
               Shop
-            </Link>
+            </Link> */}
             <Link
               to="/training"
               className={`transition-colors ${
@@ -248,7 +249,8 @@ const Navbar = () => {
               >
                 Events
               </Link>
-              <Link
+              {/* shop - not needed right now */}
+              {/* <Link
                 to="/shop"
                 className={`transition-colors ${
                   location.pathname === "/shop"
@@ -258,7 +260,7 @@ const Navbar = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Shop
-              </Link>
+              </Link> */}
               <Link
                 to="/training"
                 className={`transition-colors ${
