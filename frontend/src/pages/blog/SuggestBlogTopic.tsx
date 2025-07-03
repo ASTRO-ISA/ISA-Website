@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import Spinner from "@/components/ui/Spinner";
 
 const SuggestBlogTopic = () => {
   const { toast } = useToast();
@@ -8,6 +9,7 @@ const SuggestBlogTopic = () => {
     title: "",
     description: "",
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,6 +19,7 @@ const SuggestBlogTopic = () => {
   const handleSubmitTopic = async (e) => {
     e.preventDefault();
     try {
+      setSubmitting(true);
       const res = await axios.post(
         "http://localhost:3000/api/v1/suggestBlog/",
         blogSuggest,
@@ -28,10 +31,12 @@ const SuggestBlogTopic = () => {
         title: "",
         description: "",
       })
-      toast({ title: 'suggesion posted successfully' })
+      setSubmitting(false);
+      toast({ title: 'Suggesion posted successfully.'})
     } catch (error) {
       console.error("Post failed", error);
       toast({ title: 'something went wrong'})
+      setSubmitting(false);
     }
   };
 
@@ -68,14 +73,14 @@ const SuggestBlogTopic = () => {
                 type="submit"
                 className="bg-space-accent hover:bg-space-accent/80 text-white px-6 py-2 rounded transition-colors"
               >
-                Submit Suggestion
+                {submitting ? <Spinner /> : "Submit Suggestion"}
               </button>
             </form>
           </div>
-          <div className="md:w-1/3">
+          <div className="md:w-1/4">
             <img
               loading="lazy"
-              src="https://images.unsplash.com/photo-1576633587382-13ddf37b1fc1?q=80&w=500"
+              src="images/questionmark.png"
               alt="Space Speaker"
               className="rounded-lg h-auto w-full"
             />

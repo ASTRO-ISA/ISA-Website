@@ -23,44 +23,46 @@ const Footer = () => {
               A dedicated platform for space enthusiasts, researchers, and professionals fostering learning, collaboration, and innovation.
             </p>
             <div className="flex justify-center space-x-4 items-center text-center sm:justify-start sm:items-start sm:text-left">
-              <a 
-                href="https://www.instagram.com/isa.astrospace?igsh=cGgyeDB3M2d4dDJ5"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white hover:text-space-accent transition-colors"
-              >
-                <Instagram />
-              </a>
-              <a 
-                href="https://chat.whatsapp.com/L3cBfJnQuO3BAbTnr4FbUE?fbclid=PAZXh0bgNhZW0CMTEAAabtBxDh4K2fihtHj_B3jxL87pA6nBaZurvhwesU32G5CftYqkhHFxdlicg_aem_v3_CsBh8Vl8Pxnf3HD8Ltg"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white hover:text-space-accent transition-colors"
-              >
-                <MessageCircle />
-              </a>
-              <a 
-                href="https://www.linkedin.com/company/isa-india/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white hover:text-space-accent transition-colors"
-              >
-                <i className="fa-brands fa-linkedin fa-lg"></i>
-              </a>
-            </div>
+            <a 
+              href="https://www.instagram.com/isa.astrospace?igsh=cGgyeDB3M2d4dDJ5"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gray-700 hover:bg-gray-600 text-white w-10 h-10 rounded-full p-2 transition-colors"
+            >
+              <Instagram />
+            </a>
+
+            <a 
+              href="https://chat.whatsapp.com/L3cBfJnQuO3BAbTnr4FbUE?fbclid=PAZXh0bgNhZW0CMTEAAabtBxDh4K2fihtHj_B3jxL87pA6nBaZurvhwesU32G5CftYqkhHFxdlicg_aem_v3_CsBh8Vl8Pxnf3HD8Ltg"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gray-700 hover:bg-gray-600 text-white w-10 h-10 rounded-full p-2 transition-colors"
+            >
+              <MessageCircle />
+            </a>
+
+            <a 
+            href="https://www.linkedin.com/company/isa-india/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-gray-700 hover:bg-gray-600 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+            >
+            <i className="fa-brands fa-linkedin fa-lg"></i>
+            </a>
+          </div>
           </div>
 
           <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
-            <h3 className="text-lg font-semibold mb-4 ">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li><Link to="/" className="text-gray-400 hover:text-white transition-colors">Home</Link></li>
-              <li><Link to="/community" className="text-gray-400 hover:text-white transition-colors">Community</Link></li>
+              <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors">About</Link></li>
+              {/* <li><Link to="/community" className="text-gray-400 hover:text-white transition-colors">Community</Link></li> */}
               <li><Link to="/blog" className="text-gray-400 hover:text-white transition-colors">Blogs & News</Link></li>
               <li><Link to="/events" className="text-gray-400 hover:text-white transition-colors">Events</Link></li>
               <li><Link to="/shop" className="text-gray-400 hover:text-white transition-colors">Shop</Link></li>
               <li><Link to="/training" className="text-gray-400 hover:text-white transition-colors">Training</Link></li>
               <li><Link to="/webinars" className="text-gray-400 hover:text-white transition-colors">Webinars</Link></li>
-              <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors">About</Link></li>
             </ul>
           </div>
 
@@ -78,7 +80,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div>
+          <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
             <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
             <p className="text-gray-400 mb-4">Subscribe to our newsletter for updates on astronomical events and club activities.</p>
             <div className="flex flex-col space-y-3">
@@ -95,7 +97,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-12 pt-6 border-t border-gray-800 text-center text-gray-500">
-          <p>© {new Date().getFullYear()} ISA Club. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} ISA. All rights reserved.</p>
         </div>
       </div>
     </footer>

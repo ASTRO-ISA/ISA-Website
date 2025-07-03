@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+import Captions from "yet-another-react-lightbox/plugins/captions";
+import "yet-another-react-lightbox/plugins/captions.css";
 
 const POTDSection = () => {
   const [pictureOfTheDay, setPictureOfTheDay] = useState(null);
   const [featuredImageData, setFeaturedImageData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [openFeaturedPic, setOpenFeaturedPic] = useState(false);
+  const [openLightbox, setOpenLightbox] = useState(false);
 
   const fetchPOTD = async () => {
     try {
@@ -41,31 +47,58 @@ const POTDSection = () => {
     fetchFeaturedImage();
   }, []);
 
+  const pictureSlides = pictureOfTheDay
+    ? [
+        {
+          src: pictureOfTheDay.src,
+          alt: pictureOfTheDay.title,
+          description: pictureOfTheDay.explanation,
+        },
+      ]
+    : [];
+
+    const featuredSlides = featuredImageData
+    ? [
+        {
+          src: featuredImageData.imageUrl,
+          alt: featuredImageData.title,
+          description: featuredImageData.caption,
+        },
+      ]
+    : [];
+
   return (
     <section className="mb-4 py-4 px-4 sm:px-6">
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Spotlight Gallery</h2>
         <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-          A daily glimpse into the wonders of space from official NASA selections to exceptional images by our own club members.
+          A daily glimpse into the wonders of space from official NASA selections to exceptional
+          images by our own club members.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* POTD Card */}
         {pictureOfTheDay && (
-          <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+          <div
+            className="bg-gray-900 rounded-lg overflow-hidden shadow-lg cursor-pointer"
+            onClick={() => setOpenLightbox(true)}
+          >
             <div className="relative aspect-[16/9] sm:aspect-video">
               <img
                 src={pictureOfTheDay.src}
                 alt={pictureOfTheDay.title}
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/40" />
             </div>
             <div className="p-4 sm:p-6">
               <h3 className="text-lg sm:text-xl font-bold mb-2">Picture of the Day</h3>
-              <p className="text-sm text-gray-400 mb-3">{pictureOfTheDay.title}</p>
-              <p className="text-sm text-gray-400 mb-3">{pictureOfTheDay.explanation}</p>
+              <p className="text-sm text-gray-300 mb-3">{pictureOfTheDay.title}</p>
+              <p className="text-sm text-gray-400 mb-3 hidden sm:block">
+                {pictureOfTheDay.explanation}
+              </p>
               <p className="text-xs text-gray-500">
                 Courtesy: {pictureOfTheDay.copyright || "NASA"}
               </p>
@@ -76,10 +109,13 @@ const POTDSection = () => {
         {/* Club Featured Card */}
         {featuredImageData && (
           <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
-            <div className="relative aspect-[16/9] sm:aspect-video">
+            <div className="relative aspect-[16/9] sm:aspect-video"
+            onClick={() => setOpenFeaturedPic(true)}
+            >
               <img
                 src={featuredImageData.imageUrl}
                 alt="Featured by Club Member"
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/40" />
@@ -91,7 +127,8 @@ const POTDSection = () => {
               <p className="text-sm text-gray-400 mb-3">{featuredImageData.caption}</p>
               <div className="flex items-center gap-2">
                 <img
-                  src='images/placeholder.svg'
+                  src="images/placeholder.svg"
+                  loading="lazy"
                   alt={featuredImageData.author}
                   className="w-8 h-8 rounded-full object-cover"
                 />
@@ -104,6 +141,26 @@ const POTDSection = () => {
           </div>
         )}
       </div>
+
+      {/* Lightbox for potd */}
+      {openLightbox && pictureOfTheDay && (
+        <Lightbox
+          open={openLightbox}
+          close={() => setOpenLightbox(false)}
+          slides={pictureSlides}
+          plugins={[Captions]}
+        />
+      )}
+
+      {/* Lightbox for featured */}
+      {openFeaturedPic && pictureOfTheDay && (
+        <Lightbox
+          open={openFeaturedPic}
+          close={() => setOpenFeaturedPic(false)}
+          slides={featuredSlides}
+          plugins={[Captions]}
+        />
+      )}
     </section>
   );
 };
