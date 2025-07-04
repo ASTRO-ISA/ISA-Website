@@ -40,7 +40,7 @@ const eventSchema = new mongoose.Schema({
   type: {
     type: String,
     lowercase: true,
-    enum: ['community', 'astronomical'], // we have two types of events, community and astronomical
+    enum: ['community', 'astronomical'],
     required: true
   },
   status: {
