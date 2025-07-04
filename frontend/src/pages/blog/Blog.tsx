@@ -34,6 +34,16 @@ const Blog = () => {
   const [noFeatured, setNoFeatured] = useState(false);
   const [featuredId, setFeaturedId] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState(null);
+  // to check if there is a featured blog exist already, if it exist then we dont want to allow any more featured
+  const isEmptyFeatured = 
+  !featured._id &&
+  !featured.thumbnail &&
+  !featured.title &&
+  !featured.description &&
+  !featured.content &&
+  !featured.author.name &&
+  !featured.author.country &&
+  !featured.createdAt;
 
   const navigate = useNavigate();
   const { isLoggedIn, isAdmin } = useAuth();
@@ -170,16 +180,23 @@ const Blog = () => {
   
   // set as featured
   const handleSetFeatured = (blog) => {
+    if(!isEmptyFeatured){
+      toast({
+        title: "Already exist a featured blog.",
+        description: "Remove previous featured to set it featured."
+      })
+      return;
+    }
     try{
       axios.patch(`http://localhost:3000/api/v1/blogs/featured/${blog._id}`)
       toast({
-        title: `Blog set "${blog.title}" as featured`
+        title: `Blog "${blog.title}" set as featured.`
       })
     }
     catch (err) {
-      console.error("Error setting featured", err.message)
+      console.error("Error setting featured!", err.message)
       toast({
-        title: `Failed to set blog "${blog.title}" as featured`
+        title: `Failed to set blog "${blog.title}" as featured!`
       })
     }
   };

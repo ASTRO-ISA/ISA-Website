@@ -146,4 +146,3 @@ exports.deleteEvent = async (req, res) => {
         res.status(500).json({ message: 'Error deleting event', error });
     }
 };
-

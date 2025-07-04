@@ -1,10 +1,9 @@
-// form/page to write a blog
-
 import { useState } from "react";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import imageCompression from "browser-image-compression";
+import Spinner from "@/components/ui/Spinner";
 
 const WriteBlog = () => {
   const { toast } = useToast();
@@ -149,11 +148,10 @@ const WriteBlog = () => {
               type="submit"
               className="bg-space-accent hover:bg-space-accent/80 text-white px-6 py-2 rounded transition-colors"
             >
-              Publish
+              {loading ? <Spinner /> : "Publish"}
             </button>
           </div>
         </form>
-        {loading && <p className="text-center text-gray-300">Uploading...</p>}
       </main>
     </div>
   );
