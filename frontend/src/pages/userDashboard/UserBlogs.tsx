@@ -162,7 +162,7 @@ const UserBlogs = () => {
                         </h4>
 
                         <div className="relative z-10">
-                          <Button
+                          <button
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -173,7 +173,7 @@ const UserBlogs = () => {
                             className="p-1 rounded-full hover:bg-gray-800"
                           >
                             <MoreVertical className="w-5 h-5 text-gray-400" />
-                          </Button>
+                          </button>
 
                           {openMenuId === blog._id && (
                             <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
