@@ -18,7 +18,7 @@ import Webinars from "./pages/Webinars";
 import Community from "./pages/Community";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
-import Profile from "./pages/Dashboard";
+import Profile from "./pages/userDashboard/Dashboard";
 import EventDetails from "./pages/event/EventDetail";
 import CreateEvent from "./pages/event/CreateEvent";
 // import SplineModels from "./pages/SplineModels";
@@ -61,7 +61,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-        <ScrollToTop />
+          <ScrollToTop />
           <Navbar />
           <Routes>
             <Route path="/" element={<Index />} />
