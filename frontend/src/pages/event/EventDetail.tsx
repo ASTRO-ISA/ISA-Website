@@ -6,22 +6,6 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 
-//   const event = {
-//     title: "Geminid Meteor Shower Observation Night",
-//     date: "December 14, 2023",
-//     time: "9:00 PM - 2:00 AM",
-//     location: "Observatory Hill, Bhopal",
-//     type: "In-person",
-//     hostedBy: {
-//       name: "Aarav Verma",
-//       linkedin: "https://linkedin.com/in/aaravverma",
-//     },
-//     presentedBy: "ISA Astronomy Club",
-//     attendees: 75,
-//     image: "https://images.unsplash.com/photo-1534222190540-49b9de934701?w=900",
-//     description:
-//       "Join us for a night of stargazing to observe one of the year's best meteor showers with professional telescopes and guidance.",
-//   };
 
 const EventDetails = () => {
   const { id } = useParams();

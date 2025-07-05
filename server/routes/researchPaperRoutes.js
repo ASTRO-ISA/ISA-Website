@@ -16,12 +16,12 @@ const uploadDocument = multer({
 })
 
 router.use(authenticateToken)
+
+router.route('/').get(getAllPapers)
+
 router.use(restrictTo('admin'))
 
-router
-  .route('/')
-  .get(getAllPapers)
-  .post(uploadDocument.single('file'), uploadPaper)
+router.route('/').post(uploadDocument.single('file'), uploadPaper)
 
 router
   .route('/:id')
