@@ -52,25 +52,25 @@ exports.Webinars = async (req, res) => {
   }
 }
 
-exports.getWebinar = async (req, res) => {
-  const { id } = req.params
-  try {
-    const webinar = await Webinar.findById(id)
-    if (!webinar) {
-      return res.status(404).json({ message: 'Webinar not found' })
-    }
-    res.status(200).json(webinar)
-  } catch (err) {
-    console.log('Failed to fetch webinar:', err)
-    res.status(500).json({ message: 'Server error in get webinar' })
-  }
-}
+// exports.getWebinar = async (req, res) => {
+//   const { id } = req.params
+//   try {
+//     const webinar = await Webinar.findById(id)
+//     if (!webinar) {
+//       return res.status(404).json({ message: 'Webinar not found' })
+//     }
+//     res.status(200).json(webinar)
+//   } catch (err) {
+//     console.log('Failed to fetch webinar:', err)
+//     res.status(500).json({ message: 'Server error in get webinar' })
+//   }
+// }
 
 exports.registerWebinar = async (req, res) => {
   try {
     const { webinarid, userid } = req.params
 
-    const webinar = await Webinar.findById(eventid)
+    const webinar = await Webinar.findById(webinarid)
     const user = await User.findById(userid)
 
     if (!user) {
@@ -132,16 +132,38 @@ exports.deleteWebinar = async (req, res) => {
     }
 }
 
-exports.featuredWebinar = async (req, res) => {
+exports.setFeatured = async (req, res) => {
+  try{
+    const { id } = req.params
+    await Webinar.findByIdAndUpdate(id, {featured: true})
+    res.status(200).json({message: 'Webinar set as featured.'})
+  }
+  catch (err) {
+    res.status(500).json({ message: 'Error setting webinar as featured!', error })
+  }
+}
+
+exports.getFeatured = async (req, res) => {
   try {
-    const featuredWebinar = await Webinar.findOne({ featured: true })
-    if (!featuredWebinar) {
-      return res.status(404).json({ message: 'Webinar not found' })
+    const getFeatured = await Webinar.findOne({ featured: true })
+    if (!getFeatured) {
+      return res.status(404).json({ message: 'No featured webinar.' })
     }
-    res.status(200).json(featuredWebinar)
+    res.status(200).json(getFeatured)
   } catch (err) {
     res
       .status(500)
-      .json({ message: 'server error in featured', error: err.message })
+      .json({ message: 'Server error in getFeatured', error: err.message })
+  }
+}
+
+exports.removeFeatured = async (req, res) => {
+  try{
+    const { id } = req.params
+    await Webinar.findByIdAndUpdate(id, {featured: false})
+    res.status(200).json({message: 'Webinar removed from featured.'})
+  }
+  catch (err) {
+    res.status(500).json({ message: 'Error removing webinar as featured!', error })
   }
 }
