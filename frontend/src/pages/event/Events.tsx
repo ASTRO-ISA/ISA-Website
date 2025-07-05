@@ -143,83 +143,68 @@ const Events = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Upcoming events */}
             {loading ? (
-              <p>Loading...</p>
-            ) : events.length === 0 ? (
-              <p>Nothing to see here right now!</p>
-            ) : (
-              (showAll ? events : events.slice(0, 3)).map(
-                (
-                  event // for time being using just events
-                ) => (
-                  <div className="cosmic-card overflow-hidden group">
-                    <Link to={`/events/${event._id}`} key={event._id}>
-                      <div className="h-48 overflow-hidden">
-                        <img
-                          loading="lazy"
-                          src={event.thumbnail}
-                          alt={event.title}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                      </div>
-                      <div className="p-5">
-                        <h3 className="text-xl font-semibold mb-3">
-                          {event.title}
-                        </h3>
+  <p>Loading...</p>
+) : events.length === 0 ? (
+  <p>Nothing to see here right now!</p>
+) : (
+  (showAll ? events : events.slice(0, 3)).map((event) => (
+    <div key={event._id} className="cosmic-card overflow-hidden group relative flex flex-col">
+      <Link to={`/events/${event._id}`} className="flex-1 flex flex-col">
+        <div className="h-48 overflow-hidden">
+          <img
+            loading="lazy"
+            src={event.thumbnail}
+            alt={event.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        </div>
+        <div className="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <h3 className="text-xl font-semibold mb-3">{event.title}</h3>
 
-                        <div className="space-y-2 mb-4">
-                          <div className="flex items-center text-sm text-gray-400">
-                            <Calendar className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{formatDate(event.eventDate)}</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-400">
-                            <Clock className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{formatTime(event.eventDate)}</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-400">
-                            <MapPin className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{event.location}</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-400">
-                            <Users className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>
-                              {event.registeredUsers.length} attending
-                            </span>
-                          </div>
-                        </div>
+            <div className="space-y-2 mb-4">
+              <div className="flex items-center text-sm text-gray-400">
+                <Calendar className="h-4 w-4 mr-2 text-space-accent" />
+                <span>{formatDate(event.eventDate)}</span>
+              </div>
+              <div className="flex items-center text-sm text-gray-400">
+                <Clock className="h-4 w-4 mr-2 text-space-accent" />
+                <span>{formatTime(event.eventDate)}</span>
+              </div>
+              <div className="flex items-center text-sm text-gray-400">
+                <MapPin className="h-4 w-4 mr-2 text-space-accent" />
+                <span>{event.location}</span>
+              </div>
+              <div className="flex items-center text-sm text-gray-400">
+                <Users className="h-4 w-4 mr-2 text-space-accent" />
+                <span>{event.registeredUsers.length} attending</span>
+              </div>
+            </div>
 
-                        <p className="text-gray-400 text-sm">
-                          {event?.description
-                            ?.split(" ")
-                            .slice(0, 20)
-                            .join(" ")}
-                          ...
-                        </p>
-                      </div>
-                    </Link>
-                    <button
-                      onClick={() =>
-                        handleRegister(userInfo?.user._id, event._id)
-                      }
-                      disabled={event.registeredUsers.includes(
-                        String(userInfo?.user._id)
-                      )}
-                      className={`w-full py-2 transition-colors
-                 ${
-                   event.registeredUsers.includes(String(userInfo.user._id))
-                     ? "bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed"
-                     : "bg-space-accent"
-                 }`}
-                    >
-                      {event.registeredUsers.includes(
-                        String(userInfo?.user._id)
-                      )
-                        ? "Registered"
-                        : "Register for this Event"}
-                    </button>
-                  </div>
-                )
-              )
-            )}
+            <p className="text-gray-400 text-sm">
+              {event?.description?.split(" ").slice(0, 20).join(" ")}...
+            </p>
+          </div>
+        </div>
+      </Link>
+
+      <button
+        onClick={() => handleRegister(userInfo?.user._id, event._id)}
+        disabled={event.registeredUsers.includes(String(userInfo?.user._id))}
+        className={`w-full py-2 transition-colors mt-auto
+          ${
+            event.registeredUsers.includes(String(userInfo.user._id))
+              ? "bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed"
+              : "bg-space-accent hover:bg-space-accent/90"
+          }`}
+      >
+        {event.registeredUsers.includes(String(userInfo?.user._id))
+          ? "Registered"
+          : "Register for this Event"}
+              </button>
+            </div>
+          ))
+        )}
           </div>
 
           {/* View all events button */}

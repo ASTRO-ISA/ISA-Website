@@ -39,14 +39,59 @@ const Navbar = () => {
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-2">
+          {/* mobile menu button */}
+          <div className="w-full flex justify-between md:hidden">
+            <div className="flex gap-2">
+            <button
+              onClick={toggleMobileMenu}
+              className="text-white focus:outline-none"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+
+            <Link to="/" className="flex items-center gap-2">
             <img
               src="/images/isa-logo.jpeg"
               alt="ISA Logo"
-              className="h-10 w-auto"
+              className="h-7 w-auto"
             />
             {/* <span className="font-bold text-xl text-white">ISA Club</span> */}
-          </Link>
+            </Link>
+            </div>
+
+            {!isLoggedIn && (
+              <Button
+                asChild
+                className="bg-space-accent hover:bg-space-accent/80 text-white md-hidden"
+              >
+                <Link
+                  to="/login"
+                  className="text-white hover:text-space-light transition-colors md-hidden"
+                >
+                  Login
+                </Link>
+              </Button>
+            )}
+
+            {/* if the user is logged in show avatar */}
+            {isLoggedIn && (
+              <img
+                src="/public/placeholder.svg"
+                alt="User Avatar"
+                onClick={handleAvatarClick}
+                className="h-8 w-8 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform md-hidden"
+              />
+            )}
+          </div>
+          
+          <Link to="/" className="items-center gap-2 hidden md:flex">
+          <img
+            src="/images/isa-logo.jpeg"
+            alt="ISA Logo"
+            className="h-10 w-auto"
+          />
+          {/* <span className="font-bold text-xl text-white">ISA Club</span> */}
+        </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-2 space-x-5">
@@ -183,14 +228,14 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          {/* <div className="md:hidden">
             <button
               onClick={toggleMobileMenu}
               className="text-white focus:outline-none"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Mobile Menu Panel */}
@@ -351,6 +396,16 @@ const Navbar = () => {
                     Login
                   </Link>
                 </Button>
+              )}
+
+               {/* if the user is logged in show profile */}
+              {isLoggedIn && (
+                <img
+                  src="/public/placeholder.svg"
+                  alt="User Avatar"
+                  onClick={handleAvatarClick}
+                  className="h-10 w-10 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform"
+                />
               )}
             </div>
           </motion.div>
