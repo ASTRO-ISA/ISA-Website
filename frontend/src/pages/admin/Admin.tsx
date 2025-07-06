@@ -9,7 +9,13 @@ import SuggestedBlogTopic from "../blog/SuggestedBlogTopic";
 import { useToast } from "@/hooks/use-toast";
 import AdminGallerySection from "./AdminGallerySection";
 import AdminJobs from "./AdJob";
+
+import AdminCourses from "./AdminCourses";
+
+
+
 import AdminWebinars from "./AdminWebinar";
+
 
 export default function AdminDashboard() {
 
@@ -101,12 +107,13 @@ export default function AdminDashboard() {
                     </p>
                 </div>
 
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-5">
                 <div className="mb-6 bg-space-purple/20 rounded">
                 <TabsList className="grid h-full w-full grid-cols-2 grid-rows-2 sm:grid-cols-5 sm:grid-rows-1">
                     <TabsTrigger value="events">Manage Events</TabsTrigger>
                     <TabsTrigger value="training">Manage Jobs</TabsTrigger>
                     <TabsTrigger value="suggestions">Blog Suggestions</TabsTrigger>
+                    <TabsTrigger value="courses">Manage Courses</TabsTrigger>
                     <TabsTrigger value="gallery">Manage Gallery</TabsTrigger>
                     <TabsTrigger value="webinar">Manage Webinars</TabsTrigger>
                 </TabsList>
@@ -225,6 +232,19 @@ export default function AdminDashboard() {
                     <TabsContent value="gallery" className="space-y-6">
                     <AdminGallerySection/>
                     </TabsContent>
+
+                     
+
+                    {/* Blog Suggestions */}
+                    <SuggestedBlogTopic />
+
+
+                     {/* Admin courses */}
+                    <TabsContent value="courses" className="space-y-6">
+                    <AdminCourses/> 
+
+                    </TabsContent>
+
                 </Tabs>
             </main>
         </div>
