@@ -109,7 +109,7 @@ export default function AdminDashboard() {
 
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-5">
                 <div className="mb-6 bg-space-purple/20 rounded">
-                <TabsList className="grid h-full w-full grid-cols-2 grid-rows-2 sm:grid-cols-5 sm:grid-rows-1">
+                <TabsList className="grid h-full w-full grid-cols-2 grid-rows-2 sm:grid-cols-6 sm:grid-rows-1">
                     <TabsTrigger value="events">Manage Events</TabsTrigger>
                     <TabsTrigger value="training">Manage Jobs</TabsTrigger>
                     <TabsTrigger value="suggestions">Blog Suggestions</TabsTrigger>
