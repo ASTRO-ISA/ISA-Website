@@ -1,71 +1,121 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, Star, Users, Award, Instagram, MessageCircle } from "lucide-react";
+import { Calendar, Star, Users, Award, Instagram, MessageCircle, Github, Linkedin } from "lucide-react";
 
 const About = () => {
   const teamMembers = [
+
+
+{
+  name: "Naman Meravi",
+  role: "Full Stack Developer",
+  bio: "Simulates astronaut cognitive responses under deep space conditions to improve training modules.",
+  image: "/images/naman.png",
+  isAI: true,
+  github: "https://github.com/NamanMeravi",
+  linkedin: "https://www.linkedin.com/in/naman-meravi-660a1b257/"
+},
+
+ 
     {
-      name: "Rum Grok",
-      role: "xAI Developer Team",
-      bio: "Grok, created by xAI. We craft tools to empower space education.",
-      image: "/images/ai-developer.png",
-      isAI: true,
+      name: " Suyash Nagar",
+      role: "Full Stack Developer",
+      bio: "Expert in deep space observation...",
+      image: "/images/suyash.png",
+      github: " https://github.com/suysah",
+      linkedin: "https://www.linkedin.com/in/suyash-nagar-867027256/"
     },
     {
-      name: "Dr. Sarah Chen",
-      role: "Lead Astronomer",
-      bio: "Expert in deep space observation with 15 years of experience. Passionate about making astronomy accessible to everyone.",
-      image: "/placeholder.svg",
+      name: "Vinod Mali",
+      role: "Full Stack Devrloper",
+      bio: "Award-winning educator...",
+      image: "/images/vinod.png",
+      github: "https://github.com/vinodM09",
+      linkedin: "https://www.linkedin.com/in/vinodm09"
     },
     {
-      name: "Prof. Alex Kumar",
-      role: "Astrophysics Educator",
-      bio: "Award-winning educator specializing in theoretical astrophysics and space technology innovations.",
-      image: "/placeholder.svg",
+      name: "Anadi Gupta",
+      role: "Full Stack Devrloper",
+      bio: "Award-winning educator...",
+      image: "/images/anadi.png",
+      github: " https://github.com/Anadi-Gupta1",
+      linkedin: "https://www.linkedin.com/in/anadigupta/ "
     },
-    {
-      name: "Maya Rodriguez",
-      role: "Mission Specialist",
-      bio: "Former NASA engineer with expertise in spacecraft design and mission planning. Inspires the next generation of space explorers.",
-      image: "/placeholder.svg",
-    },
+
   ];
 
   const clubDepartments = [
-    {
-      name: "Dr. Jane Smith",
-      role: "Astronomy Educator",
-      bio: "Inspires students with hands-on workshops and stargazing sessions.",
-      image: "/placeholder.svg",
-    },
+
     {
       name: "Mark Johnson",
       role: "Rocket Engineering Lead",
-      bio: "Expert in propulsion systems and rocket design, leading our rocketry programs.",
+      bio: "Expert in propulsion systems...",
       image: "/placeholder.svg",
+      github: "https://github.com/markjohnson",
+      linkedin: "https://linkedin.com/in/markjohnson"
     },
     {
       name: "Lisa Wang",
       role: "Space Technology Coordinator",
-      bio: "Coordinates cutting-edge space technology research and development projects.",
+      bio: "Coordinates cutting-edge R&D...",
       image: "/placeholder.svg",
+      github: "https://github.com/lisawang",
+      linkedin: "https://linkedin.com/in/lisawang"
     },
-  ];
 
-  const milestones = [
-    { year: "2020", title: "Club Founded", description: "ISA space education club established" },
-    { year: "2021", title: "First Satellite Project", description: "Launched educational CubeSat program" },
-    { year: "2022", title: "100+ Members", description: "Reached milestone of 100 active members" },
-    { year: "2023", title: "Platform Launched", description: "Digital learning platform goes live" },
-    { year: "2024", title: "International Recognition", description: "Awarded for excellence in space education" },
-    { year: "2025", title: "Global Expansion", description: "Expanding programs worldwide" },
+    {
+  name: "Ethan Brooks",
+  role: "Orbital Mechanics Specialist",
+  bio: "Designs and simulates orbital trajectories for space missions and satellite constellations.",
+  image: "/placeholder.svg",
+  github: "https://github.com/ethanbrooks",
+  linkedin: "https://linkedin.com/in/ethanbrooks"
+},
+{
+  name: "Nina Patel",
+  role: "Astrobiology Research Lead",
+  bio: "Explores possibilities of life beyond Earth and leads research on extremophiles in space environments.",
+  image: "/placeholder.svg",
+  github: "https://github.com/ninapatel",
+  linkedin: "https://linkedin.com/in/ninapatel"
+},
+{
+  name: "Carlos Mendes",
+  role: "Satellite Systems Engineer",
+  bio: "Specializes in satellite subsystems, telemetry, and mission integration for low-Earth orbit missions.",
+  image: "/placeholder.svg",
+  github: "https://github.com/carlosmendes",
+  linkedin: "https://linkedin.com/in/carlosmendes"
+},
+{
+  name: "Aisha Rahman",
+  role: "Space Robotics Engineer",
+  bio: "Develops robotic arms and autonomous systems for space exploration and ISS operations.",
+  image: "/placeholder.svg",
+  github: "https://github.com/aisharahman",
+  linkedin: "https://linkedin.com/in/aisharahman"
+},
+{
+  name: "Julien Moreau",
+  role: "Space Policy Analyst",
+  bio: "Advises on international space law and policy for sustainable and ethical space development.",
+  image: "/placeholder.svg",
+  github: "https://github.com/julienmoreau",
+  linkedin: "https://linkedin.com/in/julienmoreau"
+},
+{
+  name: "Emily Zhao",
+  role: "Cosmic Data Scientist",
+  bio: "Analyzes massive astronomical datasets to uncover patterns in galaxy formation and cosmic microwave background.",
+  image: "/placeholder.svg",
+  github: "https://github.com/emilyzhao",
+  linkedin: "https://linkedin.com/in/emilyzhao"
+}
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-space-purple/20 via-space-dark to-space-accent/20 text-white pt-20">
-      {/* Hero Section */}
-      <section className="py-10">
+         <section className="py-10">
         <div className="container mx-auto px-4 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 50 }}
@@ -149,6 +199,7 @@ const About = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
+         
         >
           <h3 className="text-3xl font-bold text-center mb-10">What ISA Offers</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -160,172 +211,113 @@ const About = () => {
               "Career roadmap guidance for space aspirants",
               "Community platform for space discussion and collaboration",
             ].map((item, idx) => (
-              <div
+              <motion.div
+                whileHover={{scale:1.1}}
                 key={idx}
                 className="bg-space-purple/20 p-4 rounded-xl border border-space-accent/30 text-center flex items-center justify-center hover:shadow-lg transition-shadow"
               >
                 <p className="text-space-light">{item}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.div>
       </div>
     </section>
-
-      {/* timeline- not using right now or not needed */} 
-      {/* <section className="py-16 bg-gradient-to-r from-transparent via-space-purple/10 to-transparent">
+      {/* Meet Our Team */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-4xl font-bold text-center mb-12"
+            className="text-3xl md:text-4xl font-bold text-center mb-10"
           >
-            Our Journey
+            Meet Our Development Team
           </motion.h2>
-          
-          <div className="relative max-w-6xl mx-auto"> */}
-            {/* Timeline Line */}
-            {/* <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-space-accent via-space-purple to-space-accent"></div>
-            
-            <div className="space-y-12">
-              {milestones.map((milestone, index) => (
-                <motion.div
-                  key={milestone.year}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
-                >
-                  <div className={`w-5/12 ${index % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
-                    <Card className="cosmic-card p-6 hover:scale-105 transition-transform duration-300">
-                      <CardContent>
-                        <Badge className="bg-space-accent text-white mb-2">{milestone.year}</Badge>
-                        <h3 className="text-xl font-bold text-white mb-2">{milestone.title}</h3>
-                        <p className="text-space-light">{milestone.description}</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                  
-                  <div className="w-2/12 flex justify-center">
-                    <div className="w-4 h-4 bg-space-accent rounded-full border-4 border-space-dark shadow-lg shadow-space-accent/50"></div>
-                  </div>
-                  
-                  <div className="w-5/12"></div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section> */}
 
-      {/* Meet Our Team */}
-      <section className="py-16">
-      <div className="container mx-auto px-4">
-        <motion.h2
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-3xl md:text-4xl font-bold text-center mb-10"
-        >
-          Meet Our Development Team
-        </motion.h2>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-          {teamMembers.map((member, index) => (
-            <motion.div
-              key={member.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -4 }}
-              className="text-center"
-            >
-              <div className="relative mb-3">
-                <div
-                  className={`w-28 h-28 mx-auto rounded-full overflow-hidden border-2 ${
-                    member.isAI
-                      ? 'border-space-accent shadow-md shadow-space-accent/40'
-                      : 'border-space-purple'
-                  }`}
-                >
-                  {member.isAI ? (
-                    <div className="w-full h-full bg-gradient-to-br from-space-accent via-space-purple to-space-dark flex items-center justify-center">
-                      <div className="text-3xl">🤖</div>
-                    </div>
-                  ) : (
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-full object-cover"
-                    />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {teamMembers.map((member, index) => (
+              <motion.div
+                key={member.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -4 }}
+                className="text-center"
+              >
+                <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
+                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                </div>
+                <h3 className="text-base font-semibold text-white">{member.name}</h3>
+                <p className="text-sm text-space-accent">{member.role}</p>
+                <div className="flex justify-center space-x-4 mt-2 cursor-pointer">
+                  {member.github && (
+                    <a href={member.github} target="_blank" rel="noopener noreferrer">
+                      <Github size={18} className="text-space-light hover:text-space-accent transition-colors" />
+                    </a>
+                  )}
+                  {member.linkedin && (
+                    <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
+                      <Linkedin size={18} className="text-space-light hover:text-space-accent transition-colors" />
+                    </a>
                   )}
                 </div>
-                {member.isAI && (
-                  <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-space-accent text-white text-xs px-2 py-0.5">
-                    AI Developer
-                  </Badge>
-                )}
-              </div>
-
-              <h3 className="text-base font-semibold text-white">{member.name}</h3>
-              <p className="text-sm text-space-accent">{member.role}</p>
-            </motion.div>
-          ))}
-      </div>
-      </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* Club Department Team */}
       <section className="py-16">
-    <div className="container mx-auto px-4">
-      <motion.h2
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="text-3xl md:text-4xl font-bold text-center mb-10"
-      >
-        Club Department Team
-      </motion.h2>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-        {clubDepartments.map((member, index) => (
-          <motion.div
-            key={member.name}
+        <div className="container mx-auto px-4">
+          <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            whileHover={{ y: -4 }}
-            className="text-center"
+            className="text-3xl md:text-4xl font-bold text-center mb-10"
           >
-            <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
-              <img
-                src={member.image}
-                alt={member.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <h3 className="text-base font-semibold text-white">{member.name}</h3>
-            <p className="text-sm text-space-accent">{member.role}</p>
-            <div className="flex justify-center space-x-1 mt-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star key={star} size={14} className="text-space-accent fill-current" />
-              ))}
-            </div>
-          </motion.div>
-        ))}
-      </div>
-      </div>
+            Club Department Team
+          </motion.h2>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            {clubDepartments.map((member, index) => (
+              <motion.div
+                key={member.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -4 }}
+                className="text-center"
+              >
+                <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
+                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                </div>
+                <h3 className="text-base font-semibold text-white">{member.name}</h3>
+                <p className="text-sm text-space-accent">{member.role}</p>
+                <div className="flex justify-center space-x-4 mt-2 cursor-pointer">
+                  {member.github && (
+                    <a href={member.github} target="_blank" rel="noopener noreferrer">
+                      <Github size={18} className="text-space-light hover:text-space-accent transition-colors" />
+                    </a>
+                  )}
+                  {member.linkedin && (
+                    <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
+                      <Linkedin size={18} className="text-space-light hover:text-space-accent transition-colors" />
+                    </a>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Social Links */}
-      <section className="py-20">
+          <section className="py-20">
   <div className="container mx-auto px-4">
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -374,8 +366,9 @@ const About = () => {
     </motion.div>
   </div>
 </section>
+     
 
-      {/* Mission Statement */}
+     
       <section className="py-16">
         <div className="container mx-auto px-4">
           <motion.div
@@ -411,8 +404,8 @@ const About = () => {
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="py-20">
+
+       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -443,6 +436,7 @@ const About = () => {
           </motion.div>
         </div>
       </section>
+
     </div>
   );
 };
