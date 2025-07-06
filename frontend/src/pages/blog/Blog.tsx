@@ -1,5 +1,12 @@
 // this is the main blog page where we will see all the featured blogs, recent blogs etc.
-import { Calendar, Clock, ExternalLink } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  ExternalLink,
+  MoreVertical,
+  Share,
+  Star,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -7,6 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import SuggestBlogTopic from "./SuggestBlogTopic";
+import { Button } from "@/components/ui/button";
 
 const Blog = () => {
   const [userBlogs, setUserBlogs] = useState([]);
@@ -32,9 +40,21 @@ const Blog = () => {
     createdAt: "",
   });
   const [noFeatured, setNoFeatured] = useState(false);
+  const [featuredId, setFeaturedId] = useState<string | null>(null);
+  const [openMenuId, setOpenMenuId] = useState(null);
+  // to check if there is a featured blog exist already, if it exist then we dont want to allow any more featured
+  const isEmptyFeatured =
+    !featured._id &&
+    !featured.thumbnail &&
+    !featured.title &&
+    !featured.description &&
+    !featured.content &&
+    !featured.author.name &&
+    !featured.author.country &&
+    !featured.createdAt;
 
   const navigate = useNavigate();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isAdmin } = useAuth();
   const { toast } = useToast();
 
   // to get all blogs
@@ -56,27 +76,29 @@ const Blog = () => {
 
   // to get featured blog
   useEffect(() => {
-    const fetchBlog = async () => {
+    const fetchFeatured = async () => {
       try {
         setLoading(true);
         const res = await axios.get(
           "http://localhost:3000/api/v1/blogs/featured"
         );
-        if(!res.data){
+        if (!res.data || Object.keys(res.data).length === 0) {
           setNoFeatured(true);
-        }
-        else {
+          setFeaturedId(null);
+        } else {
           setFeatured(res.data);
+          setFeaturedId(res.data._id);
         }
       } catch (err) {
         console.error("Error fetching blogs", err);
         setNoFeatured(true);
+        setFeaturedId(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchBlog();
+    fetchFeatured();
   }, []);
 
   // to get external blogs
@@ -157,6 +179,54 @@ const Blog = () => {
     }
   };
 
+  // share block
+  const handleShare = (blog) => {
+    const shareUrl = `${window.location.origin}/blogs/${blog._id}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast({
+      title: "Link copied.",
+    });
+  };
+
+  // set as featured
+  const handleSetFeatured = (blog) => {
+    if (!isEmptyFeatured) {
+      toast({
+        title: "Already exist a featured blog.",
+        description: "Remove previous featured to set it featured.",
+      });
+      return;
+    }
+    try {
+      axios.patch(`http://localhost:3000/api/v1/blogs/featured/${blog._id}`);
+      toast({
+        title: `Blog "${blog.title}" set as featured.`,
+      });
+    } catch (err) {
+      console.error("Error setting featured!", err.message);
+      toast({
+        title: `Failed to set blog "${blog.title}" as featured!`,
+      });
+    }
+  };
+
+  // remove featured
+  const handleRemoveFeatured = (blog) => {
+    try {
+      axios.patch(
+        `http://localhost:3000/api/v1/blogs/featured/remove/${blog._id}`
+      );
+      toast({
+        title: `Blog removed "${blog.title}" from featured`,
+      });
+    } catch (err) {
+      console.error("Error removing featured", err.message);
+      toast({
+        title: `Failed to remove blog "${blog.title}" from featured`,
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-space-dark text-white">
       {/* <Navbar /> */}
@@ -175,55 +245,64 @@ const Blog = () => {
         <section className="mb-16">
           <h2 className="text-2xl font-bold mb-8">Featured</h2>
 
-          {noFeatured ? (<p>No featured for the moment.</p>) : (
-
-          <div className="cosmic-card p-0 overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-5">
-            <div className="lg:col-span-3 relative">
-              <div className="aspect-video lg:h-full">
-                <img
-                  loading="lazy"
-                  src={`http://localhost:3000/uploads/${featured.thumbnail}`}
-                  alt="Space Talk"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40" />
+          {noFeatured ? (
+            <p className="text-gray-500 italic">
+              No featured blog at the moment. Stay tuned!
+            </p>
+          ) : (
+            <div className="grid grid-cols-5 gap-6 items-center">
+             
+              <div className="col-span-2 relative">
+                <Link to={`/blogs/${featured._id}`}>
+                  <div className="relative w-full h-full">
+                    <img
+                      loading="lazy"
+                      src={featured.thumbnail}
+                      alt={featured.title}
+                      className="w-full max-h-72 object-cover rounded-xl"
+                    />
+                    <div className="absolute inset-0 bg-black/30 rounded-xl" />
+                  </div>
+                </Link>
               </div>
-            </div>
-            <div className="lg:col-span-2 p-6 flex flex-col justify-center">
-              <Link to={`/blogs/${featured._id}`}>
-                <h3 className="text-2xl font-bold mb-3">
-                  A Blog with NASA Scientist: Mars Exploration Updates
-                </h3>
-              </Link>
-              <p className="text-gray-400 mb-6">{featured.description}</p>
-              <div className="flex items-center gap-2 mb-4">
-                <img
-                  loading="lazy"
-                  src={`http://localhost:3000/uploads/${featured.thumbnail}`}
-                  alt={featured.author.name}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div>
-                  <h4 className="font-semibold">{featured.author.name}</h4>
-                  <p className="text-sm text-gray-400">
-                    NASA Mars Exploration Program
-                  </p>
+
+             
+              <div className="col-span-3 flex flex-col justify-center">
+                <p className="text-sm text-gray-400 sm:mb-2">
+                  {formatDate(featured.createdAt)} at{" "}
+                  {formatTime(featured.createdAt)}
+                </p>
+                <Link to={`/blogs/${featured._id}`}>
+                  <h3 className="text-2xl sm:text-3xl font-bold mb-3 hover:underline">
+                    {featured.title}
+                  </h3>
+                </Link>
+                <p className="text-gray-400 mb-6 hidden sm:block">
+                  {featured.description}
+                </p>
+
+                <div className="mb-4">
+                  <h4 className="text-sm text-gray-400">
+                    Author:{" "}
+                    {(featured.author?.name || "Unknown Author").toUpperCase()}
+                  </h4>
+                  {isAdmin && featuredId === featured._id && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleRemoveFeatured(featured);
+                        setOpenMenuId(null);
+                      }}
+                      className="py-2 hover:underline rounded text-red-600 flex items-center gap-2"
+                    >
+                      Remove Featured
+                    </button>
+                  )}
                 </div>
               </div>
-              {/* <a
-                href="#"
-                className="inline-flex items-center text-space-accent hover:underline"
-              >
-                Read full blog
-                <ExternalLink className="ml-1 h-4 w-4" />
-              </a> */}
             </div>
-          </div>
-          </div>
-
           )}
-          
         </section>
 
         {/* Recent Blogs */}
@@ -248,16 +327,19 @@ const Blog = () => {
             {loadingUserBlogs ? (
               <p>Loading...</p>
             ) : userBlogs.length === 0 ? (
-              <p>Nothing to see here right now!</p>
+              <p className="text-gray-500 italic">
+                Nothing to see here right now!
+              </p>
             ) : (
               (showAllUserBlogs ? userBlogs : userBlogs.slice(0, 3)).map(
                 (blog) => (
                   <Link
                     key={blog._id}
                     to={`/blogs/${blog._id}`}
-                    className="cosmic-card overflow-hidden group flex flex-col cursor-pointer"
+                    className="cosmic-card group flex flex-col cursor-pointer relative"
                   >
-                    <div className="h-48 w-full relative">
+                    {/* Image with overflow-hidden for zoom effect only */}
+                    <div className="h-48 w-full relative overflow-hidden">
                       <img
                         loading="lazy"
                         src={blog.thumbnail}
@@ -265,6 +347,8 @@ const Blog = () => {
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     </div>
+
+                    {/* Card Content */}
                     <div className="p-5 flex-1 flex flex-col justify-between">
                       <div>
                         <h3 className="text-xl font-semibold mb-3">
@@ -285,18 +369,71 @@ const Blog = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <img
-                          loading="lazy"
-                          src="/images/placeholder.svg"
-                          alt={blog.author}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                        <div>
-                          <h4 className="font-semibold">{blog.author?.name}</h4>
-                          <p className="text-sm text-gray-400">
-                            {blog.author?.country}
-                          </p>
+
+                      {/* author and drop-up menu */}
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm text-gray-400">
+                          Author:{" "}
+                          {(blog.author?.name || "Unknown").toUpperCase()}
+                        </h4>
+
+                        <div className="relative z-10">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setOpenMenuId(
+                                openMenuId === blog._id ? null : blog._id
+                              );
+                            }}
+                            className="p-1 rounded-full hover:bg-gray-800"
+                          >
+                            <MoreVertical className="w-5 h-5 text-gray-400" />
+                          </button>
+
+                          {openMenuId === blog._id && (
+                            <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleShare(blog);
+                                  setOpenMenuId(null);
+                                }}
+                                className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
+                              >
+                                Share
+                              </button>
+                              {/* if you are admin then only you will see the button */}
+                              {isAdmin && featuredId !== blog._id && (
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleSetFeatured(blog);
+                                    setOpenMenuId(null);
+                                  }}
+                                  className="w-full px-4 py-2 hover:bg-gray-100 rounded-b-md flex items-center gap-2"
+                                >
+                                  Set as Featured
+                                </button>
+                              )}
+
+                              {isAdmin && featuredId === blog._id && (
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleRemoveFeatured(blog);
+                                    setOpenMenuId(null);
+                                  }}
+                                  className="w-full px-4 py-2 hover:bg-red-100 rounded-b-md  text-red-600 flex items-center gap-2"
+                                >
+                                  Remove Featured
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -330,7 +467,9 @@ const Blog = () => {
             {loadingExternalBlogs ? (
               <p>Loading...</p>
             ) : blogs.length === 0 ? (
-              <p>Nothing to see here right now!</p>
+              <p className="text-gray-500 italic">
+                Nothing to see here right now!
+              </p>
             ) : (
               (showAllExternalBlogs ? blogs : blogs.slice(0, 3)).map((blog) => (
                 <Link
@@ -352,7 +491,7 @@ const Blog = () => {
                         {blog.title}
                       </h3>
                       <p className="text-gray-400 text-sm mb-4 line-clamp-3 min-h-[3rem]">
-                      {blog.summary}
+                        {blog.summary}
                       </p>
 
                       <div className="space-y-2 mb-4">
@@ -403,7 +542,9 @@ const Blog = () => {
             {loadingArticles ? (
               <p>Loading...</p>
             ) : articles.length === 0 ? (
-              <p>Nothing to see here right now!</p>
+              <p className="text-gray-500 italic">
+                Nothing to see here right now!
+              </p>
             ) : (
               (showAllArticles ? articles : articles.slice(0, 3)).map(
                 (article) => (
@@ -441,12 +582,12 @@ const Blog = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                      <div>
-                        <h4 className="text-sm text-gray-400">
-                          Courtesy: {article.authors?.[0]?.name || "Unknown"}
-                        </h4>
+                        <div>
+                          <h4 className="text-sm text-gray-400">
+                            Courtesy: {article.authors?.[0]?.name || "Unknown"}
+                          </h4>
+                        </div>
                       </div>
-                    </div>
                     </div>
                   </Link>
                 )

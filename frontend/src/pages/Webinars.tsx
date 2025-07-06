@@ -1,82 +1,219 @@
-
-import StarBackground from "@/components/StarBackground";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { Calendar, Clock, Users, Play, ExternalLink } from "lucide-react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { Calendar, Clock, Users, Play, MoreVertical, ExternalLink } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Webinars = () => {
-  const upcomingWebinars = [
-    {
-      id: 1,
-      title: "Exploring the James Webb Space Telescope Discoveries",
-      presenter: "Dr. Anjali Gupta",
-      date: "December 18, 2023",
-      time: "7:00 PM - 8:30 PM",
-      description: "Join us as Dr. Anjali Gupta discusses the latest discoveries from the James Webb Space Telescope and their implications for our understanding of the universe.",
-      attendees: 245,
-      image: "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?q=80&w=500"
-    },
-    {
-      id: 2,
-      title: "Careers in Space Science and Technology",
-      presenter: "Panel of Industry Experts",
-      date: "January 5, 2024",
-      time: "6:00 PM - 7:30 PM",
-      description: "Discover career paths in the growing space industry with insights from professionals working in different sectors of space science and technology.",
-      attendees: 178,
-      image: "https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=500"
-    },
-    {
-      id: 3,
-      title: "Amateur Astronomy: Getting Started with Limited Budget",
-      presenter: "Rahul Mehra",
-      date: "January 15, 2024",
-      time: "7:30 PM - 9:00 PM",
-      description: "Learn how to begin your astronomy journey with affordable equipment and free resources. Perfect for beginners and students.",
-      attendees: 120,
-      image: "https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?q=80&w=500"
-    }
-  ];
+  // all webinars
+  const [webinars, setWebinars] = useState([]);
 
-  const pastWebinars = [
-    {
-      id: 1,
-      title: "Black Holes: Beyond the Event Horizon",
-      presenter: "Dr. Vikram Shah",
-      duration: "1h 23m",
-      views: "1.2k",
-      image: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=500"
-    },
-    {
-      id: 2,
-      title: "Satellite Design and Engineering Fundamentals",
-      presenter: "Neha Kapoor",
-      duration: "1h 45m",
-      views: "876",
-      image: "https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?q=80&w=500"
-    },
-    {
-      id: 3,
-      title: "Exoplanets: The Search for Habitable Worlds",
-      presenter: "Dr. Arjun Patel",
-      duration: "1h 12m",
-      views: "1.5k",
-      image: "https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=500"
-    },
-    {
-      id: 4,
-      title: "The Future of Space Travel and Colonization",
-      presenter: "Priya Sharma",
-      duration: "1h 30m",
-      views: "2.3k",
-      image: "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?q=80&w=500"
+  // category based on live, past and upcoming
+  const [liveWebinars, setLiveWebinars] = useState([]);
+  const [upcomingWebinars, setUpcomingWebinars] = useState([]);
+  const [pastWebinars, setPastWebinars] = useState([]);
+
+  // to open three dot menu in card (right now only visible in upcoming - fix later)
+  const [openMenuId, setOpenMenuId] = useState(null);
+
+  // featured blog
+  const [featured, setFeatured] = useState({
+    _id: "",
+    thumbnail: "",
+    title: "",
+    description: "",
+    webinarDate: "",
+    presenter: "",
+    videoId: "",
+  });
+
+  // to mark a webinar as featured and also to check if there is a featured exist
+  const [featuredId, setFeaturedId] = useState(null);
+
+  // registering
+  const [registering, setRegistering] = useState(false);
+
+  const { isLoggedIn, isAdmin, userInfo } = useAuth();
+  const { toast } = useToast();
+
+  // to fetch all webinars
+  const fetchWebinars = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/api/v1/webinars", { withCredentials: true });
+      const allWebinars = res.data;
+      setWebinars(res.data);
+      setLiveWebinars(allWebinars.filter(webinar => webinar.type === "live"));
+      setUpcomingWebinars(allWebinars.filter(webinar => webinar.type === "upcoming"));
+      setPastWebinars(allWebinars.filter(webinar => webinar.type === "past"));
+    } catch (error) {
+      console.error("Error fetching webinars:", error.message);
     }
-  ];
+  };
+
+  // to featch all webinars on first render
+  useEffect(() => {
+    fetchWebinars();
+  }, []);
+
+  // to get featured webinar
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/api/v1/webinars/featured", { withCredentials: true });
+          setFeatured({
+            _id: res.data._id,
+            thumbnail: res.data.thumbnail,
+            title: res.data.title,
+            description: res.data.description,
+            webinarDate: res.data.webinarDate,
+            presenter: res.data.presenter,
+            videoId: res.data.videoId
+          });
+          setFeaturedId(res.data._id);
+      } catch (err) {
+          console.error("Error fetching blogs", err);
+          setFeaturedId(null);
+      }
+    };
+
+      fetchFeatured();
+  }, []);
+
+  // set as featured and fetch it
+  const handleSetFeatured = async (webinar) => {
+    // if there is alredy a featured, new featured is not allowed
+    if(featuredId !== null){
+      toast({
+        title: "Already exist a featured webinar.",
+        description: "Remove previous featured to set it featured."
+      })
+      return;
+    }
+    try{
+      await axios.patch(`http://localhost:3000/api/v1/webinars/featured/${webinar._id}`, { withCredentials: true });
+      // if its set featured then add its id to the featuredId so we know there exist a featured blog
+      setFeaturedId(webinar._id);
+      toast({
+        title: `Webinar "${webinar.title}" set as featured.`
+      });
+    }
+    catch (err) {
+      setFeaturedId(null);
+      console.error(`Failed to set webinar "${webinar.title}" as featured!`, err.message)
+      toast({
+        title: `Failed to set webinar "${webinar.title}" as featured!`
+      })
+    }
+  };
+
+  // remove featured
+  const handleRemoveFeatured = (webinar) => {
+    try{
+      axios.patch(`http://localhost:3000/api/v1/webinars/featured/remove/${webinar._id}`, { withCredentials: true });
+      setFeatured({
+        _id: "",
+        thumbnail: "",
+        title: "",
+        description: "",
+        webinarDate: "",
+        presenter: "",
+        videoId: ""
+      });
+      setFeaturedId(null);
+      toast({
+        title: `"${webinar.title}" removed from featured.`
+      })
+    }
+    catch (err) {
+      console.error(`Failed to remove webinar "${webinar.title}" from featured!`, err.message)
+      toast({
+        title: `Failed to remove webinar "${webinar.title}" from featured!`
+      })
+    }
+  };
+
+ // registering a user for event
+ const handleRegister = async (userId, webinarId) => {
+  if (!userId) {
+    toast({ title: "Please log in to register for the webinar." });
+    return;
+  }
+
+  setRegistering(true);
+
+  try {
+    await axios.patch(
+      `http://localhost:3000/api/v1/webinars/register/${webinarId}/${userId}`,
+      {},
+      { withCredentials: true }
+    );
+
+    // update local webinar list
+    setWebinars((prevWebinars) =>
+      prevWebinars.map((webinar) =>
+        webinar._id === webinarId
+          ? {
+              ...webinar,
+              attendees: [...webinar.attendees, String(userId)],
+            }
+          : webinar
+      )
+    );
+
+    // update upcoming list
+    setUpcomingWebinars((prev) =>
+      prev.map((webinar) =>
+        webinar._id === webinarId
+          ? {
+              ...webinar,
+              attendees: [...webinar.attendees, String(userId)],
+            }
+          : webinar
+      )
+    );
+
+    toast({
+      title: "Successfully registered!",
+      description: "You've been added to the attendees list.",
+    });
+  } catch (err) {
+    console.error("Error registering for webinar:", err);
+    toast({
+      title: "Registration failed",
+      description: err?.response?.data?.message || "Something went wrong.",
+    });
+  } finally {
+    setRegistering(false);
+  }
+ };
+
+  // to show the date in readable format
+  const formatDate = (dateStr) =>
+    new Date(dateStr).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+  // to set time in readable format
+  const formatTime = (dateStr) =>
+    new Date(dateStr).toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+  // share webinar
+  const handleShare = (webinar) => {
+    const shareUrl = `${window.location.origin}/blogs/${webinar._id}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast({
+      title: "Link copied."
+    })
+  };
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
-      {/* <StarBackground /> */}
-      {/* <Navbar /> */}
       
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="text-center mb-12">
@@ -88,81 +225,241 @@ const Webinars = () => {
         
         {/* Upcoming Webinars */}
         <section className="mb-20">
-          <h2 className="text-2xl font-bold mb-8">Upcoming Webinars</h2>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {upcomingWebinars.map((webinar) => (
-              <div key={webinar.id} className="cosmic-card overflow-hidden group">
-                <div className="h-48 overflow-hidden relative">
-                  <img 
-                    src={webinar.image} 
-                    alt={webinar.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
-                    <span className="text-white font-medium">{webinar.presenter}</span>
-                  </div>
-                </div>
-                <div className="p-5">
-                  <h3 className="text-xl font-semibold mb-3">{webinar.title}</h3>
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-sm text-gray-400">
-                      <Calendar className="h-4 w-4 mr-2 text-space-accent" />
-                      <span>{webinar.date}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-400">
-                      <Clock className="h-4 w-4 mr-2 text-space-accent" />
-                      <span>{webinar.time}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-400">
-                      <Users className="h-4 w-4 mr-2 text-space-accent" />
-                      <span>{webinar.attendees} registered</span>
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-400 text-sm mb-4">{webinar.description}</p>
-                  
-                  <button className="w-full bg-space-purple/30 hover:bg-space-purple/50 text-white py-2 rounded transition-colors">
-                    Register Now
-                  </button>
-                </div>
-              </div>
-            ))}
+        <h2 className="text-2xl font-bold mb-8">Upcoming Webinars</h2>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {upcomingWebinars.length === 0 ? (
+  <p className="text-gray-500 italic">No upcoming webinars right now!</p>
+) : (
+  upcomingWebinars.map((webinar) => (
+    <div
+      key={webinar._id}
+      className="cosmic-card overflow-hidden group flex flex-col relative"
+    >
+      {/* Video or Thumbnail */}
+      <div className="relative h-44 overflow-hidden">
+        {webinar.videoId ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${webinar.videoId}`}
+            title={webinar.title}
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          />
+        ) : (
+          <img
+            src={webinar.thumbnail}
+            alt={webinar.title}
+            className="w-full h-full object-cover"
+          />
+        )}
+      </div>
+
+      {/* Details */}
+      <div className="p-5 flex-1 flex flex-col justify-between">
+        <div>
+          <h3 className="text-xl font-semibold mb-3">{webinar.title}</h3>
+          <p className="text-gray-400 text-sm mb-4">{webinar.description}</p>
+
+          <div className="space-y-2 mb-4">
+            <div className="flex items-center text-sm text-gray-400">
+              <Calendar className="h-4 w-4 mr-2 text-space-accent" />
+              <span>{formatDate(webinar.createdAt)}</span>
+            </div>
+            <div className="flex items-center text-sm text-gray-400">
+              <Clock className="h-4 w-4 mr-2 text-space-accent" />
+              <span>{formatTime(webinar.createdAt)}</span>
+            </div>
+            <div className="flex items-center text-sm text-gray-400">
+              <Users className="h-4 w-4 mr-2 text-space-accent" />
+              <span>{webinar.attendees} registered</span>
+            </div>
           </div>
-        </section>
+        </div>
+
+        
+        <div className="flex items-center justify-between mt-auto">
+          <h4 className="text-sm text-gray-400">
+            Presenter: {(webinar.presenter || "Unknown").toUpperCase()}
+          </h4>
+
+          <div className="relative z-10">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpenMenuId(openMenuId === webinar._id ? null : webinar._id);
+              }}
+              className="p-1 rounded-full hover:bg-gray-800"
+            >
+              <MoreVertical className="w-5 h-5 text-gray-400" />
+            </button>
+
+            {openMenuId === webinar._id && (
+              <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleShare(webinar);
+                    setOpenMenuId(null);
+                  }}
+                  className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
+                >
+                  Share
+                </button>
+
+                {isAdmin && featuredId !== webinar._id && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleSetFeatured(webinar);
+                      setOpenMenuId(null);
+                    }}
+                    className="w-full px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    Set as Featured
+                  </button>
+                )}
+
+                {isAdmin && featuredId === webinar._id && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleRemoveFeatured(webinar);
+                      setOpenMenuId(null);
+                    }}
+                    className="w-full px-4 py-2 hover:bg-red-100 text-red-600 flex items-center gap-2 rounded-b-md"
+                  >
+                    Remove Featured
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Register Button */}
+      <button
+        onClick={() => handleRegister(userInfo?.user._id, webinar._id)}
+        disabled={webinar.attendees?.includes(String(userInfo?.user._id))}
+        className={`w-full py-2 transition-colors ${
+          webinar.attendees?.includes(String(userInfo?.user._id))
+            ? "bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed"
+            : "bg-space-accent hover:bg-space-accent/90"
+        }`}
+      >
+        {webinar.attendees?.includes(String(userInfo?.user._id))
+          ? "Registered"
+          : "Register for this Webinar"}
+      </button>
+          </div>
+        ))
+      )}
+        </div>
+      </section>
         
         {/* Past Webinars */}
         <section className="mb-20">
           <h2 className="text-2xl font-bold mb-8">Recent Webinar Recordings</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {pastWebinars.map((webinar) => (
-              <div key={webinar.id} className="cosmic-card overflow-hidden group">
-                <div className="relative h-44 overflow-hidden">
-                  <img 
-                    src={webinar.image} 
-                    alt={webinar.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          {pastWebinars.map((webinar) => (
+            <div key={webinar._id} className="cosmic-card overflow-hidden group">
+              <div className="relative h-44 overflow-hidden">
+                {webinar.videoId ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${webinar.videoId}`}
+                    title={webinar.title}
+                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
                   />
-                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-14 h-14 rounded-full bg-space-accent/80 flex items-center justify-center">
-                      <Play className="h-6 w-6 text-white" />
+                ) : (
+                  <img
+                    src={webinar.thumbnail}
+                    alt={webinar.title}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+
+              <div className="p-4">
+                <p className="text-gray-400 text-sm">{formatDate(webinar.webinarDate)}</p>
+                <h3 className="text-xl font-semibold mb-1 text-white line-clamp-2">
+                  {webinar.title}
+                </h3>
+                <p className="text-gray-400 text-sm mb-4">{webinar.description}</p>
+                  {/* Presenter & Menu */}
+                    <div className="flex items-center justify-between">
+                    <h4 className="text-sm text-gray-400">
+                      Presenter: {(webinar.presenter || "Unknown").toUpperCase()}
+                    </h4>
+
+                    <div className="relative z-10">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setOpenMenuId(openMenuId === webinar._id ? null : webinar._id);
+                        }}
+                        className="p-1 rounded-full hover:bg-gray-800"
+                      >
+                        <MoreVertical className="w-5 h-5 text-gray-400" />
+                      </button>
+
+                      {openMenuId === webinar._id && (
+                        <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleShare(webinar);
+                              setOpenMenuId(null);
+                            }}
+                            className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
+                          >
+                            Share
+                          </button>
+
+                          {isAdmin && featuredId !== webinar._id && (
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleSetFeatured(webinar);
+                                setOpenMenuId(null);
+                              }}
+                              className="w-full px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+                            >
+                              Set as Featured
+                            </button>
+                          )}
+
+                          {isAdmin && featuredId === webinar._id && (
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleRemoveFeatured(webinar);
+                                setOpenMenuId(null);
+                              }}
+                              className="w-full px-4 py-2 hover:bg-red-100 text-red-600 flex items-center gap-2 rounded-b-md"
+                            >
+                              Remove Featured
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold mb-1 text-white line-clamp-2">{webinar.title}</h3>
-                  <p className="text-gray-400 text-sm mb-3">{webinar.presenter}</p>
-                  
-                  <div className="flex justify-between text-xs text-gray-400">
-                    <span>Duration: {webinar.duration}</span>
-                    <span>{webinar.views} views</span>
-                  </div>
-                </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
+        </div>
           
           <div className="text-center mt-10">
             <button className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors">
@@ -173,99 +470,58 @@ const Webinars = () => {
         
         {/* Featured Session */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold mb-8">Featured Talk</h2>
-          
-          <div className="cosmic-card p-0 overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-5">
-              <div className="lg:col-span-3 h-64 lg:h-auto relative">
-                <img 
-                  src="https://images.unsplash.com/photo-1501862700950-18382cd41497?q=80&w=1000" 
-                  alt="Space Talk"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-space-accent/80 flex items-center justify-center cursor-pointer hover:bg-space-accent transition-colors">
-                    <Play className="h-8 w-8 text-white" />
-                  </div>
-                </div>
-              </div>
-              <div className="lg:col-span-2 p-6 flex flex-col justify-center">
-                <h3 className="text-2xl font-bold mb-3">An Evening with NASA Scientist: Mars Exploration Updates</h3>
-                <p className="text-gray-400 mb-6">
-                  In this special session, we hosted Dr. Rajesh Kumar, a NASA scientist working on the Mars Exploration Program, who shared exclusive insights about the latest discoveries on the Red Planet.
-                </p>
-                <div className="flex items-center gap-2 mb-4">
-                  <img 
-                    src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=100" 
-                    alt="Dr. Rajesh Kumar"
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                  <div>
-                    <h4 className="font-semibold">Dr. Rajesh Kumar</h4>
-                    <p className="text-sm text-gray-400">NASA Mars Exploration Program</p>
-                  </div>
-                </div>
-                <a 
-                  href="#" 
-                  className="inline-flex items-center text-space-accent hover:underline"
-                >
-                  Watch full session
-                  <ExternalLink className="ml-1 h-4 w-4" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Suggest a Speaker */}
-        <section className="cosmic-card p-8">
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="md:w-2/3">
-              <h2 className="text-2xl font-bold mb-4">Suggest a Speaker or Topic</h2>
-              <p className="text-gray-300 mb-6">
-                Have a speaker or topic you'd like to see featured in our webinar series? We welcome your suggestions and are constantly looking for exciting new content.
-              </p>
+        <h2 className="text-2xl font-bold mb-8">Featured Talk</h2>
+
+        {featured && (featured.videoId || featured.thumbnail) ? (
+          <div className="cosmic-card p-0 overflow-hidden rounded-none" style={{ borderRadius: 0 }}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
               
-              <form className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder="Your Name"
-                    className="px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
+              <div className="aspect-video md:aspect-[4/3] rounded-md overflow-hidden">
+                {featured.videoId ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${featured.videoId}`}
+                    title={featured.title}
+                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
                   />
-                  <input
-                    type="email"
-                    placeholder="Your Email"
-                    className="px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
+                ) : (
+                  <img
+                    src={featured.thumbnail}
+                    alt={featured.title}
+                    className="w-full h-full object-cover"
                   />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Suggested Speaker or Topic"
-                  className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
-                />
-                <textarea
-                  placeholder="Why this would be valuable (optional)"
-                  rows={3}
-                  className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
-                ></textarea>
-                <button type="submit" className="bg-space-accent hover:bg-space-accent/80 text-white px-6 py-2 rounded transition-colors">
-                  Submit Suggestion
-                </button>
-              </form>
-            </div>
-            <div className="md:w-1/3">
-              <img 
-                src="https://images.unsplash.com/photo-1576633587382-13ddf37b1fc1?q=80&w=500" 
-                alt="Space Speaker" 
-                className="rounded-lg h-auto w-full"
-              />
+                )}
+              </div>
+
+              <div className="md:col-span-2 p-4 md:p-6">
+                <h3 className="text-2xl font-bold mb-2">{featured.title}</h3>
+                <p className="text-gray-400 mb-4 line-clamp-3">
+                  {featured.description}
+                </p>
+                <p className="text-sm text-gray-400">
+                  <span className="font-semibold text-white">Presenter: </span>{featured.presenter || "Unknown"}
+                </p>
+                <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleRemoveFeatured(featured);
+                        setOpenMenuId(null);
+                      }}
+                      className="py-2 hover:underline rounded text-red-600 flex items-center gap-2"
+                    >
+                      Remove Featured
+                    </button>
+              </div>
+
             </div>
           </div>
-        </section>
+        ) : (
+          <p className="text-gray-500 italic">No featured webinar at the moment.</p>
+        )}
+      </section>
       </main>
-      
-      {/* <Footer /> */}
     </div>
   );
 };
