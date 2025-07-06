@@ -14,21 +14,17 @@ const {
 const uploadDocument = multer({ storage: documentStorage('job-attachments') })
 
 router.use(authenticateToken)
+
+router.route('/').get(getAllJobs)
 router.use(restrictTo('admin'))
 
 router
   .route('/')
-  .get(getAllJobs)
-  .post(
-    uploadDocument.single('document'),
-    createJob
-  )
+
+  .post(uploadDocument.single('document'), createJob)
 router
   .route('/:id')
   .delete(deleteJob)
-  .patch(
-    uploadDocument.single('document'),
-    updateJob
-  )
+  .patch(uploadDocument.single('document'), updateJob)
 
 module.exports = router

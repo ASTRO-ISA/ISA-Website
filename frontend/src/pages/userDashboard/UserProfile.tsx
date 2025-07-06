@@ -1,0 +1,133 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Edit, Camera, LogOut } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "@/hooks/use-toast";
+
+const userInfo = {
+  // temporory
+  name: "dshflh",
+  email: "someone@email.com",
+  avatar: "/images/placeholder.svg",
+  bio: "Welcome to the ISA community! Start your space exploration journey.",
+  location: "Bhopal",
+  joinDate: "17 08 2025",
+  membershipType: "Standard",
+  interests: ["Astrophysics", "Space Exploration", "Astronomy", "Science"],
+};
+const UserProfile = () => {
+  const navigate = useNavigate();
+
+  const { loginCheck, userInfo: user } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await axios.get("http://localhost:3000/api/v1/users/logout", {
+        withCredentials: true,
+      });
+      toast({
+        title: "Logout successful!",
+        description: "See you again!",
+      });
+      loginCheck();
+      navigate("/");
+    } catch (err) {
+      toast({
+        title: "Logout failed",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <div className="mb-8">
+      <Card className="bg-space-purple/10 border-space-purple/30">
+        <CardContent className="p-8">
+          <div className="flex flex-col lg:flex-row items-start gap-6">
+            <div className="relative">
+              <Avatar className="w-24 h-24">
+                <AvatarImage src={userInfo.avatar} alt={userInfo.name} />{" "}
+                {/* use this after defining user info */}
+                <AvatarFallback className="text-2xl bg-space-purple">
+                  {userInfo.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+              <Button
+                // size="sm"
+                className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0 bg-space-accent"
+                onClick={() => setIsEditing(true)}
+              >
+                <Camera className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <div className="flex-1">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4">
+                <div>
+                  <h1 className="text-3xl font-bold mb-2">
+                    {user ? user.user.name : userInfo.name}
+                  </h1>
+                  <p className="text-gray-400 mb-2">
+                    {user ? user.user.email : userInfo.email}
+                  </p>
+                  <div className="flex items-center gap-4 text-sm text-gray-400">
+                    <span>📍 {userInfo.location}</span>
+                    <span>🗓️ Joined: 19 June 2025</span>
+                    {/* <span>🗓️ Joined {formatDate(user.joinDate)}</span> */}
+                    <Badge className="bg-space-accent text-white">
+                      {userInfo.membershipType}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="flex gap-6 mt-4 lg:mt-0">
+                  <Button
+                    onClick={() => setIsEditing(true)}
+                    // variant="outline"
+                    className="border-space-purple/50"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                  <button
+                    onClick={handleLogout}
+                    // variant="outline"
+                    className="flex justify-center items-center border border-red-700 py-2 pl-4 pr-4 text-red-800 hover:bg-red-500/20"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    <p>Logout</p>
+                  </button>
+                </div>
+              </div>
+
+              <p className="text-gray-300 mb-4">{userInfo.bio}</p>
+
+              <div className="flex flex-wrap gap-2">
+                {userInfo.interests.map((interest, index) => (
+                  <Badge
+                    key={index}
+                    // variant="outline"
+                    className="border-space-purple/50"
+                  >
+                    {interest}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default UserProfile;
