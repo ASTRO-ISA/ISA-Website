@@ -15,8 +15,13 @@ const blogSuggestionRouter = require('./routes/blogSuggestionRoutes.js')
 const jobRouter = require('./routes/jobRoutes.js')
 const galleryRouter = require('./routes/galleryRoutes.js')
 const researchPaperRouter = require('./routes/researchPaperRoutes.js')
+
+const courseRoute = require('./routes/courseRoute.js')
+
+
 const featuredRouter = require('./routes/featuredRoutes.js')
 const webinarRouter = require('./routes/webinarRoutes.js')
+
 
 // middlewares
 app.use(
@@ -33,6 +38,7 @@ app.use(cookieParser())
 
 app.use('/api/v1/researchPapers', researchPaperRouter)
 app.use('/api/v1/jobs', jobRouter)
+app.use('/api/v1/courses',courseRoute)
 app.use('/api/v1/suggestBlog', blogSuggestionRouter)
 app.use('/api/v1/blogs', blogRouter)
 app.use('/api/v1/users', userRouter)
