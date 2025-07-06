@@ -35,7 +35,7 @@ const About = () => {
     },
     {
       name: "Anadi Gupta",
-      role: "Full Stack Devrloper",
+      role: "Frontend Developer",
       bio: "Award-winning educator...",
       image: "/images/anadi.png",
       github: " https://github.com/Anadi-Gupta1",
