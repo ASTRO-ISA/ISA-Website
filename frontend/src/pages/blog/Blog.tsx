@@ -1,4 +1,3 @@
-// this is the main blog page where we will see all the featured blogs, recent blogs etc.
 import {
   Calendar,
   Clock,
@@ -14,19 +13,15 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import SuggestBlogTopic from "./SuggestBlogTopic";
-import { Button } from "@/components/ui/button";
 
 const Blog = () => {
-  const [userBlogs, setUserBlogs] = useState([]);
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingUserBlogs, setLoadingUserBlogs] = useState(true);
-  const [showAllUserBlogs, setShowAllUserBlogs] = useState(false);
-  const [loadingExternalBlogs, setLoadingExternalBlogs] = useState(true);
-  const [showAllExternalBlogs, setShowAllExternalBlogs] = useState(false);
-  const [articles, setArticles] = useState([]);
-  const [loadingArticles, setLoadingArticles] = useState(true);
-  const [showAllArticles, setShowAllArticles] = useState(false);
+
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const { isLoggedIn, isAdmin } = useAuth();
+
+  // featured blog
+  const [loadingFeaturedBlog, setLoadingFeaturedBlog] = useState(false);
   const [featured, setFeatured] = useState({
     _id: "",
     thumbnail: "",
@@ -39,23 +34,25 @@ const Blog = () => {
     },
     createdAt: "",
   });
-  const [noFeatured, setNoFeatured] = useState(false);
   const [featuredId, setFeaturedId] = useState<string | null>(null);
-  const [openMenuId, setOpenMenuId] = useState(null);
-  // to check if there is a featured blog exist already, if it exist then we dont want to allow any more featured
-  const isEmptyFeatured =
-    !featured._id &&
-    !featured.thumbnail &&
-    !featured.title &&
-    !featured.description &&
-    !featured.content &&
-    !featured.author.name &&
-    !featured.author.country &&
-    !featured.createdAt;
 
-  const navigate = useNavigate();
-  const { isLoggedIn, isAdmin } = useAuth();
-  const { toast } = useToast();
+  // blogs weitten by users
+  const [loadingUserBlogs, setLoadingUserBlogs] = useState(false);
+  const [userBlogs, setUserBlogs] = useState([]);
+  const [showAllUserBlogs, setShowAllUserBlogs] = useState(false);
+
+  // external blogs
+  const [loadingExternalBlogs, setLoadingExternalBlogs] = useState(false);
+  const [externalBlogs, setExternalBlogs] = useState([]);
+  const [showAllExternalBlogs, setShowAllExternalBlogs] = useState(false);
+
+  // external articles
+  const [loadingArticles, setLoadingArticles] = useState(true);
+  const [articles, setArticles] = useState([]);
+  const [showAllArticles, setShowAllArticles] = useState(false);
+
+  // 3 dot menu
+  const [openMenuId, setOpenMenuId] = useState(null);
 
   // to get all blogs
   useEffect(() => {
@@ -75,41 +72,90 @@ const Blog = () => {
   }, []);
 
   // to get featured blog
-  useEffect(() => {
-    const fetchFeatured = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(
-          "http://localhost:3000/api/v1/blogs/featured"
-        );
-        if (!res.data || Object.keys(res.data).length === 0) {
-          setNoFeatured(true);
-          setFeaturedId(null);
-        } else {
-          setFeatured(res.data);
-          setFeaturedId(res.data._id);
-        }
-      } catch (err) {
-        console.error("Error fetching blogs", err);
-        setNoFeatured(true);
+  const fetchFeatured = async () => {
+    try {
+      setLoadingFeaturedBlog(true);
+      const res = await axios.get(
+        "http://localhost:3000/api/v1/blogs/featured"
+      );
+      if (!res.data || Object.keys(res.data).length === 0) {
         setFeaturedId(null);
-      } finally {
-        setLoading(false);
+        const emptyFeatured = {
+          _id: "",
+          thumbnail: "",
+          title: "",
+          description: "",
+          content: "",
+          author: {
+            name: "",
+            country: "",
+          },
+          createdAt: "",
+        };
+        setFeatured(emptyFeatured);
+      } else {
+        setFeatured(res.data);
+        setFeaturedId(res.data._id);
+        setLoadingFeaturedBlog(false);
       }
-    };
+    } catch (err) {
+      console.error("Error fetching blogs", err);
+      setFeaturedId(null);
+    }
+  };
 
+  useEffect(() => {
     fetchFeatured();
   }, []);
 
+    // set as featured
+  const handleSetFeatured = async (blog) => {
+    if (featuredId !== null) {
+      toast({
+        title: "Already exist a featured blog.",
+        description: "Remove previous featured to set it featured.",
+      });
+      return;
+    }
+    try {
+      await axios.patch(`http://localhost:3000/api/v1/blogs/featured/${blog._id}`);
+      toast({
+        title: `Blog "${blog.title}" set as featured.`,
+      });
+      await fetchFeatured();
+    } catch (err) {
+      console.error("Error setting featured!", err.message);
+      toast({
+        title: `Failed to set blog "${blog.title}" as featured!`,
+      });
+    }
+  };
+
+  // remove featured
+  const handleRemoveFeatured = async (blog) => {
+    try {
+      await axios.patch(`http://localhost:3000/api/v1/blogs/featured/remove/${blog._id}`);
+      toast({
+        title: `Blog removed "${blog.title}" from featured`,
+      });
+      await fetchFeatured();
+    } catch (err) {
+      console.error("Error removing featured", err.message);
+      toast({
+        title: `Failed to remove blog "${blog.title}" from featured`,
+      });
+    }
+  };
+
   // to get external blogs
   useEffect(() => {
-    const fetchBlogs = async () => {
+    const fetchExternalBlogs = async () => {
       try {
         setLoadingExternalBlogs(true);
         const res = await axios.get(
           "http://localhost:3000/api/v2/blogs/external"
         );
-        setBlogs(res.data);
+        setExternalBlogs(res.data);
       } catch (err) {
         console.error("Error fetching external blogs", err);
       } finally {
@@ -117,12 +163,12 @@ const Blog = () => {
       }
     };
 
-    fetchBlogs();
+    fetchExternalBlogs();
   }, []);
 
   // to get external articles
   useEffect(() => {
-    const fetchBlogs = async () => {
+    const fetchArticles = async () => {
       try {
         setLoadingArticles(true);
         const res = await axios.get(
@@ -136,18 +182,18 @@ const Blog = () => {
       }
     };
 
-    fetchBlogs();
+    fetchArticles();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-100 mb-4"></div>
-        <p className="text-gray-100">Loading blogs for you...</p>
-      </div>
-    );
-  }
-  if (!userBlogs) return <p>Nothing to see here right now.</p>;
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen flex flex-col items-center justify-center h-64">
+  //       <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-100 mb-4"></div>
+  //       <p className="text-gray-100">Loading blogs for you...</p>
+  //     </div>
+  //   );
+  // }
+  // if (!userBlogs) return <p>Nothing to see here right now.</p>;
 
   // to show the date in readable format
   const formatDate = (dateStr) =>
@@ -188,45 +234,6 @@ const Blog = () => {
     });
   };
 
-  // set as featured
-  const handleSetFeatured = (blog) => {
-    if (!isEmptyFeatured) {
-      toast({
-        title: "Already exist a featured blog.",
-        description: "Remove previous featured to set it featured.",
-      });
-      return;
-    }
-    try {
-      axios.patch(`http://localhost:3000/api/v1/blogs/featured/${blog._id}`);
-      toast({
-        title: `Blog "${blog.title}" set as featured.`,
-      });
-    } catch (err) {
-      console.error("Error setting featured!", err.message);
-      toast({
-        title: `Failed to set blog "${blog.title}" as featured!`,
-      });
-    }
-  };
-
-  // remove featured
-  const handleRemoveFeatured = (blog) => {
-    try {
-      axios.patch(
-        `http://localhost:3000/api/v1/blogs/featured/remove/${blog._id}`
-      );
-      toast({
-        title: `Blog removed "${blog.title}" from featured`,
-      });
-    } catch (err) {
-      console.error("Error removing featured", err.message);
-      toast({
-        title: `Failed to remove blog "${blog.title}" from featured`,
-      });
-    }
-  };
-
   return (
     <div className="min-h-screen bg-space-dark text-white">
       {/* <Navbar /> */}
@@ -245,63 +252,105 @@ const Blog = () => {
         <section className="mb-16">
           <h2 className="text-2xl font-bold mb-8">Featured</h2>
 
-          {noFeatured ? (
-            <p className="text-gray-500 italic">
-              No featured blog at the moment. Stay tuned!
-            </p>
+          {featuredId === null ? (
+            <p className="text-gray-500 italic">No featured blog at the moment. Stay tuned!</p>
           ) : (
-            <div className="grid grid-cols-5 gap-6 items-center">
-             
-              <div className="col-span-2 relative">
-                <Link to={`/blogs/${featured._id}`}>
-                  <div className="relative w-full h-full">
-                    <img
-                      loading="lazy"
-                      src={featured.thumbnail}
-                      alt={featured.title}
-                      className="w-full max-h-72 object-cover rounded-xl"
-                    />
-                    <div className="absolute inset-0 bg-black/30 rounded-xl" />
-                  </div>
-                </Link>
+            <Link
+              to={`/blogs/${featured._id}`}
+              className="cosmic-card group flex flex-col cursor-pointer relative max-w-md"
+            >
+              {/* Image */}
+              <div className="h-60 relative overflow-hidden rounded-t-md">
+                <img
+                  loading="lazy"
+                  src={featured.thumbnail}
+                  alt={featured.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/30 rounded-t-md" />
               </div>
 
-             
-              <div className="col-span-3 flex flex-col justify-center">
-                <p className="text-sm text-gray-400 sm:mb-2">
-                  {formatDate(featured.createdAt)} at{" "}
-                  {formatTime(featured.createdAt)}
-                </p>
-                <Link to={`/blogs/${featured._id}`}>
-                  <h3 className="text-2xl sm:text-3xl font-bold mb-3 hover:underline">
+              {/* Content */}
+              <div className="p-5 flex flex-col justify-between bg-space-dark/80 rounded-b-md">
+                <div>
+                  {/* Category tag */}
+                  <p className="uppercase text-xs font-bold tracking-widest text-red-500 mb-2">
+                    Featured Blog
+                  </p>
+
+                  {/* Title */}
+                  <h3 className="text-2xl font-bold mb-3 text-white hover:underline">
                     {featured.title}
                   </h3>
-                </Link>
-                <p className="text-gray-400 mb-6 hidden sm:block">
-                  {featured.description}
-                </p>
 
-                <div className="mb-4">
+                  {/* Description */}
+                  <p className="text-gray-400 text-sm mb-4">
+                    {featured.description || "An exciting read that'll challenge your thinking."}
+                  </p>
+
+                  {/* Date & Time */}
+                  <div className="space-y-2 mb-4 text-sm text-gray-400">
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-2 text-space-accent" />
+                      {formatDate(featured.createdAt)}
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="h-4 w-4 mr-2 text-space-accent" />
+                      {formatTime(featured.createdAt)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Author + Admin */}
+                <div className="flex items-center justify-between">
                   <h4 className="text-sm text-gray-400">
-                    Author:{" "}
-                    {(featured.author?.name || "Unknown Author").toUpperCase()}
+                    Author: {(featured.author?.name || "Unknown").toUpperCase()}
                   </h4>
-                  {isAdmin && featuredId === featured._id && (
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleRemoveFeatured(featured);
-                        setOpenMenuId(null);
-                      }}
-                      className="py-2 hover:underline rounded text-red-600 flex items-center gap-2"
-                    >
-                      Remove Featured
-                    </button>
+
+                  {isAdmin && (
+                    <div className="relative z-10">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setOpenMenuId(openMenuId === featured._id ? null : featured._id);
+                        }}
+                        className="p-1 rounded-full hover:bg-gray-800"
+                      >
+                        <MoreVertical className="w-5 h-5 text-gray-400" />
+                      </button>
+
+                      {openMenuId === featured._id && (
+                        <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleShare(featured);
+                              setOpenMenuId(null);
+                            }}
+                            className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
+                          >
+                            Share
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleRemoveFeatured(featured);
+                              setOpenMenuId(null);
+                            }}
+                            className="w-full px-4 py-2 hover:bg-red-100 rounded-b-md text-red-600 flex items-center gap-2"
+                          >
+                            Remove Featured
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
-            </div>
+            </Link>
           )}
         </section>
 
@@ -445,7 +494,7 @@ const Blog = () => {
 
           {/* View all blogs button */}
           {/* if there are no blpgs, no need to show the see all events button */}
-          {blogs.length > 3 && !showAllUserBlogs && (
+          {externalBlogs.length > 3 && !showAllUserBlogs && (
             <div className="text-center mt-10">
               <button
                 onClick={() => setShowAllUserBlogs(true)}
@@ -466,12 +515,12 @@ const Blog = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {loadingExternalBlogs ? (
               <p>Loading...</p>
-            ) : blogs.length === 0 ? (
+            ) : externalBlogs.length === 0 ? (
               <p className="text-gray-500 italic">
                 Nothing to see here right now!
               </p>
             ) : (
-              (showAllExternalBlogs ? blogs : blogs.slice(0, 3)).map((blog) => (
+              (showAllExternalBlogs ? externalBlogs : externalBlogs.slice(0, 3)).map((blog) => (
                 <Link
                   key={blog.id}
                   to={blog.url}
@@ -520,7 +569,7 @@ const Blog = () => {
 
           {/* View all blogs button */}
           {/* if there are no events, no need to show the see all events button */}
-          {blogs.length > 3 && !showAllExternalBlogs && (
+          {externalBlogs.length > 3 && !showAllExternalBlogs && (
             <div className="text-center mt-10">
               <button
                 onClick={() => setShowAllExternalBlogs(true)}
@@ -595,7 +644,7 @@ const Blog = () => {
             )}
           </div>
 
-          {blogs.length > 3 && !showAllExternalBlogs && (
+          {externalBlogs.length > 3 && !showAllExternalBlogs && (
             <div className="text-center mt-10">
               <button
                 onClick={() => setShowAllArticles(true)}

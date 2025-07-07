@@ -121,6 +121,8 @@ const Events = () => {
       hour12: true,
     });
 
+  const userId = userInfo?.user._id;
+
   return (
     <div className="min-h-screen bg-space-dark text-white">
       {/* <StarBackground /> */}
@@ -190,15 +192,15 @@ const Events = () => {
 
       <button
         onClick={() => handleRegister(userInfo?.user._id, event._id)}
-        disabled={event.registeredUsers.includes(String(userInfo?.user._id))}
+        disabled={event.registeredUsers.includes(String(userId))}
         className={`w-full py-2 transition-colors mt-auto
           ${
-            event.registeredUsers.includes(String(userInfo.user._id))
+            event.registeredUsers.includes(String(userId))
               ? "bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed"
               : "bg-space-accent hover:bg-space-accent/90"
           }`}
       >
-        {event.registeredUsers.includes(String(userInfo?.user._id))
+        {event.registeredUsers.includes(String(userId))
           ? "Registered"
           : "Register for this Event"}
               </button>
@@ -232,49 +234,52 @@ const Events = () => {
             {launches.length === 0 ? (
               <p>Nothing to see here right now!</p>
             ) : (
-              (showAll ? launches : launches.slice(0, 6)).map(
+              (showAll ? launches : launches.slice(0, 3)).map(
                 (
                   launch // for time being using just events
                 ) => (
                   <Link to={`/events/${launch.id}`} key={launch.id}>
-                    <div className="cosmic-card overflow-hidden group">
-                      <div className="h-48 overflow-hidden">
-                        <img
-                          loading="lazy"
-                          src={launch.image?.image_url}
-                          alt={launch.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                      </div>
-                      <div className="p-5">
-                        <h3 className="text-xl font-semibold mb-3">
-                          {launch.name}
-                        </h3>
+                  <div className="cosmic-card overflow-hidden group flex flex-col min-h-[28rem]">
+                    {/* Image */}
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        loading="lazy"
+                        src={launch.image?.image_url}
+                        alt={launch.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
 
-                        <div className="space-y-2 mb-4">
-                          <div className="flex items-center text-sm text-gray-400">
+                    {/* Card Content */}
+                    <div className="p-5 flex flex-col flex-1 justify-between">
+                      <div>
+                        <h3 className="text-xl font-semibold mb-3 min-h-[3rem]">{launch.name}</h3>
+
+                        <div className="space-y-2 mb-4 text-sm text-gray-400">
+                          <div className="flex items-center">
                             <Calendar className="h-4 w-4 mr-2 text-space-accent" />
                             <span>{formatDate(launch.window_start)}</span>
                           </div>
-                          <div className="flex items-center text-sm text-gray-400">
+                          <div className="flex items-center">
                             <Clock className="h-4 w-4 mr-2 text-space-accent" />
                             <span>{formatTime(launch.window_start)}</span>
                           </div>
-                          <div className="flex items-center text-sm text-gray-400">
+                          <div className="flex items-center">
                             <MapPin className="h-4 w-4 mr-2 text-space-accent" />
                             <span>{launch.launch_service_provider?.name}</span>
                           </div>
                         </div>
 
-                        <p className="text-gray-400 text-sm mb-4">
+                        <p className="text-gray-400 text-sm line-clamp-3">
                           {launch.mission?.description
                             ?.split(" ")
-                            .slice(0, 20)
+                            .slice(0, 30)
                             .join(" ")}
                           ...
                         </p>
                       </div>
                     </div>
+                  </div>
                   </Link>
                 )
               )

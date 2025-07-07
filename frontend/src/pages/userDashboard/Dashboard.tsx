@@ -1,39 +1,39 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  User,
-  BookOpen,
-  Award,
-  ShoppingBag,
-  Calendar,
-  Settings,
-  BarChart3,
-  Trophy,
-  Clock,
-  Download,
-  Eye,
-  Heart,
-  MessageCircle,
-  Star,
-  TrendingUp,
-  CheckCircle,
-  PlayCircle,
-  FileText,
-  CreditCard,
-  Bell,
-  Edit,
-  Camera,
-  LogOut,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import {
+//   User,
+//   BookOpen,
+//   Award,
+//   ShoppingBag,
+//   Calendar,
+//   Settings,
+//   BarChart3,
+//   Trophy,
+//   Clock,
+//   Download,
+//   Eye,
+//   Heart,
+//   MessageCircle,
+//   Star,
+//   TrendingUp,
+//   CheckCircle,
+//   PlayCircle,
+//   FileText,
+//   CreditCard,
+//   Bell,
+//   Edit,
+//   Camera,
+//   LogOut,
+// } from "lucide-react";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+// import { Button } from "@/components/ui/button";
+// import { Badge } from "@/components/ui/badge";
+// import { Progress } from "@/components/ui/progress";
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
@@ -231,7 +231,7 @@ const Dashboard = () => {
         <UserProfile />
 
         {/* Quick Actions */}
-        <QuickActions />
+        {/* <QuickActions /> */}
 
         {/* Main Content Tabs */}
         <Tabs
@@ -240,11 +240,9 @@ const Dashboard = () => {
           className="space-y-4 mt-8"
         >
           <TabsList className="grid w-full grid-cols-4 bg-space-purple/20">
-            <TabsTrigger value="events">Registered events</TabsTrigger>
+            <TabsTrigger value="events">Registered Events</TabsTrigger>
             <TabsTrigger value="blogs">My Blogs</TabsTrigger>
-            <TabsTrigger value="research_papers">
-              My Research papers
-            </TabsTrigger>
+            <TabsTrigger value="research_papers">My Research Papers</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
