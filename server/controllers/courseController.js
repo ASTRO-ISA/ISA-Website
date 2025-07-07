@@ -16,8 +16,8 @@ const createCourse = async (req, res) => {
       return res.status(400).json({ message: "Required fields are missing." });
     }
 
-    const imageUrl = req.file.path;       // Cloudinary URL
-    const publicId = req.file.filename;   // Cloudinary public ID
+    const imageUrl = req.file.path
+    const publicId = req.file.filename
 
     const newCourse = new Course({
       title,
@@ -27,7 +27,7 @@ const createCourse = async (req, res) => {
       rating,
       students,
       price,
-      image: imageUrl,
+      imageUrl,
       publicId,
     });
 
@@ -38,7 +38,7 @@ const createCourse = async (req, res) => {
       course: savedCourse,
     });
   } catch (error) {
-    console.error("Error creating course:", error.message);
+    console.error("Error creating course:", error);
     res.status(500).json({ message: "Server error while creating course." });
   }
 };

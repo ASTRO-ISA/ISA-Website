@@ -30,7 +30,7 @@ const CtaSection = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <div className="cosmic-card p-6 text-left">
-              <div className="text-4xl font-bold text-space-accent mb-2">250+</div>
+              <div className="text-4xl font-bold text-space-accent mb-2">500+</div>
               <p className="text-white">Active Members</p>
             </div>
             <div className="cosmic-card p-6 text-left">

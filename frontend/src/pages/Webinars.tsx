@@ -272,7 +272,7 @@ const Webinars = () => {
             </div>
             <div className="flex items-center text-sm text-gray-400">
               <Users className="h-4 w-4 mr-2 text-space-accent" />
-              <span>{webinar.attendees} registered</span>
+              <span>{webinar.attendees.length} registered</span>
             </div>
           </div>
         </div>
@@ -500,7 +500,7 @@ const Webinars = () => {
                   {featured.description}
                 </p>
                 <p className="text-sm text-gray-400">
-                  <span className="font-semibold text-white">Presenter: </span>{featured.presenter || "Unknown"}
+                  <span className="font-semibold text-white">Presenter: </span>{(featured.presenter || "Unknown").toUpperCase()}
                 </p>
                 <button
                       onClick={(e) => {
@@ -509,7 +509,7 @@ const Webinars = () => {
                         handleRemoveFeatured(featured);
                         setOpenMenuId(null);
                       }}
-                      className="py-2 hover:underline rounded text-red-600 flex items-center gap-2"
+                      className="p-2 border border-red-600 hover:text-red-800 hover:border-red-800 rounded text-red-600 flex items-center gap-2"
                     >
                       Remove Featured
                     </button>

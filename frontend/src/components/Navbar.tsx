@@ -76,7 +76,7 @@ const Navbar = () => {
             {/* if the user is logged in show avatar */}
             {isLoggedIn && (
               <img
-                src="/public/placeholder.svg"
+                src="images/profile-dark.webp"
                 alt="User Avatar"
                 onClick={handleAvatarClick}
                 className="h-8 w-8 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform md-hidden"
@@ -219,7 +219,7 @@ const Navbar = () => {
             {/* if the user is logged in show avatar */}
             {isLoggedIn && (
               <img
-                src="/public/placeholder.svg"
+                src="images/profile-dark.webp"
                 alt="User Avatar"
                 onClick={handleAvatarClick}
                 className="h-10 w-10 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform"
@@ -262,15 +262,15 @@ const Navbar = () => {
               </Link>
             ) : null}
               <Link
-                to="/community"
+                to="/about"
                 className={`transition-colors ${
-                  location.pathname === "/community"
+                  location.pathname === "/about"
                     ? "text-space-accent"
                     : "text-white hover:text-space-light"
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Community
+                About
               </Link>
               <Link
                 to="/blogs"
@@ -398,15 +398,15 @@ const Navbar = () => {
                 </Button>
               )}
 
-               {/* if the user is logged in show profile */}
-              {isLoggedIn && (
+              {/* if the user is logged in show profile */}
+              {/* {isLoggedIn && (
                 <img
                   src="/public/placeholder.svg"
                   alt="User Avatar"
                   onClick={handleAvatarClick}
                   className="h-10 w-10 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform"
                 />
-              )}
+              )} */}
             </div>
           </motion.div>
         )}

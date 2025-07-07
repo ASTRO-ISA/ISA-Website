@@ -60,14 +60,14 @@ const UserEvents = () => {
       <main className="container mx-auto px-4 pt-8 pb-16">
         {/* Upcoming ISA Events */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold mb-8">Upcoming ISA Club Events</h2>
+          <h2 className="text-2xl font-bold mb-8">Upcoming Events for You</h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Upcoming events */}
             {loading ? (
               <p>Loading...</p>
             ) : events.length === 0 ? (
-              <p>Nothing to see here right now!</p>
+              <p className="text-gray-500 italic">Nothing to see here right now! Registerd events will appear here.</p>
             ) : (
               (showAll ? events : events.slice(0, 3)).map((event) => (
                 <div key={event._id} className="cosmic-card overflow-hidden group relative flex flex-col">

@@ -31,17 +31,17 @@ const QuickActions = () => {
             </Button>
             <Button
               className="h-20 flex-col gap-2 bg-space-accent/20 hover:bg-space-accent/30"
-              onClick={() => navigate("/community")}
+              onClick={() => navigate("/about")}
             >
               <MessageCircle className="w-6 h-6" />
-              Join Community
+              About
             </Button>
             <Button
               className="h-20 flex-col gap-2 bg-space-accent/20 hover:bg-space-accent/30"
-              onClick={() => navigate("/shop")}
+              onClick={() => navigate("/training")}
             >
               <ShoppingBag className="w-6 h-6" />
-              Visit Shop
+              e-Learning
             </Button>
           </div>
         </CardContent>

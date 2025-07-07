@@ -38,7 +38,8 @@ const Footer = () => {
               rel="noopener noreferrer"
               className="bg-gray-700 hover:bg-gray-600 text-white w-10 h-10 rounded-full p-2 transition-colors"
             >
-              <MessageCircle />
+              {/* <MessageCircle /> */}
+              <i className="fa-brands fa-whatsapp fa-xl"></i>
             </a>
 
             <a 
@@ -47,7 +48,7 @@ const Footer = () => {
             rel="noopener noreferrer"
             className="bg-gray-700 hover:bg-gray-600 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors"
             >
-            <i className="fa-brands fa-linkedin fa-lg"></i>
+            <i className="fa-brands fa-linkedin fa-xl"></i>
             </a>
           </div>
           </div>
