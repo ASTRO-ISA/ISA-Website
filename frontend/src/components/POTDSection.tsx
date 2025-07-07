@@ -81,7 +81,7 @@ const POTDSection = () => {
         {/* POTD Card */}
         {pictureOfTheDay && (
           <div
-            className="bg-gray-900 rounded-lg overflow-hidden shadow-lg cursor-pointer"
+            className="bg-gray-900 overflow-hidden shadow-lg cursor-pointer"
             onClick={() => setOpenLightbox(true)}
           >
             <div className="relative aspect-[16/9] sm:aspect-video">
@@ -91,7 +91,7 @@ const POTDSection = () => {
                 loading="lazy"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/40" />
+              <div className="absolute inset-0" />
             </div>
             <div className="p-4 sm:p-6">
               <h3 className="text-lg sm:text-xl font-bold mb-2">Picture of the Day</h3>
@@ -108,7 +108,7 @@ const POTDSection = () => {
 
         {/* Club Featured Card */}
         {featuredImageData && (
-          <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+          <div className="bg-gray-900 overflow-hidden shadow-lg">
             <div className="relative aspect-[16/9] sm:aspect-video"
             onClick={() => setOpenFeaturedPic(true)}
             >
@@ -118,7 +118,7 @@ const POTDSection = () => {
                 loading="lazy"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/40" />
+              <div className="absolute inset-0" />
             </div>
             <div className="p-4 sm:p-6">
               <h3 className="text-lg sm:text-xl font-bold mb-2">
@@ -126,15 +126,15 @@ const POTDSection = () => {
               </h3>
               <p className="text-sm text-gray-400 mb-3">{featuredImageData.caption}</p>
               <div className="flex items-center gap-2">
-                <img
+                {/* <img
                   src="images/placeholder.svg"
                   loading="lazy"
                   alt={featuredImageData.author}
                   className="w-8 h-8 rounded-full object-cover"
-                />
+                /> */}
                 <div>
-                  <h4 className="text-sm font-semibold">{featuredImageData.author}</h4>
-                  <p className="text-xs text-gray-400">Astro Club</p>
+                  <h4 className="text-sm font-semibold">Pictured by: {featuredImageData.author}</h4>
+                  <p className="text-xs text-gray-400">ISA Club</p>
                 </div>
               </div>
             </div>

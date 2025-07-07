@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import {
   User,
   BookOpen,
@@ -39,20 +38,21 @@ import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import UserProfile from "./UserProfile";
 
-const userInfo = {
-  // temporory
-  name: "dshflh",
-  email: "someone@email.com",
-  avatar: "/images/placeholder.svg",
-  bio: "Welcome to the ISA community! Start your space exploration journey.",
-  location: "Bhopal",
-  joinDate: "17 08 2025",
-  membershipType: "Standard",
-  interests: ["Astrophysics", "Space Exploration", "Astronomy", "Science"],
-};
+// const userInfo = {
+//   // temporory
+//   name: "dshflh",
+//   email: "someone@email.com",
+//   avatar: "/images/placeholder.svg",
+//   bio: "Welcome to the ISA community! Start your space exploration journey.",
+//   location: "Bhopal",
+//   joinDate: "17 08 2025",
+//   membershipType: "Standard",
+//   interests: ["Astrophysics", "Space Exploration", "Astronomy", "Science"],
+// };
 
 const UserSettings = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const { userInfo } = useAuth();
 
   const handleSaveProfile = () => {
     setIsEditing(false);
@@ -85,7 +85,7 @@ const UserSettings = () => {
                   <Label htmlFor="name">Full Name</Label>
                   <Input
                     id="name"
-                    defaultValue={userInfo.name}
+                    defaultValue={userInfo.user.name}
                     className="bg-space-purple/10 border-space-purple/30"
                   />
                 </div>
@@ -94,7 +94,7 @@ const UserSettings = () => {
                   <Input
                     id="email"
                     type="email"
-                    defaultValue={userInfo.email}
+                    defaultValue={userInfo.user.email}
                     className="bg-space-purple/10 border-space-purple/30"
                     disabled
                   />
@@ -103,18 +103,18 @@ const UserSettings = () => {
                   <Label htmlFor="location">Location</Label>
                   <Input
                     id="location"
-                    defaultValue={userInfo.location}
+                    defaultValue={userInfo.user.country}
                     className="bg-space-purple/10 border-space-purple/30"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="bio">Bio</Label>
-                  <Textarea
+                  {/* <Textarea
                     id="bio"
                     defaultValue={userInfo.bio}
                     className="bg-space-purple/10 border-space-purple/30"
                     rows={3}
-                  />
+                  /> */}
                 </div>
                 <div className="flex gap-2">
                   <Button onClick={handleSaveProfile}>Save Changes</Button>
@@ -128,20 +128,20 @@ const UserSettings = () => {
                 <div className="space-y-3">
                   <div>
                     <Label className="text-gray-400">Full Name</Label>
-                    <p className="font-medium">{userInfo.name}</p>
+                    <p className="font-medium">{userInfo.user.name}</p>
                   </div>
                   <div>
                     <Label className="text-gray-400">Email</Label>
-                    <p className="font-medium">{userInfo.email}</p>
+                    <p className="font-medium">{userInfo.user.email}</p>
                   </div>
                   <div>
                     <Label className="text-gray-400">Location</Label>
-                    <p className="font-medium">{userInfo.location}</p>
+                    <p className="font-medium">{userInfo.user.country}</p>
                   </div>
-                  <div>
+                  {/* <div>
                     <Label className="text-gray-400">Bio</Label>
-                    <p className="font-medium">{userInfo.bio}</p>
-                  </div>
+                    <p className="font-medium">{userInfo.user.bio}</p>
+                  </div> */}
                 </div>
                 <Button onClick={() => setIsEditing(true)}>
                   <Edit className="w-4 h-4 mr-2" />
