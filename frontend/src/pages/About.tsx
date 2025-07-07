@@ -6,29 +6,29 @@ const About = () => {
   const teamMembers = [
 
 
-{
-  name: "Naman Meravi",
-  role: "Full Stack Developer",
-  bio: "Simulates astronaut cognitive responses under deep space conditions to improve training modules.",
-  image: "/images/naman.png",
-  isAI: true,
-  github: "https://github.com/NamanMeravi",
-  linkedin: "https://www.linkedin.com/in/naman-meravi-660a1b257/"
-},
+    {
+      name: "Naman Meravi",
+      role: "Full Stack Developer",
+      // bio: "Simulates astronaut cognitive responses under deep space conditions to improve training modules.",
+      image: "/images/naman.png",
+      // isAI: true,
+      github: "https://github.com/NamanMeravi",
+      linkedin: "https://www.linkedin.com/in/naman-meravi-660a1b257/"
+    },
 
  
     {
       name: " Suyash Nagar",
       role: "Full Stack Developer",
-      bio: "Expert in deep space observation...",
+      // bio: "Expert in deep space observation...",
       image: "/images/suyash.png",
       github: " https://github.com/suysah",
       linkedin: "https://www.linkedin.com/in/suyash-nagar-867027256/"
     },
     {
       name: "Vinod Mali",
-      role: "Full Stack Devrloper",
-      bio: "Award-winning educator...",
+      role: "Full Stack Developer",
+      // bio: "Award-winning educator...",
       image: "/images/vinod.png",
       github: "https://github.com/vinodM09",
       linkedin: "https://www.linkedin.com/in/vinodm09"
@@ -36,7 +36,7 @@ const About = () => {
     {
       name: "Anadi Gupta",
       role: "Frontend Developer",
-      bio: "Award-winning educator...",
+      // bio: "Award-winning educator...",
       image: "/images/anadi.png",
       github: " https://github.com/Anadi-Gupta1",
       linkedin: "https://www.linkedin.com/in/anadigupta/ "
@@ -248,7 +248,7 @@ const About = () => {
                 className="text-center"
               >
                 <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
-                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                  <img src={member.image} alt={member.name} loading="lazy" className="w-full h-full object-cover" />
                 </div>
                 <h3 className="text-base font-semibold text-white">{member.name}</h3>
                 <p className="text-sm text-space-accent">{member.role}</p>
@@ -295,7 +295,7 @@ const About = () => {
                 className="text-center"
               >
                 <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
-                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                  <img src={member.image} alt={member.name} loading="lazy" className="w-full h-full object-cover" />
                 </div>
                 <h3 className="text-base font-semibold text-white">{member.name}</h3>
                 <p className="text-sm text-space-accent">{member.role}</p>
