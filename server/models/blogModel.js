@@ -30,6 +30,10 @@ const blogSchema = new mongoose.Schema({
     featured: { // for the featured blog section
         type: Boolean,
         default: false
+    },
+    publicId: {
+        type: String,
+        required: true
     }
 })
 

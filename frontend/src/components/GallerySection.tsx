@@ -4,6 +4,8 @@ import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import "yet-another-react-lightbox/plugins/captions.css";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+// import "yet-another-react-lightbox/plugins/zoom.css";
 
 const GallerySection = () => {
   const [open, setOpen] = useState(false);
@@ -124,7 +126,7 @@ const GallerySection = () => {
           close={() => setOpen(false)}
           index={index}
           slides={displayedImages.map(img => ({ src: img.src, description: img.caption }))}
-          plugins={[Captions]}
+          plugins={[Captions, Zoom]}
         />
 
         {/* <div className="text-center mt-12">

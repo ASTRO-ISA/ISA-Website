@@ -57,6 +57,10 @@ const eventSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  publicId: {
+    type: String,
+    required: true
   }
 })
 
