@@ -1,171 +1,179 @@
 import { useState } from "react";
-import {
-  User,
-  BookOpen,
-  Award,
-  ShoppingBag,
-  Calendar,
-  Settings,
-  BarChart3,
-  Trophy,
-  Clock,
-  Download,
-  Eye,
-  Heart,
-  MessageCircle,
-  Star,
-  TrendingUp,
-  CheckCircle,
-  PlayCircle,
-  FileText,
-  CreditCard,
-  Bell,
-  Edit,
-  Camera,
-  LogOut,
-} from "lucide-react";
+import { Edit, Settings, Camera } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { toast, useToast } from "@/hooks/use-toast";
-import axios from "axios";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
-import UserProfile from "./UserProfile";
-
-// const userInfo = {
-//   // temporory
-//   name: "dshflh",
-//   email: "someone@email.com",
-//   avatar: "/images/placeholder.svg",
-//   bio: "Welcome to the ISA community! Start your space exploration journey.",
-//   location: "Bhopal",
-//   joinDate: "17 08 2025",
-//   membershipType: "Standard",
-//   interests: ["Astrophysics", "Space Exploration", "Astronomy", "Science"],
-// };
+import PasswordChange from "./PasswordChange";
+import axios from "axios";
 
 const UserSettings = () => {
-  const [isEditing, setIsEditing] = useState(false);
   const { userInfo } = useAuth();
 
-  const handleSaveProfile = () => {
-    setIsEditing(false);
-    toast({
-      title: "Profile updated",
-      description: "Your profile has been saved successfully.",
-    });
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState(userInfo.user.name);
+  const [location, setLocation] = useState(userInfo.user.country);
+  const [avatar, setAvatar] = useState(userInfo.user.avatar); // Image URL or base64
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+
+  const handleSaveProfile = async () => {
+    try {
+      // Simulate API call
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("country", location);
+      if (avatarFile) {
+        formData.append("avatar", avatarFile);
+      }
+
+      await axios.patch(
+        `http://localhost:3000/api/v1/users/updateUser/${userInfo.user._id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been saved successfully.",
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error updating profile",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatar(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
-    <>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Profile Settings */}
-        <Card className="bg-space-purple/10 border-space-purple/30">
-          <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {isEditing ? (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input
-                    id="name"
-                    defaultValue={userInfo.user.name}
-                    className="bg-space-purple/10 border-space-purple/30"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    defaultValue={userInfo.user.email}
-                    className="bg-space-purple/10 border-space-purple/30"
-                    disabled
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    defaultValue={userInfo.user.country}
-                    className="bg-space-purple/10 border-space-purple/30"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="bio">Bio</Label>
-                  {/* <Textarea
-                    id="bio"
-                    defaultValue={userInfo.bio}
-                    className="bg-space-purple/10 border-space-purple/30"
-                    rows={3}
-                  /> */}
-                </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleSaveProfile}>Save Changes</Button>
-                  <Button variant="outline" onClick={() => setIsEditing(false)}>
-                    Cancel
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="space-y-3">
-                  <div>
-                    <Label className="text-gray-400">Full Name</Label>
-                    <p className="font-medium">{userInfo.user.name}</p>
-                  </div>
-                  <div>
-                    <Label className="text-gray-400">Email</Label>
-                    <p className="font-medium">{userInfo.user.email}</p>
-                  </div>
-                  <div>
-                    <Label className="text-gray-400">Location</Label>
-                    <p className="font-medium">{userInfo.user.country}</p>
-                  </div>
-                  {/* <div>
-                    <Label className="text-gray-400">Bio</Label>
-                    <p className="font-medium">{userInfo.user.bio}</p>
-                  </div> */}
-                </div>
-                <Button onClick={() => setIsEditing(true)}>
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit Profile
-                </Button>
-              </>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Profile Settings */}
+      <Card className="bg-space-purple/10 border-space-purple/30">
+        <CardHeader>
+          <CardTitle>Profile Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Avatar Section */}
+          <div className="flex items-center gap-4">
+            <Avatar className="w-16 h-16">
+              <AvatarImage src={userInfo.user.avatar} />
+              <AvatarFallback>{name?.[0]}</AvatarFallback>
+            </Avatar>
+            {isEditing && (
+              <div>
+                <Label
+                  htmlFor="avatar"
+                  className="flex items-center gap-2 cursor-pointer text-sm text-blue-500"
+                >
+                  <Camera className="w-4 h-4" />
+                  Change Photo
+                </Label>
+                <Input
+                  type="file"
+                  id="avatar"
+                  name="avatar"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
+              </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Account Settings */}
-        <Card className="bg-space-purple/10 border-space-purple/30">
-          <CardHeader>
-            <CardTitle>Account Settings</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full justify-start">
-              <Settings className="w-4 h-4 mr-2" />
-              Change Password
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    </>
+          {isEditing ? (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="bg-space-purple/10 border-space-purple/30"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={userInfo.user.email}
+                  disabled
+                  className="bg-space-purple/10 border-space-purple/30"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="bg-space-purple/10 border-space-purple/30"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleSaveProfile}>Save Changes</Button>
+                <Button variant="outline" onClick={() => setIsEditing(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-gray-400">Full Name</Label>
+                  <p className="font-medium">{name}</p>
+                </div>
+                <div>
+                  <Label className="text-gray-400">Email</Label>
+                  <p className="font-medium">{userInfo.user.email}</p>
+                </div>
+                <div>
+                  <Label className="text-gray-400">Location</Label>
+                  <p className="font-medium">{location}</p>
+                </div>
+              </div>
+              <Button onClick={() => setIsEditing(true)}>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit Profile
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Account Settings */}
+      <Card className="bg-space-purple/10 border-space-purple/30">
+        <CardHeader>
+          <CardTitle>Account Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <PasswordChange />
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
