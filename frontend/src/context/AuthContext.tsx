@@ -10,6 +10,8 @@ interface User {
     role: string;
     phoneNo: number;
     country: string;
+    avatar: string;
+    createdAt: string;
   };
 }
 
@@ -60,7 +62,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ userInfo, isLoggedIn, isAdmin: userInfo?.user.role === "admin", loginCheck, logout }}>
+    <AuthContext.Provider
+      value={{
+        userInfo,
+        isLoggedIn,
+        isAdmin: userInfo?.user.role === "admin",
+        loginCheck,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
