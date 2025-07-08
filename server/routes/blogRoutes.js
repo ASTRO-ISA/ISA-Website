@@ -17,7 +17,16 @@ router
     uploadImage.single('thumbnail'),
     blogController.createBlog
   )
+
 router.route('/featured').get(blogController.featuredBlog)
+
+router
+  .route('/delete/:id')
+  .get(
+    authenticateToken,
+    blogController.deleteBlog
+  )
+
 router.route('/:id').get(blogController.readBlog)
 
 module.exports = router

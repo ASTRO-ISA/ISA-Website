@@ -34,11 +34,11 @@ const CtaSection = () => {
               <p className="text-white">Active Members</p>
             </div>
             <div className="cosmic-card p-6 text-left">
-              <div className="text-4xl font-bold text-space-accent mb-2">30+</div>
+              <div className="text-4xl font-bold text-space-accent mb-2">10+</div>
               <p className="text-white">Events Per Year</p>
             </div>
             <div className="cosmic-card p-6 text-left">
-              <div className="text-4xl font-bold text-space-accent mb-2">15+</div>
+              <div className="text-4xl font-bold text-space-accent mb-2">5+</div>
               <p className="text-white">Expert Speakers</p>
             </div>
           </div>

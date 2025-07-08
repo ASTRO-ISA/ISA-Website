@@ -2,6 +2,7 @@ const Webinar = require('../models/webinarModel')
 const User = require('../models/userModel')
 const sendEmail = require('../utils/sendEmail')
 const getVideoId = require("../utils/getVideoId")
+const cloudinary = require('cloudinary').v2
 
 exports.createWebinar = async (req, res) => {
   try {
@@ -20,6 +21,7 @@ exports.createWebinar = async (req, res) => {
     return res.status(400).json({ error: "Invalid YouTube video link." })
     }
     const thumbnail = req.file ? req.file.path : '' // from cludinary
+    const publicId = req.file.filename
     const webinar = new Webinar({
         thumbnail,
         title,
@@ -27,7 +29,8 @@ exports.createWebinar = async (req, res) => {
         webinarDate,
         type,
         presenter,
-        videoId
+        videoId,
+        publicId
     })
 
     await webinar.save()
@@ -124,7 +127,13 @@ exports.updatedWebinar = async (req, res) => {
 exports.deleteWebinar = async (req, res) => {
     const { id } = req.params;
     try {
-        const webinar = await Webinar.findByIdAndDelete(id);
+        const webinar = await Webinar.findById(id);
+        if (webinar.publicId) {
+          await cloudinary.uploader.destroy(webinar.publicId, {
+            resource_type: 'raw'
+          })
+        }
+        await Webinar.findByIdAndDelete(id);
         if (!webinar) return res.status(404).json({ message: 'webinar not found' });
         res.status(200).json({ message: 'webinar deleted successfully' });
     } catch (error) {

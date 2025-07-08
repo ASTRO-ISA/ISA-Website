@@ -1,6 +1,7 @@
 const Event = require('../models/eventModel')
 const User = require('../models/userModel')
 const sendEmail = require('../utils/sendEmail')
+const cloudinary = require('cloudinary').v2
 
 // const currentDate = new Date()
 
@@ -21,6 +22,7 @@ exports.createEvent = async (req, res) => {
     const hostedBy = JSON.parse(req.body.hostedBy || '[]')
 
     const thumbnail = req.file ? req.file.path : ''
+    const publicId = req.file.filename
 
     const event = new Event({
       title,
@@ -32,7 +34,8 @@ exports.createEvent = async (req, res) => {
       type,
       status,
       hostedBy,
-      thumbnail
+      thumbnail,
+      publicId
     })
 
     await event.save()
@@ -115,9 +118,6 @@ exports.registerEvent = async (req, res) => {
   }
 }
 
-
-/* admin edit  */
-
 exports.updateEvent = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
@@ -131,18 +131,15 @@ exports.updateEvent = async (req, res) => {
     }
 };
 
-
-
-/* delete event */
-
 exports.deleteEvent = async (req, res) => {
     const { id } = req.params;
-
     try {
-        const event = await Event.findByIdAndDelete(id);
-        if (!event) return res.status(404).json({ message: 'Event not found' });
-        res.status(200).json({ message: 'Event deleted successfully' });
+        const event = await Event.findById(id)
+        if (!event) return res.status(404).json({ message: 'Event not found' })
+        await cloudinary.uploader.destroy(event.publicId)
+        await event.deleteOne()
+        res.status(200).json({ message: 'Event deleted successfully' })
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting event', error });
+        res.status(500).json({ message: 'Error deleting event', error })
     }
 };

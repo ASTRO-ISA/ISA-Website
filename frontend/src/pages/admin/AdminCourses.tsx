@@ -200,16 +200,16 @@ const AdminCourses = () => {
               key={course._id}
               className="p-4 border bg-space-purple/20 rounded"
             >
-              <p className="font-semibold text-lg">{course.title}</p>
-              <p>Instructor: {course.instructor}</p>
-              <p>Level: {course.level}</p>
-              <p>Duration: {course.duration}</p>
-              <p>Price: {course.price}</p>
-              <img
+              <p className="font-semibold text-lg"><span className="text-gray-400">Title: </span>{course.title}</p>
+              <p><span className="text-gray-400">Instructor: </span>{course.instructor}</p>
+              <p><span className="text-gray-400">Level: </span>{course.level}</p>
+              <p><span className="text-gray-400">Duration: </span>{course.duration}</p>
+              <p><span className="text-gray-400">Price: </span>{course.price}</p>
+              {/* <img
                 src={course.imageUrl}
                 alt={course.title}
                 className="w-full h-40 object-cover mt-2 rounded"
-              />
+              /> */}
               <Button
                 size="sm"
                 onClick={() => handleDeleteCourse(course._id)}

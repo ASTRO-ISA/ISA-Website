@@ -274,7 +274,7 @@ const Blog = () => {
               <div className="p-5 flex flex-col justify-between bg-space-dark/80 rounded-b-md">
                 <div>
                   {/* Category tag */}
-                  <p className="uppercase text-xs font-bold tracking-widest text-red-500 mb-2">
+                  <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
                     Featured Blog
                   </p>
 

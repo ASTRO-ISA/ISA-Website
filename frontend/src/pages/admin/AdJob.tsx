@@ -190,25 +190,29 @@ const AdminJobs = () => {
               className="w-full p-2 rounded bg-gray-800 text-white"
               required
             ></textarea>
+            <label htmlFor="applyLink" className="block text-gray-400 text-sm">
+              Apply Link
             <input
               type="url"
               name="applyLink"
               value={newJobFormData.applyLink}
               onChange={handleNewJobFormChange}
               placeholder="Apply Link"
-              className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
+              className="w-full p-2 rounded bg-gray-800 text-white"
               required
             />
-            <label htmlFor="document" className="block mt-2 text-gray-400 text-sm mb-3">
-              The allowed formats are pdf, docx and doc
             </label>
-            <input
+            <label htmlFor="document" className="block text-gray-400 text-sm">
+              The allowed formats are pdf, docx and doc
+              <input
               type="file"
               name="document"
               onChange={handleNewJobFormChange}
               className="w-full p-2 rounded bg-gray-800 text-white"
               required
             />
+            </label>
+            
             <Button type="submit" className="w-full">
               {creatingJob ? <Spinner /> : "Create Job"}
             </Button>
@@ -269,10 +273,10 @@ const AdminJobs = () => {
               ) : (
                 <>
                   <div className="w-full max-w-[100%] break-words">
-                  <p className="font-semibold">{job.title}</p>
-                  <p>{job.role}</p>
-                  <p>{job.description}</p>
-                  <p className="text-blue-400 underline break-words">{job.applyLink}</p>
+                  <p className="font-semibold"><span className="text-gray-400">Title: </span>{job.title}</p>
+                  <p><span className="text-gray-400">Role: </span>{job.role}</p>
+                  <p><span className="text-gray-400">Description: </span>{job.description}</p>
+                  <p className="text-blue-400 break-words"><span className="text-gray-400">Apply Link: </span>{job.applyLink}</p>
                   
                   <div className="flex flex-wrap gap-2 mt-2">
                     <Button
