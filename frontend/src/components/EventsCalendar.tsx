@@ -44,7 +44,7 @@ const EventsCalendar = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Upcoming Astronomical Events</h2>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              <p className="text-xl hidden md:block text-gray-400 max-w-3xl mx-auto">
                 Mark your calendar for these celestial phenomena and join our community observation sessions.
               </p>
             </div>
@@ -62,20 +62,21 @@ const EventsCalendar = () => {
             <img src={launch.image?.image_url} loading="lazy" alt="event" />
           </div>
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-            <div className="text-white font-semibold">{formatDate(launch.window_start)}</div>
+            {/* <div className="text-white font-semibold">{formatDate(launch.window_start)}</div> */}
             <h3 className="text-xl font-bold text-white">{formatTime(launch.window_start)} IST</h3>
           </div>
         </div>
         <CardContent className="p-4">
+          <p className="text-sm mb-2">{formatDate(launch.window_start)}</p>
           <p className="text-gray-400 text-sm">
             {launch.mission?.description?.split(" ").slice(0, 20).join(" ")}
           </p>
-          <Link
+          {/* <Link
             to={`/events/${launch.id}`}
             className="mt-4 text-space-accent hover:text-space-accent/80 text-sm font-medium"
           >
             Learn more →
-          </Link>
+          </Link> */}
         </CardContent>
       </Card>
     ))}

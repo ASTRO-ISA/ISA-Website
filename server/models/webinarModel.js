@@ -42,6 +42,10 @@ const webinarSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    publicId: {
+        type: String,
+        required: [true, 'could not find the pulic id to save the image o cloudinary']
     }
 })
 

@@ -167,6 +167,7 @@ export default function AdminDashboard() {
                                             onChange={handleEventChange}
                                             className="w-full p-2 rounded bg-gray-800 text-white"
                                             required
+                                            min={new Date().toISOString().split("T")[0]}
                                         />
                                     </label>
                                     <div className="flex gap-2">
@@ -182,10 +183,10 @@ export default function AdminDashboard() {
                                 </form>
                             ) : (
                                 <>
-                                    <p className="font-semibold">{event.title}</p>
-                                    <p>{event.description}</p>
+                                    <p className="font-semibold"><span className="text-gray-400">Title: </span>{event.title}</p>
+                                    <p><span className="text-gray-400">Description: </span>{event.description}</p>
                                     <p className="text-sm text-gray-400">
-                                        {new Date(event.eventDate).toLocaleDateString()}
+                                    <span className="text-gray-400">Date: </span>{new Date(event.eventDate).toLocaleDateString()}
                                     </p>
                                     <div className="flex gap-2 mt-2">
                                         <Button
@@ -232,12 +233,6 @@ export default function AdminDashboard() {
                     <TabsContent value="gallery" className="space-y-6">
                     <AdminGallerySection/>
                     </TabsContent>
-
-                     
-
-                    {/* Blog Suggestions */}
-                    <SuggestedBlogTopic />
-
 
                      {/* Admin courses */}
                     <TabsContent value="courses" className="space-y-6">

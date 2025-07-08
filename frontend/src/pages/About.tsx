@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Star, Users, Award, Instagram, MessageCircle, Github, Linkedin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const About = () => {
   const teamMembers = [
@@ -418,6 +419,9 @@ const About = () => {
               Join our community of space enthusiasts and start your journey to the stars today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+              to="/"
+              >
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -425,6 +429,10 @@ const About = () => {
               >
                 Join Our Community
               </motion.button>
+              </Link>
+              <Link
+              to="/training"
+              >
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -432,6 +440,7 @@ const About = () => {
               >
                 Explore Courses
               </motion.button>
+              </Link>
             </div>
           </motion.div>
         </div>

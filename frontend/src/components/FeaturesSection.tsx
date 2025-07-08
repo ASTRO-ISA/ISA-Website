@@ -87,8 +87,8 @@ const FeaturesSection = () => {
     <section className="py-10 bg-space-dark">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Explore ISA Club Features</h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Explore Club Features</h2>
+          <p className="text-xl hidden md:block text-gray-400 max-w-3xl mx-auto">
             Discover the many ways our platform bridges the gap between passion and profession in astronomy and space science.
           </p>
         </div>

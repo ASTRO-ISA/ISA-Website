@@ -50,6 +50,17 @@ const CreateEvent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const selected = new Date(formData.eventDate);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // zero out time
+
+    if (selected < now) {
+      toast({
+        description: "You can’t set an event in the past. Please select correct date." 
+      })
+      return;
+    }
     setIsSubmitting(true);
     setSuccessMsg("");
     setErrorMsg("");
@@ -147,6 +158,7 @@ const CreateEvent = () => {
           onChange={handleChange}
           className="w-full p-2 rounded bg-zinc-800"
           required
+          min={new Date().toISOString().split("T")[0]}
         />
 
         <input
