@@ -123,6 +123,10 @@ const Events = () => {
 
   const userId = userInfo?.user._id;
 
+  const getStatus = (eventDate) => {
+    return new Date(eventDate) > new Date() ? "Upcoming" : "Completed";
+  };
+
   return (
     <div className="min-h-screen bg-space-dark text-white">
       {/* <StarBackground /> */}
@@ -148,7 +152,7 @@ const Events = () => {
   <p>Loading...</p>
 ) : events.length === 0 ? (
   <p>Nothing to see here right now!</p>
-) : (
+) : ( 
   (showAll ? events : events.slice(0, 3)).map((event) => (
     <div key={event._id} className="cosmic-card overflow-hidden group relative flex flex-col">
       <Link to={`/events/${event._id}`} className="flex-1 flex flex-col">
@@ -162,6 +166,16 @@ const Events = () => {
         </div>
         <div className="p-5 flex-1 flex flex-col justify-between">
           <div>
+          <span
+          className={`${
+            new Date(event.eventDate) > new Date()
+              ? "text-space-accent"
+              : "text-space-purple"
+          } uppercase text-xs font-bold tracking-widest mb-2`}
+          >
+          {new Date(event.eventDate) > new Date() ? "Upcoming" : "Completed"}
+          </span>
+            {/* <p className={`uppercase text-xs font-bold tracking-widest text-space-accent mb-2`}>{getStatus(event.eventDate)}</p> */}
             <h3 className="text-xl font-semibold mb-3">{event.title}</h3>
 
             <div className="space-y-2 mb-4">

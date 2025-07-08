@@ -1,4 +1,5 @@
-const Course = require("../models/courses");
+const Course = require("../models/coursesModel")
+const cloudinary = require('cloudinary').v2
 
 const createCourse = async (req, res) => {
   try {
@@ -60,7 +61,7 @@ const deleteCourse = async (req, res) => {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    await cloudinary.uploader.destroy(course.publicId); // Remove image from Cloudinary
+    await cloudinary.uploader.destroy(course.publicId)
     await course.deleteOne();
 
     res.status(200).json({ message: "Course deleted successfully" });

@@ -4,6 +4,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import "yet-another-react-lightbox/plugins/captions.css";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
 
 const POTDSection = () => {
   const [pictureOfTheDay, setPictureOfTheDay] = useState(null);
@@ -71,7 +72,7 @@ const POTDSection = () => {
     <section className="mb-4 py-4 px-4 sm:px-6">
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Spotlight Gallery</h2>
-        <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+        <p className="text-xl hidden md:block text-gray-400 max-w-3xl mx-auto">
           A daily glimpse into the wonders of space from official NASA selections to exceptional
           images by our own club members.
         </p>
@@ -81,7 +82,7 @@ const POTDSection = () => {
         {/* POTD Card */}
         {pictureOfTheDay && (
           <div
-            className="bg-gray-900 overflow-hidden shadow-lg cursor-pointer"
+            className="cosmic-card overflow-hidden shadow-lg cursor-pointer"
             onClick={() => setOpenLightbox(true)}
           >
             <div className="relative aspect-[16/9] sm:aspect-video">
@@ -97,7 +98,7 @@ const POTDSection = () => {
               <h3 className="text-lg sm:text-xl font-bold mb-2">Picture of the Day</h3>
               <p className="text-sm text-gray-300 mb-3">{pictureOfTheDay.title}</p>
               <p className="text-sm text-gray-400 mb-3 hidden sm:block">
-                {pictureOfTheDay.explanation}
+                {(pictureOfTheDay.explanation).slice(0, 300)}...
               </p>
               <p className="text-xs text-gray-500">
                 Courtesy: {pictureOfTheDay.copyright || "NASA"}
@@ -108,7 +109,7 @@ const POTDSection = () => {
 
         {/* Club Featured Card */}
         {featuredImageData && (
-          <div className="bg-gray-900 overflow-hidden shadow-lg">
+          <div className="cosmic-card overflow-hidden shadow-lg">
             <div className="relative aspect-[16/9] sm:aspect-video"
             onClick={() => setOpenFeaturedPic(true)}
             >
@@ -121,6 +122,9 @@ const POTDSection = () => {
               <div className="absolute inset-0" />
             </div>
             <div className="p-4 sm:p-6">
+                  <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
+                    Featured Pic
+                  </p>
               <h3 className="text-lg sm:text-xl font-bold mb-2">
                 Club Member’s Featured Picture
               </h3>
@@ -134,7 +138,10 @@ const POTDSection = () => {
                 /> */}
                 <div>
                   <h4 className="text-sm font-semibold">Pictured by: {featuredImageData.author}</h4>
-                  <p className="text-xs text-gray-400">ISA Club</p>
+                  <p className="text-xs text-gray-400 mb-2">ISA Club</p>
+                  <hr className="mb-2"/>
+                  <p className="text-xs text-gray-400">* We’re looking for amazing space shots from the community!
+                  Send us your best astro photos for a chance to be featured here.</p>
                 </div>
               </div>
             </div>
@@ -148,7 +155,17 @@ const POTDSection = () => {
           open={openLightbox}
           close={() => setOpenLightbox(false)}
           slides={pictureSlides}
-          plugins={[Captions]}
+          plugins={[Captions, Zoom]}
+          carousel={{
+            finite: true, // disables infinite loop if we hae single image
+          }}
+          controller={{
+            closeOnBackdropClick: true,
+          }}
+          render={{
+            buttonPrev: pictureSlides.length > 1 ? undefined : () => null,
+            buttonNext: pictureSlides.length > 1 ? undefined : () => null,
+          }}
         />
       )}
 
