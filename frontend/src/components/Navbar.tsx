@@ -42,21 +42,21 @@ const Navbar = () => {
           {/* mobile menu button */}
           <div className="w-full flex justify-between md:hidden">
             <div className="flex gap-2">
-            <button
-              onClick={toggleMobileMenu}
-              className="text-white focus:outline-none"
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+              <button
+                onClick={toggleMobileMenu}
+                className="text-white focus:outline-none"
+              >
+                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
 
-            <Link to="/" className="flex items-center gap-2">
-            <img
-              src="/images/isa-logo.jpeg"
-              alt="ISA Logo"
-              className="h-7 w-auto"
-            />
-            {/* <span className="font-bold text-xl text-white">ISA Club</span> */}
-            </Link>
+              <Link to="/" className="flex items-center gap-2">
+                <img
+                  src="/images/isa-logo.jpeg"
+                  alt="ISA Logo"
+                  className="h-7 w-auto"
+                />
+                {/* <span className="font-bold text-xl text-white">ISA Club</span> */}
+              </Link>
             </div>
 
             {!isLoggedIn && (
@@ -76,22 +76,26 @@ const Navbar = () => {
             {/* if the user is logged in show avatar */}
             {isLoggedIn && (
               <img
-                src="images/profile-dark.webp"
+                src={
+                  userInfo.user.avatar === "profile-dark.webp"
+                    ? `images/${userInfo.user.avatar}`
+                    : userInfo.user.avatar
+                }
                 alt="User Avatar"
                 onClick={handleAvatarClick}
                 className="h-8 w-8 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform md-hidden"
               />
             )}
           </div>
-          
+
           <Link to="/" className="items-center gap-2 hidden md:flex">
-          <img
-            src="/images/isa-logo.jpeg"
-            alt="ISA Logo"
-            className="h-10 w-auto"
-          />
-          {/* <span className="font-bold text-xl text-white">ISA Club</span> */}
-        </Link>
+            <img
+              src="/images/isa-logo.jpeg"
+              alt="ISA Logo"
+              className="h-10 w-auto"
+            />
+            {/* <span className="font-bold text-xl text-white">ISA Club</span> */}
+          </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-2 space-x-5">
@@ -219,7 +223,11 @@ const Navbar = () => {
             {/* if the user is logged in show avatar */}
             {isLoggedIn && (
               <img
-                src="images/profile-dark.webp"
+                src={
+                  userInfo.user.avatar === "profile-dark.webp"
+                    ? `images/${userInfo.user.avatar}`
+                    : userInfo.user.avatar
+                }
                 alt="User Avatar"
                 onClick={handleAvatarClick}
                 className="h-10 w-10 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform"
@@ -249,18 +257,18 @@ const Navbar = () => {
           >
             <div className="flex flex-col space-y-4 pt-4 pb-6 px-2">
               {userInfo?.user.role === "admin" ? (
-              <Link
-                to="/admin"
-                className={`transition-colors ${
-                  location.pathname === "/admin"
-                    ? "text-space-accent"
-                    : "text-white hover:text-space-light"
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Admin
-              </Link>
-            ) : null}
+                <Link
+                  to="/admin"
+                  className={`transition-colors ${
+                    location.pathname === "/admin"
+                      ? "text-space-accent"
+                      : "text-white hover:text-space-light"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Admin
+                </Link>
+              ) : null}
               <Link
                 to="/about"
                 className={`transition-colors ${

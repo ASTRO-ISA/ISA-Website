@@ -1,6 +1,6 @@
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
-// const crypto = require('crypto')
+const cloudinary = require('cloudinary').v2
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -94,4 +94,84 @@ exports.logout = async (req, res) => {
     expires: new Date(0)
   })
   res.status(200).json({ status: 'success', message: 'Logged out' })
+}
+
+exports.updatePassword = async (req, res) => {
+  try {
+    // 1. get user from the collection
+    const { currentPassword, newPassword, passwordConfirm } = req.body
+
+    const user = await User.findById(req.user.id).select('+password')
+
+    // 2. check if the given password is correct
+    const isCorrect = await user.correctPassword(currentPassword, user.password)
+    if (!isCorrect) {
+      return res
+        .status(401)
+        .json('Password does not match. Please enter the correct password')
+    }
+
+    // 3.update password
+    user.password = newPassword
+    user.passwordConfirm = passwordConfirm
+    await user.save()
+
+    // 4. log User in , using jwt
+
+    createSendToken(user, 200, res)
+  } catch (error) {
+    res.status(500).json({ status: 'success', message: error.message })
+  }
+}
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    if (!id) {
+      return res
+        .status(400)
+        .json({ status: 'fail', message: 'No ID provided in jobUpdater' })
+    }
+
+    const user = await User.findById(id)
+    if (!user) {
+      return res.status(404).json({ message: 'user does not exist' })
+    }
+
+    if ((!req.body || Object.keys(req.body).length === 0) && !req.file) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'No data or document provided to update'
+      })
+    }
+
+    // Only handle document if new one is uploaded
+    if (req.file) {
+      req.body.avatar = req.file.path
+      req.body.avatarPublicId = req.file.filename
+
+      // Remove old doc from Cloudinary
+      if (user.avatarPublicId) {
+        await cloudinary.uploader.destroy(user.avatarPublicId)
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true
+    })
+
+    res.status(200).json({
+      status: 'success',
+      message: 'user updated',
+      data: updatedUser
+    })
+  } catch (error) {
+    res.status(500).json({
+      status: 'fail',
+      message: 'Server error, cannot update User',
+      error: error.message
+    })
+  }
 }
