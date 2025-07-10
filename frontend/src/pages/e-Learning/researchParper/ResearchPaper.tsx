@@ -1,33 +1,30 @@
 import axios from "axios";
 import DisplayResearchPaper from "./DisplayResearchPaper";
 import UploadResearchPaper from "./UploadResearchPaper";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import Spinner from "@/components/ui/Spinner";
+import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
+
+const fetchPapers = async () => {
+  const res = await axios.get("http://localhost:3000/api/v1/researchPapers/", {
+    withCredentials: true,
+  });
+  return res.data.data;
+};
 
 const ResearchPaper = () => {
-  const [papers, setPapers] = useState([]);
-
-  const fetchPapers = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:3000/api/v1/researchPapers/",
-        {
-          withCredentials: true,
-        }
-      );
-      setPapers(res.data.data);
-    } catch (error) {
-      console.error("Error fetching papers:", error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchPapers();
-  }, []);
+  const { data: papers = [], isLoading } = useQuery({
+    queryKey: ["research-paper"],
+    queryFn: fetchPapers,
+  });
 
   return (
     <div>
-      <DisplayResearchPaper papers={papers} />
-      <UploadResearchPaper fetchPapers={fetchPapers} />
+      <SpinnerOverlay show={isLoading}>
+        <DisplayResearchPaper papers={papers} />
+      </SpinnerOverlay>
+
+      {/* <UploadResearchPaper fetchPapers={fetchPapers} /> */}
     </div>
   );
 };

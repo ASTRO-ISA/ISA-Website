@@ -5,27 +5,23 @@ import { useAuth } from "@/context/AuthContext";
 import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 const UserResearchPaper = () => {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const { userInfo } = useAuth();
-  const [isEditingSeleting, setIsEditingDeleting] = useState(false);
-  const toggleAbstract = (paperId: string) => {
-    setExpanded((prev) => ({
-      ...prev,
-      [paperId]: !prev[paperId],
-    }));
-  };
-
+  const [isEditingDeleting, setIsEditingDeleting] = useState(false);
+  const [isEditingPaper, setIsEditingPaper] = useState(false);
+  const [editPaperData, setEditPaperData] = useState(null);
   const [papers, setPapers] = useState([]);
 
   const fetchPapers = async () => {
     try {
       const res = await axios.get(
         "http://localhost:3000/api/v1/researchPapers/",
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
       const userPaper = res.data.data.filter(
         (paper) => paper.uploadedBy._id == userInfo.user._id
@@ -40,7 +36,18 @@ const UserResearchPaper = () => {
     fetchPapers();
   }, []);
 
-  const handleEditPaper = (paper) => {};
+  const toggleAbstract = (paperId: string) => {
+    setExpanded((prev) => ({
+      ...prev,
+      [paperId]: !prev[paperId],
+    }));
+  };
+
+  const handleEditPaper = (paper) => {
+    setEditPaperData({ ...paper, paperFile: null });
+    setIsEditingPaper(true);
+  };
+
   const handleDeletePaper = async (paper_id) => {
     try {
       setIsEditingDeleting(true);
@@ -50,24 +57,63 @@ const UserResearchPaper = () => {
           withCredentials: true,
         }
       );
-      setIsEditingDeleting(false);
-      toast({
-        title: "Deletion successful",
-      });
-      fetchPapers();
+      toast({ title: "Deletion successful" });
+      await fetchPapers();
     } catch (error) {
-      setIsEditingDeleting(false);
       toast({
         title: "Deletion unsuccessful",
         variant: "destructive",
         description: error.message,
       });
-      console.log(error.message);
+    } finally {
+      setIsEditingDeleting(false);
+    }
+  };
+
+  const handleEditInputChange = (e) => {
+    setEditPaperData({ ...editPaperData, [e.target.name]: e.target.value });
+  };
+
+  const handleUpdatePaper = async () => {
+    try {
+      if (!editPaperData) return;
+      setIsEditingDeleting(true);
+
+      const formData = new FormData();
+      formData.append("title", editPaperData.title);
+      formData.append("authors", editPaperData.authors);
+      formData.append("abstract", editPaperData.abstract);
+      if (editPaperData.paperFile) {
+        formData.append("file", editPaperData.paperFile); // <- this is the new PDF file
+      }
+
+      await axios.patch(
+        `http://localhost:3000/api/v1/researchPapers/${editPaperData._id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+
+      toast({ title: "Paper updated successfully!" });
+      setIsEditingPaper(false);
+      await fetchPapers();
+    } catch (error) {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsEditingDeleting(false);
     }
   };
 
   return (
-    <SpinnerOverlay show={isEditingSeleting}>
+    <SpinnerOverlay show={isEditingDeleting}>
       <ul className="space-y-4 mt-4">
         {papers.map((paper) => (
           <li
@@ -132,6 +178,63 @@ const UserResearchPaper = () => {
           </li>
         ))}
       </ul>
+
+      {/* Edit Form */}
+      {isEditingPaper && editPaperData && (
+        <div className="mt-10 p-6 bg-space-purple/10 border rounded-xl max-w-xl mx-auto space-y-4">
+          <h2 className="text-xl font-semibold text-center text-space-accent">
+            Edit Research Paper
+          </h2>
+
+          <div className="space-y-2">
+            <Label>Title</Label>
+            <Input
+              name="title"
+              value={editPaperData.title}
+              onChange={handleEditInputChange}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Authors</Label>
+            <Input
+              name="authors"
+              value={editPaperData.authors}
+              onChange={handleEditInputChange}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Abstract</Label>
+            <Textarea
+              name="abstract"
+              value={editPaperData.abstract}
+              onChange={handleEditInputChange}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Upload New PDF (Max size 10MB)</Label>
+            <Input
+              type="file"
+              accept="application/pdf"
+              onChange={(e) =>
+                setEditPaperData({
+                  ...editPaperData,
+                  paperFile: e.target.files?.[0] || null,
+                })
+              }
+            />
+          </div>
+
+          <div className="flex gap-4 mt-4 justify-end">
+            <Button onClick={handleUpdatePaper}>Save</Button>
+            <Button variant="outline" onClick={() => setIsEditingPaper(false)}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
     </SpinnerOverlay>
   );
 };
