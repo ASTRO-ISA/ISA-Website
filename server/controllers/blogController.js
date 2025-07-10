@@ -3,7 +3,7 @@ const cloudinary = require('cloudinary').v2
 
 exports.allBlogs = async (req, res) => {
   try {
-    const allBlogs = await Blog.find({}).populate('author', 'name country')
+    const allBlogs = await Blog.find({}).populate('author', 'name country avatar')
 
     if (!allBlogs) {
       res.status(404).json({ message: 'Nothing to see here right now!' })
@@ -58,7 +58,7 @@ exports.featuredBlog = async (req, res) => {
 exports.readBlog = async (req, res) => {
   try {
     const { id } = req.params
-    const blog = await Blog.findById(id).populate('author', 'name country')
+    const blog = await Blog.findById(id).populate('author', 'name country avatar')
 
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' })
@@ -78,7 +78,7 @@ exports.deleteBlog = async (req, res) => {
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' })
     }
-    if (blog.authorId.toString() !== req.user.id) {
+    if (blog.author.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Unauthorized' });
     }
     await cloudinary.uploader.destroy(blog.publicId)
