@@ -18,16 +18,24 @@ exports.createEvent = async (req, res) => {
       status
     } = req.body
 
-    // hostedBy is sent as JSON string from frontend
+    // setting an event end time which will help us delete after the event ends
+    // if user have not entered a end time then we will assume it to last 1 day
+    const eventEndTime = req.body.eventEndTime 
+    ? new Date(req.body.eventEndTime)
+    : new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h later
+
+    // hostedBy is sent as JSON string from frontend because we can have multiple hosts
     const hostedBy = JSON.parse(req.body.hostedBy || '[]')
 
     const thumbnail = req.file ? req.file.path : ''
     const publicId = req.file.filename
+    const createdBy = req.user.id
 
     const event = new Event({
       title,
       description,
       eventDate,
+      eventEndTime,
       location,
       eventType,
       presentedBy,
@@ -35,7 +43,8 @@ exports.createEvent = async (req, res) => {
       status,
       hostedBy,
       thumbnail,
-      publicId
+      publicId,
+      createdBy
     })
 
     await event.save()
@@ -65,7 +74,7 @@ exports.Events = async (req, res) => {
 exports.getEvent = async (req, res) => {
   const { id } = req.params
   try {
-    const event = await Event.findById(id)
+    const event = await Event.findById(id).populate('createdBy', '_id name email')
     if (!event) {
       return res.status(404).json({ message: 'Event not found' })
     }
