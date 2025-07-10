@@ -9,19 +9,20 @@ import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import PasswordChange from "./PasswordChange";
 import axios from "axios";
+import Spinner from "@/components/ui/Spinner";
 
 const UserSettings = () => {
-  const { userInfo } = useAuth();
-
+  const { userInfo, refetchUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(userInfo.user.name);
-  const [location, setLocation] = useState(userInfo.user.country);
-  const [avatar, setAvatar] = useState(userInfo.user.avatar); // Image URL or base64
+  const [name, setName] = useState(userInfo?.user.name || "");
+  const [location, setLocation] = useState(userInfo?.user.country || "");
+  const [avatar, setAvatar] = useState(userInfo?.user.avatar || "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleSaveProfile = async () => {
     try {
-      // Simulate API call
+      setIsUpdating(true);
       const formData = new FormData();
       formData.append("name", name);
       formData.append("country", location);
@@ -33,19 +34,22 @@ const UserSettings = () => {
         `http://localhost:3000/api/v1/users/updateUser/${userInfo.user._id}`,
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { "Content-Type": "multipart/form-data" },
           withCredentials: true,
         }
       );
+
+      await refetchUser();
 
       toast({
         title: "Profile updated",
         description: "Your profile has been saved successfully.",
       });
+
+      setIsUpdating(false);
       setIsEditing(false);
     } catch (error) {
+      setIsUpdating(false);
       console.error(error);
       toast({
         title: "Error updating profile",
@@ -133,7 +137,10 @@ const UserSettings = () => {
                 />
               </div>
               <div className="flex gap-2">
-                <Button onClick={handleSaveProfile}>Save Changes</Button>
+                <Button onClick={handleSaveProfile}>
+                  {" "}
+                  {isUpdating ? <Spinner /> : " Save Changes"}
+                </Button>
                 <Button variant="outline" onClick={() => setIsEditing(false)}>
                   Cancel
                 </Button>

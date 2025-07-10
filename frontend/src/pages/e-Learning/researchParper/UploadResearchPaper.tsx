@@ -1,26 +1,29 @@
 import { useRef, useState } from "react";
 import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Spinner from "@/components/ui/Spinner";
 
-type UploadResearchPaperProps = {
-  fetchPapers: () => void;
-};
+// type UploadResearchPaperProps = {
+//   fetchPapers: () => void;
+// };
 
-const UploadResearchPaper = ({ fetchPapers }: UploadResearchPaperProps) => {
+const UploadResearchPaper = () => {
   const [file, setFile] = useState<File | null>(null);
   const [form, setForm] = useState({
     title: "",
     authors: "",
     abstract: "",
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleUpload = async () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
+
+  // Mutation function
+  const uploadPaper = async () => {
     if (!file || !form.title || !form.authors || !form.abstract) {
-      return alert("Please fill all fields and select a file");
+      throw new Error("All fields and file are required.");
     }
 
     const formData = new FormData();
@@ -29,30 +32,36 @@ const UploadResearchPaper = ({ fetchPapers }: UploadResearchPaperProps) => {
       formData.append(key, val);
     });
 
-    try {
-      setIsLoading(true);
-      const res = await axios.post(
-        "http://localhost:3000/api/v1/researchPapers/",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        }
-      );
-      console.log("Uploaded:", res.data);
+    const res = await axios.post(
+      "http://localhost:3000/api/v1/researchPapers/",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      }
+    );
+
+    return res.data;
+  };
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: uploadPaper,
+    onSuccess: () => {
       setForm({ title: "", authors: "", abstract: "" });
       setFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-      setIsLoading(false);
-      fetchPapers();
-    } catch (error) {
-      setIsLoading(false);
-      console.error(error.response?.data || error.message);
-    }
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      queryClient.invalidateQueries({ queryKey: ["research-paper"] });
+    },
+    onError: (error) => {
+      console.error(error.message);
+      alert("Upload failed. Please try again.");
+    },
+  });
+
+  const handleUpload = () => {
+    mutate(); // Triggers the mutation
   };
 
   return (
@@ -89,8 +98,12 @@ const UploadResearchPaper = ({ fetchPapers }: UploadResearchPaperProps) => {
             accept=".pdf,.doc,.docx"
             onChange={(e) => setFile(e.target.files?.[0] || null)}
           />
-          <Button className="w-full" onClick={handleUpload}>
-            {isLoading ? <Spinner /> : " Upload Paper"}
+          <Button
+            className="w-full"
+            onClick={handleUpload}
+            disabled={isPending}
+          >
+            {isPending ? <Spinner /> : "Upload Paper"}
           </Button>
         </CardContent>
       </Card>
