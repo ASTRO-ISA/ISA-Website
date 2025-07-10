@@ -24,6 +24,9 @@ mongoose
     process.exit(1)
   })
 
+// to auto delete events
+require('./utils/autoDeleteEvent')
+
 // Start the server
 const port = process.env.port || 3000
 const server = app.listen(port, () => {

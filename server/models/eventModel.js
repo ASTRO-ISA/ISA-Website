@@ -61,6 +61,15 @@ const eventSchema = new mongoose.Schema({
   publicId: {
     type: String,
     required: true
+  },
+  eventEndTime: {
+    type: String,
+    required: true
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   }
 })
 

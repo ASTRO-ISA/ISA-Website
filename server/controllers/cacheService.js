@@ -1,4 +1,5 @@
 const axios = require('axios')
+const cron = require('node-cron')
 require('dotenv').config()
 
 let cache = {
@@ -20,7 +21,6 @@ const pictureOfTheDay = async () => {
     const res = await axios.get(`https://api.nasa.gov/planetary/apod?api_key=${process.env.POTD_API_KEY}`)
     cache.potd = res.data
     timestamps.potd = new Date()
-    // console.log('launches cache updated')
   } catch (err) {
     console.error('failed to fetch potd:', err.message)
   }
@@ -31,9 +31,8 @@ const fetchLaunches = async () => {
     const res = await axios.get('https://lldev.thespacedevs.com/2.3.0/launches/upcoming/')
     cache.launches = res.data.results
     timestamps.launches = new Date()
-    // console.log('launches cache updated')
   } catch (err) {
-    console.error('failed to fetch launches:', err.message)
+    console.error('Failed to fetch launches:', err.message)
   }
 }
 
@@ -42,33 +41,34 @@ const fetchBlogs = async () => {
     const res = await axios.get('https://api.spaceflightnewsapi.net/v4/blogs')
     cache.blogs = res.data.results
     timestamps.blogs = new Date()
-    // console.log('blogs cache updated')
   } catch (err) {
-    console.error('failed to fetch blogs:', err.message)
+    console.error('Failed to fetch blogs:', err.message)
   }
-}
+};
 
 const fetchArticles = async () => {
   try {
     const res = await axios.get('https://api.spaceflightnewsapi.net/v4/articles')
     cache.articles = res.data.results
     timestamps.articles = new Date()
-    // console.log('articles cache updated')
   } catch (err) {
-    console.error('failed to fetch articles:', err.message)
+    console.error('Failed to fetch articles:', err.message)
   }
-};
+}
 
-// run at sever start
+// on first run
 pictureOfTheDay()
 fetchLaunches()
 fetchBlogs()
 fetchArticles()
 
-// auto refresh every 10 minutes
-setInterval(fetchLaunches, 10 * 60 * 1000)
-setInterval(fetchBlogs, 10 * 60 * 1000)
-setInterval(fetchArticles, 10 * 60 * 1000)
+// every 20 minutes but not at the same time, we are calling them at differnt time so they dont fire at once
+cron.schedule('0,20,40 * * * *', fetchLaunches)
+cron.schedule('5,25,45 * * * *', fetchBlogs)
+cron.schedule('10,30,50 * * * *', fetchArticles)
+
+// only once a day at 00:10 AM
+cron.schedule('0 */3 * * *', pictureOfTheDay)
 
 module.exports = {
   pictureOfTheDay: () => cache.potd,
