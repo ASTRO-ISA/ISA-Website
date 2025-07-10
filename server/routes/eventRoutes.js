@@ -21,15 +21,8 @@ router.route('/:id').get(eventController.getEvent)
 router.route('/register/:eventid/:userid').patch(eventController.registerEvent)
 
 router.use(authenticateToken)
+router.delete('/:id' , eventController.deleteEvent)
 router.use(restrictTo('admin'))
-router.put('/:id',eventController.updateEvent);
-router.delete('/:id' , eventController.deleteEvent);
-
-
-router.use(authenticateToken)
-router.use(restrictTo('admin'))
-router.put('/:id', eventController.updateEvent)
-router.delete('/:id', eventController.deleteEvent)
-
+router.put('/:id',eventController.updateEvent)
 
 module.exports = router

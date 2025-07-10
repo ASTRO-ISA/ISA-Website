@@ -22,7 +22,7 @@ router.route('/featured').get(blogController.featuredBlog)
 
 router
   .route('/delete/:id')
-  .get(
+  .delete(
     authenticateToken,
     blogController.deleteBlog
   )
