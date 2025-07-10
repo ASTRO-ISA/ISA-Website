@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
-  const { loginCheck } = useAuth();
+  const { refetchUser } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -29,28 +28,25 @@ const Login = () => {
         }
       );
 
-      console.log("Login success", response.data);
       toast({
         title: "Login successful!",
         description: "Welcome back!",
       });
-      loginCheck();
+
+      await refetchUser();
       navigate("/");
     } catch (err) {
-      console.log("Something went wrong", err);
+      console.error("Login error:", err);
       toast({
         title: "Login failed",
         description: "Invalid credentials",
         variant: "destructive",
       });
     }
-    console.log("Login submitted:", form);
   };
 
   return (
     <div className="min-h-screen bg-space-dark text-white flex flex-col">
-      {/* <Navbar /> */}
-
       <main className="flex-grow flex items-center justify-center px-4 pt-24 pb-16">
         <form
           onSubmit={handleSubmit}
@@ -108,8 +104,6 @@ const Login = () => {
           </p>
         </form>
       </main>
-
-      {/* <Footer /> */}
     </div>
   );
 };
