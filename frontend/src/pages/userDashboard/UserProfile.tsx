@@ -12,7 +12,7 @@ import Spinner from "@/components/ui/Spinner";
 const UserProfile = () => {
   const navigate = useNavigate();
 
-  const { loginCheck, userInfo } = useAuth();
+  const { refetchUser, userInfo } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
 
   console.log(userInfo);
@@ -26,7 +26,7 @@ const UserProfile = () => {
         title: "Logout successful!",
         description: "See you again!",
       });
-      loginCheck();
+      await refetchUser();
       navigate("/");
     } catch (err) {
       toast({
@@ -91,13 +91,6 @@ const UserProfile = () => {
                   </div>
                 </div>
                 <div className="flex gap-6 mt-4 lg:mt-0">
-                  <Button
-                    onClick={() => setIsEditing(true)}
-                    className="border-space-purple/50"
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit Profile
-                  </Button>
                   <button
                     onClick={handleLogout}
                     className="flex justify-center items-center border border-red-700 py-2 pl-4 pr-4 text-red-800 hover:bg-red-500/20"
