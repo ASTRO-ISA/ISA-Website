@@ -94,7 +94,7 @@ const Dashboard = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("events");
   const [isEditing, setIsEditing] = useState(false);
-  const { loginCheck, userInfo: user } = useAuth();
+  const { userInfo: user } = useAuth();
 
   // Mock data - in real app would come from API
   const [userStats] = useState<UserStats>({
@@ -174,27 +174,6 @@ const Dashboard = () => {
     },
   ]);
 
-  // logout handler {manual}
-  const handleLogout = async () => {
-    try {
-      await axios.get("http://localhost:3000/api/v1/users/logout", {
-        withCredentials: true,
-      });
-      toast({
-        title: "Logout successful!",
-        description: "See you again!",
-      });
-      loginCheck();
-      navigate("/");
-    } catch (err) {
-      toast({
-        title: "Logout failed",
-        description: "Please try again",
-        variant: "destructive",
-      });
-    }
-  };
-
   const handleSaveProfile = () => {
     setIsEditing(false);
     toast({
@@ -242,7 +221,9 @@ const Dashboard = () => {
           <TabsList className="grid w-full grid-cols-4 bg-space-purple/20">
             <TabsTrigger value="events">Registered Events</TabsTrigger>
             <TabsTrigger value="blogs">My Blogs</TabsTrigger>
-            <TabsTrigger value="research_papers">My Research Papers</TabsTrigger>
+            <TabsTrigger value="research_papers">
+              My Research Papers
+            </TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
