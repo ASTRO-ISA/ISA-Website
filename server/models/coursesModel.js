@@ -1,18 +1,15 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const CourseSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
-    instructor: { type: String, required: true },
-    level: {
+    description: { type: String, required: true },
+    applyLink: {
       type: String,
-      enum: ["Beginner", "Intermediate", "Advanced"],
-      default: "Beginner",
+      required: true,
+      validate: [validator.isURL, 'Please enter a valid URL'],
     },
-    duration: { type: String, required: true },
-    rating: { type: Number, min: 0, max: 5, default: 0 },
-    students: { type: Number, default: 0 },
-    price: { type: String, required: true },
     imageUrl: { type: String, required: true },
     publicId: { type: String, required: true },
   },

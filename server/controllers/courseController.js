@@ -1,33 +1,21 @@
-const Course = require("../models/coursesModel")
-const cloudinary = require('cloudinary').v2
+const Course = require("../models/coursesModel");
+const cloudinary = require("cloudinary").v2;
 
 const createCourse = async (req, res) => {
   try {
-    const {
-      title,
-      instructor,
-      level,
-      duration,
-      rating,
-      students,
-      price,
-    } = req.body;
+    const { title, description, applyLink } = req.body;
 
-    if (!req.file || !title || !instructor || !duration || !price) {
+    if (!req.file || !title || !description || !applyLink) {
       return res.status(400).json({ message: "Required fields are missing." });
     }
 
-    const imageUrl = req.file.path
-    const publicId = req.file.filename
+    const imageUrl = req.file.path;
+    const publicId = req.file.filename;
 
     const newCourse = new Course({
       title,
-      instructor,
-      level,
-      duration,
-      rating,
-      students,
-      price,
+      description,
+      applyLink,
       imageUrl,
       publicId,
     });
@@ -39,7 +27,7 @@ const createCourse = async (req, res) => {
       course: savedCourse,
     });
   } catch (error) {
-    console.error("Error creating course:", error);
+    console.error("Error creating course:", error.message);
     res.status(500).json({ message: "Server error while creating course." });
   }
 };
@@ -61,7 +49,7 @@ const deleteCourse = async (req, res) => {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    await cloudinary.uploader.destroy(course.publicId)
+    await cloudinary.uploader.destroy(course.publicId);
     await course.deleteOne();
 
     res.status(200).json({ message: "Course deleted successfully" });
