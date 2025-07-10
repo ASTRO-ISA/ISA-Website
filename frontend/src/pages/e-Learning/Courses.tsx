@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Star } from "lucide-react";
 import axios from "axios";
+import { ExternalLink } from "lucide-react";
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
@@ -43,35 +43,25 @@ const Courses = () => {
                     alt={course.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                  <div className="absolute top-2 right-2 bg-space-purple/90 text-white text-xs font-bold px-2 py-1 rounded">
-                    {course.level}
-                  </div>
                 </div>
+
                 <div className="p-4">
                   <h3 className="text-lg font-semibold mb-1 text-white">
                     {course.title}
                   </h3>
                   <p className="text-gray-400 text-sm mb-3">
-                    by {course.instructor}
+                    {course.description}
                   </p>
 
-                  <div className="flex justify-between text-sm text-gray-400 mb-3">
-                    <span>{course.duration}</span>
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 text-space-accent mr-1 fill-space-accent" />
-                      <span>
-                        {course.rating ?? 4.8} ({course.students ?? 0} students)
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center mt-4">
-                    <span className="text-xl font-bold text-space-accent">
-                      {course.price}
-                    </span>
-                    <button className="bg-space-accent hover:bg-space-accent/80 text-white px-3 py-1 rounded transition-colors">
-                      Enroll Now
-                    </button>
+                  <div className="flex justify-end mt-4">
+                    <a
+                      href={course.applyLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-space-accent hover:bg-space-accent/80 text-white px-3 py-1 rounded transition-colors inline-flex items-center gap-1"
+                    >
+                      Apply <ExternalLink className="h-4 w-4" />
+                    </a>
                   </div>
                 </div>
               </div>

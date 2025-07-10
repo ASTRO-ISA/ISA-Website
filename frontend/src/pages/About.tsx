@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 const About = () => {
   const teamMembers = [
 
+ 
+ 
+ 
 
     {
       name: "Naman Meravi",
@@ -16,20 +19,26 @@ const About = () => {
       github: "https://github.com/NamanMeravi",
       linkedin: "https://www.linkedin.com/in/naman-meravi-660a1b257/"
     },
-
  
+
     {
       name: " Suyash Nagar",
       role: "Full Stack Developer",
+ 
       // bio: "Expert in deep space observation...",
+ 
       image: "/images/suyash.png",
       github: " https://github.com/suysah",
       linkedin: "https://www.linkedin.com/in/suyash-nagar-867027256/"
     },
     {
       name: "Vinod Mali",
-      role: "Full Stack Developer",
+ 
+      role: "Full Stack Devrloper",
+ 
+ 
       // bio: "Award-winning educator...",
+ 
       image: "/images/vinod.png",
       github: "https://github.com/vinodM09",
       linkedin: "https://www.linkedin.com/in/vinodm09"
@@ -37,10 +46,20 @@ const About = () => {
     {
       name: "Anadi Gupta",
       role: "Frontend Developer",
+ 
+ 
       // bio: "Award-winning educator...",
+ 
       image: "/images/anadi.png",
       github: " https://github.com/Anadi-Gupta1",
       linkedin: "https://www.linkedin.com/in/anadigupta/ "
+    },
+    {
+      name: "Sunaina Chaurasiya",
+      role: "Frontend Developer",
+      image: "/images/sunaina.png",
+      github: "https://github.com/Sunaina-Chaurasiya",
+      linkedin: "https://www.linkedin.com/in/sunaina-chaurasiya-252a06285/ "
     },
 
   ];
@@ -48,70 +67,63 @@ const About = () => {
   const clubDepartments = [
 
     {
-      name: "Mark Johnson",
+      name: "Jyotsana ",
       role: "Rocket Engineering Lead",
-      bio: "Expert in propulsion systems...",
-      image: "/placeholder.svg",
-      github: "https://github.com/markjohnson",
-      linkedin: "https://linkedin.com/in/markjohnson"
+      image: "/images/Jyotsana.png",
+      github: "https://github.com/jyotsana20",
+      linkedin: "https://www.linkedin.com/in/jyotsana-rani-3a7a18298?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
     },
     {
-      name: "Lisa Wang",
+      name: " Chanchal Bairagi",
       role: "Space Technology Coordinator",
-      bio: "Coordinates cutting-edge R&D...",
-      image: "/placeholder.svg",
+      image: "/images/Chanchal.png",
       github: "https://github.com/lisawang",
-      linkedin: "https://linkedin.com/in/lisawang"
+      linkedin: "https://www.linkedin.com/in/chanchal-bairagi-1502b8293?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+    },
+    {
+      name: "Akshay Jain",
+      role: "Space Technology Coordinator",
+      image: "/images/Akshay.png",
+      github: "https://github.com/Akshay-Jain08",
+      linkedin: "https://www.linkedin.com/in/akshay-jain-88776b20b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+    },
+    {
+      name: " AMIT KUMAR",
+      role: "Space Technology Coordinator",
+      image: "/images/Amit.png",
+      github: "https://github.com/amitakr0027",
+      linkedin: " http://www.linkedin.com/in/amitkumar0027"
+    },
+    {
+      name: "Mayank Manan",
+      role: "Space Technology Coordinator",
+      image: "/images/Mayank.png",
+      github: "https://github.com/MayankManan",
+      linkedin: " https://in.linkedin.com/in/manan-mayank"
+    },
+    {
+      name: " Niyati Richhariya",
+      role: "Space Technology Coordinator",
+      image: "/images/Niyati.png",
+       
+      linkedin: " https://www.linkedin.com/in/niyati-richhariya-83a019334?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+    },
+    {
+      name: " Akshat Shevalkar ",
+      role: "Space Technology Coordinator",
+      image: "/images/Akshat.png",
+      
+      linkedin: " https://www.linkedin.com/in/akshat-shevalkar-380711329?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+    },
+    {
+      name: "   Srijan Mishra ",
+      role: "Space Technology Coordinator",
+      image: "/images/Srijan.png",
+      
+      linkedin: " https://www.linkedin.com/in/srijan-mishra-7b95692b5?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app "
     },
 
-    {
-  name: "Ethan Brooks",
-  role: "Orbital Mechanics Specialist",
-  bio: "Designs and simulates orbital trajectories for space missions and satellite constellations.",
-  image: "/placeholder.svg",
-  github: "https://github.com/ethanbrooks",
-  linkedin: "https://linkedin.com/in/ethanbrooks"
-},
-{
-  name: "Nina Patel",
-  role: "Astrobiology Research Lead",
-  bio: "Explores possibilities of life beyond Earth and leads research on extremophiles in space environments.",
-  image: "/placeholder.svg",
-  github: "https://github.com/ninapatel",
-  linkedin: "https://linkedin.com/in/ninapatel"
-},
-{
-  name: "Carlos Mendes",
-  role: "Satellite Systems Engineer",
-  bio: "Specializes in satellite subsystems, telemetry, and mission integration for low-Earth orbit missions.",
-  image: "/placeholder.svg",
-  github: "https://github.com/carlosmendes",
-  linkedin: "https://linkedin.com/in/carlosmendes"
-},
-{
-  name: "Aisha Rahman",
-  role: "Space Robotics Engineer",
-  bio: "Develops robotic arms and autonomous systems for space exploration and ISS operations.",
-  image: "/placeholder.svg",
-  github: "https://github.com/aisharahman",
-  linkedin: "https://linkedin.com/in/aisharahman"
-},
-{
-  name: "Julien Moreau",
-  role: "Space Policy Analyst",
-  bio: "Advises on international space law and policy for sustainable and ethical space development.",
-  image: "/placeholder.svg",
-  github: "https://github.com/julienmoreau",
-  linkedin: "https://linkedin.com/in/julienmoreau"
-},
-{
-  name: "Emily Zhao",
-  role: "Cosmic Data Scientist",
-  bio: "Analyzes massive astronomical datasets to uncover patterns in galaxy formation and cosmic microwave background.",
-  image: "/placeholder.svg",
-  github: "https://github.com/emilyzhao",
-  linkedin: "https://linkedin.com/in/emilyzhao"
-}
+     
   ];
 
   return (
@@ -237,7 +249,7 @@ const About = () => {
             Meet Our Development Team
           </motion.h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
             {teamMembers.map((member, index) => (
               <motion.div
                 key={member.name}
@@ -281,10 +293,10 @@ const About = () => {
             viewport={{ once: true }}
             className="text-3xl md:text-4xl font-bold text-center mb-10"
           >
-            Club Department Team
+            Core team Menmbers
           </motion.h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
             {clubDepartments.map((member, index) => (
               <motion.div
                 key={member.name}
@@ -451,3 +463,20 @@ const About = () => {
 };
 
 export default About;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 

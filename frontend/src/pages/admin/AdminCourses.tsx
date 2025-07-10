@@ -15,13 +15,9 @@ const AdminCourses = () => {
 
   const [newCourse, setNewCourse] = useState({
     title: "",
-    instructor: "",
-    level: "Beginner",
-    duration: "",
-    rating: 0,
-    students: 0,
-    price: "",
-    image: null, // file object
+    description: "",
+    applyLink: "",
+    image: null,
   });
 
   const handleInputChange = (e) => {
@@ -50,12 +46,8 @@ const AdminCourses = () => {
 
       const formData = new FormData();
       formData.append("title", newCourse.title);
-      formData.append("instructor", newCourse.instructor);
-      formData.append("level", newCourse.level);
-      formData.append("duration", newCourse.duration);
-      formData.append("rating", newCourse.rating.toString());
-      formData.append("students", newCourse.students.toString());
-      formData.append("price", newCourse.price);
+      formData.append("description", newCourse.description);
+      formData.append("applyLink", newCourse.applyLink);
       formData.append("image", newCourse.image);
 
       await axios.post("http://localhost:3000/api/v1/courses/create", formData, {
@@ -68,12 +60,8 @@ const AdminCourses = () => {
       toast({ title: "Course created successfully!" });
       setNewCourse({
         title: "",
-        instructor: "",
-        level: "Beginner",
-        duration: "",
-        rating: 0,
-        students: 0,
-        price: "",
+        description: "",
+        applyLink: "",
         image: null,
       });
       fetchCourses();
@@ -128,54 +116,21 @@ const AdminCourses = () => {
               required
               className="w-full p-2 rounded bg-gray-800 text-white"
             />
-            <input
-              name="instructor"
-              value={newCourse.instructor}
+            <textarea
+              name="description"
+              value={newCourse.description}
               onChange={handleInputChange}
-              placeholder="Instructor*"
+              placeholder="Course Description*"
               required
+              rows={3}
               className="w-full p-2 rounded bg-gray-800 text-white"
             />
-            <select
-              name="level"
-              value={newCourse.level}
-              onChange={handleInputChange}
-              className="w-full p-2 rounded bg-gray-800 text-white"
-            >
-              <option value="Beginner">Beginner</option>
-              <option value="Intermediate">Intermediate</option>
-              <option value="Advanced">Advanced</option>
-            </select>
             <input
-              name="duration"
-              value={newCourse.duration}
+              name="applyLink"
+              value={newCourse.applyLink}
               onChange={handleInputChange}
-              placeholder="Duration* (e.g., 6 weeks)"
+              placeholder="Apply Link*"
               required
-              className="w-full p-2 rounded bg-gray-800 text-white"
-            />
-            <input
-              name="price"
-              value={newCourse.price}
-              onChange={handleInputChange}
-              placeholder="Price* (e.g., $49.99)"
-              required
-              className="w-full p-2 rounded bg-gray-800 text-white"
-            />
-            <input
-              name="rating"
-              type="number"
-              value={newCourse.rating}
-              onChange={handleInputChange}
-              placeholder="Rating (0-5)"
-              className="w-full p-2 rounded bg-gray-800 text-white"
-            />
-            <input
-              name="students"
-              type="number"
-              value={newCourse.students}
-              onChange={handleInputChange}
-              placeholder="Enrolled Students"
               className="w-full p-2 rounded bg-gray-800 text-white"
             />
             <input
@@ -200,16 +155,24 @@ const AdminCourses = () => {
               key={course._id}
               className="p-4 border bg-space-purple/20 rounded"
             >
-              <p className="font-semibold text-lg"><span className="text-gray-400">Title: </span>{course.title}</p>
-              <p><span className="text-gray-400">Instructor: </span>{course.instructor}</p>
-              <p><span className="text-gray-400">Level: </span>{course.level}</p>
-              <p><span className="text-gray-400">Duration: </span>{course.duration}</p>
-              <p><span className="text-gray-400">Price: </span>{course.price}</p>
-              {/* <img
+              <p className="font-semibold text-lg">{course.title}</p>
+              <p>{course.description}</p>
+              <p>
+                Apply:{" "}
+                <a
+                  href={course.applyLink}
+                  className="text-blue-400 underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {course.applyLink}
+                </a>
+              </p>
+              <img
                 src={course.imageUrl}
                 alt={course.title}
                 className="w-full h-40 object-cover mt-2 rounded"
-              /> */}
+              />
               <Button
                 size="sm"
                 onClick={() => handleDeleteCourse(course._id)}
