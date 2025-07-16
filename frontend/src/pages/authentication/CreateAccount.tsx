@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
 const Signup = () => {
-  const { loginCheck } = useAuth();
+  const { refetchUser } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -50,7 +50,7 @@ const Signup = () => {
         title: "Account created!:",
         description: "Welcome!",
       });
-      loginCheck();
+      refetchUser();
       navigate("/");
     } catch (err) {
       console.error("Something went wrong", err);

@@ -16,19 +16,21 @@ import Training from "./pages/e-Learning/Training";
 import Events from "./pages/event/Events";
 import Webinars from "./pages/Webinars";
 import Community from "./pages/Community";
-import Login from "./pages/Login";
-import CreateAccount from "./pages/CreateAccount";
+import Login from "./pages/authentication/Login";
+import CreateAccount from "./pages/authentication/CreateAccount";
 import Profile from "./pages/userDashboard/Dashboard";
 import EventDetails from "./pages/event/EventDetail";
 import CreateEvent from "./pages/event/CreateEvent";
 // import SplineModels from "./pages/SplineModels";
 // import FigmaDesign from "./pages/FigmaDesign";
 // import AstronomyResources from "./pages/AstronomyResources";
-import NotFound from "./pages/NotFound";
+import NotFound from "./pages/authentication/NotFound";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AdminDashboard from "./pages/admin/Admin";
 import About from "./pages/About";
+import ResetPassword from "./pages/authentication/ResetPassword";
+import ForgotPassword from "./pages/authentication/ForgotPassword";
 
 const queryClient = new QueryClient();
 
@@ -80,9 +82,8 @@ const App = () => {
             <Route path="/host-event" element={<CreateEvent />} />
             <Route path="/about" element={<About />} />
             <Route path="/events/:id" element={<EventDetails />} />
-            {/* <Route path="/spline-models" element={<SplineModels />} />
-            <Route path="/figma-design" element={<FigmaDesign />} />
-            <Route path="/astronomy-resources" element={<AstronomyResources />} /> */}
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
