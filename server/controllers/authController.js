@@ -1,6 +1,7 @@
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary').v2
+const sendEmail = require('../utils/sendEmail')
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -98,29 +99,28 @@ exports.logout = async (req, res) => {
 
 exports.updatePassword = async (req, res) => {
   try {
-    // 1. get user from the collection
-    const { currentPassword, newPassword, passwordConfirm } = req.body
+    const { currentPassword, newPassword } = req.body
 
+    // 1. Get user and include password field
     const user = await User.findById(req.user.id).select('+password')
 
-    // 2. check if the given password is correct
+    // 2. Check if current password is correct
     const isCorrect = await user.correctPassword(currentPassword, user.password)
     if (!isCorrect) {
-      return res
-        .status(401)
-        .json('Password does not match. Please enter the correct password')
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Current password is incorrect'
+      })
     }
 
-    // 3.update password
+    // 3. Set new password and save
     user.password = newPassword
-    user.passwordConfirm = passwordConfirm
-    await user.save()
+    await user.save() // Will trigger pre-save hash + passwordChangedAt
 
-    // 4. log User in , using jwt
-
+    // 4. Send new JWT
     createSendToken(user, 200, res)
   } catch (error) {
-    res.status(500).json({ status: 'success', message: error.message })
+    res.status(500).json({ status: 'error', message: error.message })
   }
 }
 
@@ -172,6 +172,47 @@ exports.updateUser = async (req, res) => {
       status: 'fail',
       message: 'Server error, cannot update User',
       error: error.message
+    })
+  }
+}
+
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body
+
+  const user = await User.findOne({ email })
+  if (!user)
+    return res.status(404).json({ message: 'User not found with this email' })
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: '15m'
+  })
+
+  const resetLink = `http://localhost:8080/reset-password/${token}`
+
+  await sendEmail(user.email, 'Reset your password', `Reset link: ${resetLink}`)
+
+  res.status(200).json({ message: 'Reset link sent to email' })
+}
+
+exports.resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const user = await User.findById(decoded.id).select('+password')
+    if (!user) return res.status(400).json({ message: 'Invalid user' })
+
+    user.password = newPassword
+    user.passwordChangedAt = Date.now()
+    await user.save()
+
+    res
+      .status(200)
+      .json({ status: 'success', message: 'Password has been reset' })
+  } catch (err) {
+    return res.status(400).json({
+      message: 'Invalid or expired token',
+      error: err.message
     })
   }
 }
