@@ -3,19 +3,26 @@ const Featured = require('../models/featuredPicModel')
 const cloudinary = require('../utils/cloudinary')
 
 exports.uploadFeatured = async (req, res) => {
-  try{
+  try {
     const cldImage = req.file.path
     const newFeatured = new Featured({
-        caption: req.body.caption,
-        imageUrl: cldImage,
-        publicId: req.file.filename,
-        author: req.body.author
+      caption: req.body.caption,
+      imageUrl: cldImage,
+      publicId: req.file.filename,
+      author: req.body.author
     })
     await newFeatured.save()
-    res.status(201).json({message:'Image uploaded successfully', pic: newFeatured})
-    } catch (err) {
-        res.status(500).json({ message: 'something went wrong in uploadFeatured'})
-    }
+    res
+      .status(201)
+      .json({ message: 'Image uploaded successfully', pic: newFeatured })
+  } catch (err) {
+    res
+      .status(500)
+      .json({
+        message: 'something went wrong in uploadFeatured',
+        error: err.message
+      })
+  }
 }
 
 exports.deleteFeatured = async (req, res) => {
@@ -31,35 +38,52 @@ exports.deleteFeatured = async (req, res) => {
 
     res.status(204).json({ message: 'Deleted successfully' })
   } catch (err) {
-    res.status(500).json({ message: 'Something went wrong in deleteFeatured' })
+    res
+      .status(500)
+      .json({
+        message: 'Something went wrong in deleteFeatured',
+        error: err.message
+      })
   }
 }
 
 exports.getFeatured = async (req, res) => {
-  try{
-      const pics = await Featured.find({})
-      if (!pics) {
-          res.status(404).json({ message: 'Nothing to see here right now!' })
-      }
-      res.status(200).json(pics)
+  try {
+    const pics = await Featured.find({})
+    if (!pics) {
+      res.status(404).json({ message: 'Nothing to see here right now!' })
+    }
+    res.status(200).json(pics)
   } catch (err) {
-      res.status(500).json({ message: 'something went wrong in getallpics'})
+    res
+      .status(500)
+      .json({
+        message: 'something went wrong in getallpics',
+        error: err.message
+      })
   }
 }
 
 exports.uploadPics = async (req, res) => {
-    try{
-        const cldImage = req.file.path
-        const newPic = new Gallery({
-            caption: req.body.caption,
-            imageUrl: cldImage,
-            publicId: req.file.filename
-        })
-        await newPic.save()
-        res.status(201).json({message:'Image uploaded successfully', pic: newPic})
-    } catch (err) {
-        res.status(500).json({ message: 'something went wrong in uploadPics'})
-    }
+  try {
+    const cldImage = req.file.path
+    const newPic = new Gallery({
+      caption: req.body.caption,
+      imageUrl: cldImage,
+      publicId: req.file.filename
+    })
+    await newPic.save()
+    res
+      .status(201)
+      .json({ message: 'Image uploaded successfully', pic: newPic })
+  } catch (err) {
+    res
+      .status(500)
+      .json({
+        message: 'something went wrong in uploadPics',
+        error: err.message
+      })
+  }
 }
 
 exports.deletePics = async (req, res) => {
@@ -75,18 +99,28 @@ exports.deletePics = async (req, res) => {
 
     res.status(204).json({ message: 'Deleted successfully' })
   } catch (err) {
-    res.status(500).json({ message: 'Something went wrong in deletePics' })
+    res
+      .status(500)
+      .json({
+        message: 'Something went wrong in deletePics',
+        error: err.message
+      })
   }
 }
 
 exports.allPics = async (req, res) => {
-    try{
-        const pics = await Gallery.find({})
-        if (!pics) {
-            res.status(404).json({ message: 'Nothing to see here right now!' })
-        }
-        res.status(200).json(pics)
-    } catch (err) {
-        res.status(500).json({ message: 'something went wrong in getallpics'})
+  try {
+    const pics = await Gallery.find({})
+    if (!pics) {
+      res.status(404).json({ message: 'Nothing to see here right now!' })
     }
+    res.status(200).json(pics)
+  } catch (err) {
+    res
+      .status(500)
+      .json({
+        message: 'something went wrong in getallpics',
+        error: err.message
+      })
+  }
 }
