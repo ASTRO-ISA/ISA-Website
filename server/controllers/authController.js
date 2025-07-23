@@ -1,7 +1,7 @@
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary').v2
-const sendEmail = require('../utils/sendEmail')
+const { sendEmail } = require('../utils/sendEmail')
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
