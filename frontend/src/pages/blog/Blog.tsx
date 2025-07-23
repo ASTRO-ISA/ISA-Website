@@ -239,7 +239,7 @@ const Blog = () => {
   });
 
   //saving blogs to user
-  const handleSaveblog = (blogId) => {
+  const handleSaveBlog = (blogId) => {
     mutateSaveBlog.mutate(blogId);
   };
 
@@ -516,6 +516,30 @@ const Blog = () => {
                               >
                                 Share
                               </button>
+
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleSaveBlog(blog._id);
+                                }}
+                                className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
+                              >
+                                Save
+                              </button>
+
+                              {/* If you are admin then only you will see the button */}
+                              {isAdmin && (
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleAddToNewsletter(blog);
+                                  }}
+                                  className="w-full px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+                                >
+                                  Add to Newsletter
+                                </button>
+                              )}
 
                               {/* if you are admin then only you will see the button */}
                               {isAdmin && featuredId !== blog._id && (
