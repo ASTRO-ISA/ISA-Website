@@ -216,3 +216,104 @@ exports.resetPassword = async (req, res) => {
     })
   }
 }
+
+exports.getSavedBlogs = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate('savedBlogs')
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'User not found'
+      })
+    }
+
+    res.status(200).json({
+      status: 'success',
+      savedBlogs: user.savedBlogs
+    })
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'Something went wrong while saving the blog',
+      error: error.message
+    })
+  }
+}
+
+exports.saveBlog = async (req, res) => {
+  try {
+    const { blogId } = req.params
+
+    if (!blogId) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'No blogId provided'
+      })
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $addToSet: { savedBlogs: blogId } },
+      { new: true }
+    )
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'User not found'
+      })
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Blog saved successfully',
+
+      savedBlogs: user.savedBlogs
+    })
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'Something went wrong while saving the blog',
+      error: error.message
+    })
+  }
+}
+
+exports.unSaveBlog = async (req, res) => {
+  try {
+    const { blogId } = req.params
+
+    if (!blogId) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'No blogId provided'
+      })
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $pull: { savedBlogs: blogId } },
+      { new: true }
+    )
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'User not found'
+      })
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Blog deleted successfully',
+      savedBlogs: user.savedBlogs
+    })
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'Something went wrong while unsaving the blog',
+      error: error.message
+    })
+  }
+}

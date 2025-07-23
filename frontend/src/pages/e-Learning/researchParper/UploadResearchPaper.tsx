@@ -5,10 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Spinner from "@/components/ui/Spinner";
 
-// type UploadResearchPaperProps = {
-//   fetchPapers: () => void;
-// };
-
 const UploadResearchPaper = () => {
   const [file, setFile] = useState<File | null>(null);
   const [form, setForm] = useState({
@@ -61,7 +57,7 @@ const UploadResearchPaper = () => {
   });
 
   const handleUpload = () => {
-    mutate(); // Triggers the mutation
+    mutate();
   };
 
   return (

@@ -28,6 +28,12 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user'
   },
+  savedBlogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Blog'
+    }
+  ],
   password: {
     type: String,
     minlength: [8, 'Minimum 8 characters'],
