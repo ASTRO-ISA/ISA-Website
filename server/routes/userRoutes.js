@@ -22,5 +22,8 @@ router
 
 // protected route to check if the user is logged in
 router.route('/me').get(authController.getMe)
+router.route('/savedBlogs').get(authController.getSavedBlogs)
+router.route('/saveBlog/:blogId').patch(authController.saveBlog)
+router.route('/unSaveBlog/:blogId').delete(authController.unSaveBlog)
 
 module.exports = router
