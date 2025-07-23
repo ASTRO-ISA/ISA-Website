@@ -5,6 +5,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { MoreHorizontal, Share, Mail } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 // import StarBackground from "@/components/StarBackground";
 
 const Events = () => {
@@ -15,6 +17,9 @@ const Events = () => {
   const { isLoggedIn, userInfo } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // 3 dot menu
+  const [openMenuId, setOpenMenuId] = useState(null);
 
   // to check if the user is logged in before writing the blog, if the user is not logged in, he cannot write blog
   const handleWriteClick = () => {
@@ -53,6 +58,27 @@ const Events = () => {
         console.error("Error regstering user for event", err);
         setLoading(false);
       });
+  };
+
+  const handleAddToNewsletter = async (event) => {
+    try {
+      await axios.post(
+        "http://localhost:3000/api/v1/newsletter/draft/add",
+        {
+          type: "event",
+          id: event._id,
+        },
+        { withCredentials: true }
+      );
+      toast({ title: "Added to newsletter draft!" });
+    } catch (err) {
+      toast({
+        title: "Failed to add to draft",
+        variant: "destructive",
+      });
+    } finally {
+      setOpenMenuId(null);
+    }
   };
 
   useEffect(() => {
@@ -203,6 +229,36 @@ const Events = () => {
           </div>
         </div>
       </Link>
+      <div className="absolute top-3 right-3 z-10">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="text-white bg-black/40 hover:bg-black/60 rounded-full p-1">
+              <MoreHorizontal size={18} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-black border border-gray-800 text-white text-sm shadow-xl">
+            <DropdownMenuItem
+              onClick={() => navigator.share
+                ? navigator.share({
+                    title: event.title,
+                    text: "Check out this event!",
+                    url: `${window.location.origin}/events/${event._id}`,
+                  })
+                : alert("Sharing not supported on this browser.")
+              }
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Share size={14} /> Share
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => handleAddToNewsletter(event)}
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Mail size={14} /> Add to Newsletter
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
       <button
         onClick={() => handleRegister(userInfo?.user._id, event._id)}

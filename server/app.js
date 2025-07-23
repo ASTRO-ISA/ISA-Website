@@ -18,6 +18,7 @@ const researchPaperRouter = require('./routes/researchPaperRoutes.js')
 const courseRouter = require('./routes/courseRoutes.js')
 const featuredRouter = require('./routes/featuredRoutes.js')
 const webinarRouter = require('./routes/webinarRoutes.js')
+const newsletterRouter = require('./routes/newsletterRoutes.js')
 
 
 // middlewares
@@ -47,6 +48,7 @@ app.use('/api/v1/picture', extApiRouter)
 app.use('/api/v1/gallery', galleryRouter)
 app.use('/api/v1/blogs/featured', featuredRouter)
 app.use('/api/v1/webinars', webinarRouter)
+app.use('/api/v1/newsletter', newsletterRouter)
 
 app.get('/', (req, res) => {
   res.status(200).json({

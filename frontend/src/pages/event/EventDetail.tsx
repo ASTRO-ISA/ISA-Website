@@ -37,8 +37,8 @@ const EventDetails = () => {
   };
 
   // get event from database
-  const fetchEvent = () => {
-    const res = axios
+  const fetchEvent = async () => {
+    const res = await axios
       .get(`http://localhost:3000/api/v1/events/${id}`)
       .then((res) => {
         setEvent(res.data);

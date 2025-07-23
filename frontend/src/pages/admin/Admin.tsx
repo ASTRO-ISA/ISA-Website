@@ -9,13 +9,9 @@ import SuggestedBlogTopic from "../blog/SuggestedBlogTopic";
 import { useToast } from "@/hooks/use-toast";
 import AdminGallerySection from "./AdminGallerySection";
 import AdminJobs from "./AdJob";
-
 import AdminCourses from "./AdminCourses";
-
-
-
 import AdminWebinars from "./AdminWebinar";
-
+import AdminNewsletterDraft from "./AdminNewsletterDraft";
 
 export default function AdminDashboard() {
 
@@ -116,6 +112,7 @@ export default function AdminDashboard() {
                     <TabsTrigger value="courses">Manage Courses</TabsTrigger>
                     <TabsTrigger value="gallery">Manage Gallery</TabsTrigger>
                     <TabsTrigger value="webinar">Manage Webinars</TabsTrigger>
+                    <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
                 </TabsList>
                 </div>
 
@@ -237,7 +234,11 @@ export default function AdminDashboard() {
                      {/* Admin courses */}
                     <TabsContent value="courses" className="space-y-6">
                     <AdminCourses/> 
+                    </TabsContent>
 
+                    {/*newsletter */}
+                    <TabsContent value="newsletter" className="space-y-6">
+                    <AdminNewsletterDraft/> 
                     </TabsContent>
 
                 </Tabs>
