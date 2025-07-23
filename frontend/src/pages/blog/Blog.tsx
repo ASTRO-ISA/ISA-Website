@@ -13,12 +13,15 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import SuggestBlogTopic from "./SuggestBlogTopic";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { error } from "console";
+import { Button } from "@/components/ui/button";
 
 const Blog = () => {
-
   const { toast } = useToast();
   const navigate = useNavigate();
   const { isLoggedIn, isAdmin } = useAuth();
+  const queryClient = useQueryClient();
 
   // featured blog
   const [loadingFeaturedBlog, setLoadingFeaturedBlog] = useState(false);
@@ -108,7 +111,7 @@ const Blog = () => {
     fetchFeatured();
   }, []);
 
-    // set as featured
+  // set as featured
   const handleSetFeatured = async (blog) => {
     if (featuredId !== null) {
       toast({
@@ -118,7 +121,9 @@ const Blog = () => {
       return;
     }
     try {
-      await axios.patch(`http://localhost:3000/api/v1/blogs/featured/${blog._id}`);
+      await axios.patch(
+        `http://localhost:3000/api/v1/blogs/featured/${blog._id}`
+      );
       toast({
         title: `Blog "${blog.title}" set as featured.`,
       });
@@ -134,7 +139,9 @@ const Blog = () => {
   // remove featured
   const handleRemoveFeatured = async (blog) => {
     try {
-      await axios.patch(`http://localhost:3000/api/v1/blogs/featured/remove/${blog._id}`);
+      await axios.patch(
+        `http://localhost:3000/api/v1/blogs/featured/remove/${blog._id}`
+      );
       toast({
         title: `Blog removed "${blog.title}" from featured`,
       });
@@ -184,6 +191,36 @@ const Blog = () => {
 
     fetchArticles();
   }, []);
+
+  const mutateSaveBlog = useMutation({
+    mutationFn: async (blogId) => {
+      await axios.patch(
+        `http://localhost:3000/api/v1/users/saveBlog/${blogId}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["saved-blogs"] });
+      toast({
+        title: "Blog saved!",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  //saving blogs to user
+  const handleSaveblog = (blogId) => {
+    mutateSaveBlog.mutate(blogId);
+  };
 
   // if (loading) {
   //   return (
@@ -253,7 +290,9 @@ const Blog = () => {
           <h2 className="text-2xl font-bold mb-8">Featured</h2>
 
           {featuredId === null ? (
-            <p className="text-gray-500 italic">No featured blog at the moment. Stay tuned!</p>
+            <p className="text-gray-500 italic">
+              No featured blog at the moment. Stay tuned!
+            </p>
           ) : (
             <Link
               to={`/blogs/${featured._id}`}
@@ -285,7 +324,8 @@ const Blog = () => {
 
                   {/* Description */}
                   <p className="text-gray-400 text-sm mb-4">
-                    {featured.description || "An exciting read that'll challenge your thinking."}
+                    {featured.description ||
+                      "An exciting read that'll challenge your thinking."}
                   </p>
 
                   {/* Date & Time */}
@@ -309,16 +349,18 @@ const Blog = () => {
 
                   {isAdmin && (
                     <div className="relative z-10">
-                      <button
+                      <Button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          setOpenMenuId(openMenuId === featured._id ? null : featured._id);
+                          setOpenMenuId(
+                            openMenuId === featured._id ? null : featured._id
+                          );
                         }}
                         className="p-1 rounded-full hover:bg-gray-800"
                       >
                         <MoreVertical className="w-5 h-5 text-gray-400" />
-                      </button>
+                      </Button>
 
                       {openMenuId === featured._id && (
                         <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
@@ -427,7 +469,7 @@ const Blog = () => {
                         </h4>
 
                         <div className="relative z-10">
-                          <button
+                          <Button
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -437,8 +479,8 @@ const Blog = () => {
                             }}
                             className="p-1 rounded-full hover:bg-gray-800"
                           >
-                            <MoreVertical className="w-5 h-5 text-gray-400" />
-                          </button>
+                            <MoreVertical className="w-5 h-5 text-black-400" />
+                          </Button>
 
                           {openMenuId === blog._id && (
                             <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
@@ -452,6 +494,15 @@ const Blog = () => {
                                 className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
                               >
                                 Share
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleSaveblog(blog._id);
+                                }}
+                                className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
+                              >
+                                Save
                               </button>
                               {/* if you are admin then only you will see the button */}
                               {isAdmin && featuredId !== blog._id && (
@@ -520,7 +571,10 @@ const Blog = () => {
                 Nothing to see here right now!
               </p>
             ) : (
-              (showAllExternalBlogs ? externalBlogs : externalBlogs.slice(0, 3)).map((blog) => (
+              (showAllExternalBlogs
+                ? externalBlogs
+                : externalBlogs.slice(0, 3)
+              ).map((blog) => (
                 <Link
                   key={blog.id}
                   to={blog.url}

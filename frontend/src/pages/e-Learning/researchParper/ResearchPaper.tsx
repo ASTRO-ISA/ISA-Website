@@ -2,7 +2,6 @@ import axios from "axios";
 import DisplayResearchPaper from "./DisplayResearchPaper";
 import UploadResearchPaper from "./UploadResearchPaper";
 import { useQuery } from "@tanstack/react-query";
-import Spinner from "@/components/ui/Spinner";
 import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
 
 const fetchPapers = async () => {
@@ -24,7 +23,7 @@ const ResearchPaper = () => {
         <DisplayResearchPaper papers={papers} />
       </SpinnerOverlay>
 
-      {/* <UploadResearchPaper fetchPapers={fetchPapers} /> */}
+      <UploadResearchPaper />
     </div>
   );
 };
