@@ -25,4 +25,28 @@ const sendEmail = async (to, subject, text) => {
   }
 }
 
-module.exports = sendEmail
+const sendNewsletter = async ({bcc, subject, html}) => {
+  try{
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.SENDER_EMAIL,
+        pass: process.env.SENDER_APP_PASS
+      }
+    })
+
+    const mailOptions = {
+      from: `noreply <${process.env.SENDER_EMAIL}`,
+      bcc,
+      subject,
+      html
+    }
+
+    const newsletter = await transporter.sendMail(mailOptions)
+    console.log('Newsletter sent', newsletter.response)
+  } catch (err) {
+    console.log('Error sending newsletter')
+  }
+}
+
+module.exports = {sendEmail, sendNewsletter}
