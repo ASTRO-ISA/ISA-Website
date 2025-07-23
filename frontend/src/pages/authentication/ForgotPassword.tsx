@@ -1,15 +1,17 @@
 import { useState } from "react";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+import Spinner from "@/components/ui/Spinner";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setSending(true);
     try {
       await axios.post(
         "http://localhost:3000/api/v1/users/forgotPassword",
@@ -22,11 +24,13 @@ const ForgotPassword = () => {
       );
 
       setSubmitted(true);
+      setSending(false);
       toast({
         title: "Email sent!",
         description: "Check your inbox for the reset link.",
       });
     } catch (error) {
+      setSending(false);
       toast({
         title: "Failed to send reset link",
         description: error.response?.data?.message || "Try again later",
@@ -66,7 +70,7 @@ const ForgotPassword = () => {
                 type="submit"
                 className="w-full bg-space-accent hover:bg-space-accent/80 text-white font-semibold py-2 rounded-md transition-colors"
               >
-                Send Reset Link
+                {sending ? <Spinner/> : "Send Reset Link"}
               </button>
             </>
           ) : (

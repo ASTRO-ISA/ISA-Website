@@ -1,6 +1,6 @@
 const Event = require('../models/eventModel')
 const User = require('../models/userModel')
-const sendEmail = require('../utils/sendEmail')
+const { sendEmail } = require('../utils/sendEmail')
 const cloudinary = require('cloudinary').v2
 
 // const currentDate = new Date()
