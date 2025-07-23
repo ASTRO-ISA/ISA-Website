@@ -147,6 +147,27 @@ const Blog = () => {
     }
   };
 
+  const handleAddToNewsletter = async (blog) => {
+    try {
+      await axios.post(
+        "http://localhost:3000/api/v1/newsletter/draft/add",
+        {
+          type: "blog",
+          id: blog._id,
+        },
+        { withCredentials: true }
+      );
+      toast({ title: "Added to newsletter draft!" });
+    } catch (err) {
+      toast({
+        title: "Failed to add to draft",
+        variant: "destructive",
+      });
+    } finally {
+      setOpenMenuId(null);
+    }
+  };
+
   // to get external blogs
   useEffect(() => {
     const fetchExternalBlogs = async () => {
@@ -453,6 +474,21 @@ const Blog = () => {
                               >
                                 Share
                               </button>
+
+                                {/* if you are admin then only you will see the button */}
+                              {isAdmin && (
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleAddToNewsletter(blog);
+                                  }}
+                                  className="w-full px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+                                >
+                                  Add to Newsletter
+                                </button>
+                              )}
+
                               {/* if you are admin then only you will see the button */}
                               {isAdmin && featuredId !== blog._id && (
                                 <button

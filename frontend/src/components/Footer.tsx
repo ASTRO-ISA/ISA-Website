@@ -1,8 +1,50 @@
-
-import { Instagram, MessageCircle, Mail, Phone, MapPin } from 'lucide-react';
+import { Instagram, Mail, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import axios from 'axios';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
 
 const Footer = () => {
+  const { isLoggedIn } = useAuth();
+  const { toast } = useToast();
+  const [uploadingEmail, setUploadingEmail] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+
+  // const handleChange = (event) => {
+  //   event.preventDefault();
+  //   const { email } = event.target.value;
+  //   setUserEmail(email);
+  // }
+
+  const subscribeToNewsletter = async () => {
+    if(isLoggedIn){
+      setUploadingEmail(true);
+      try{
+        console.log(userEmail);
+        const response = await axios.post('http://localhost:3000/api/v1/newsletter/subscribe', {userEmail}, {withCredentials: true});
+        toast({
+          description: "Subscribed Successfully!, You will be the first to recieve the info about new events."
+        })
+        setUserEmail("");
+        setUploadingEmail(false);
+      }
+      catch(err){
+        console.error("Failed to subscribe", err)
+        toast({
+          description: "Something went wrong! Please try again later."
+        })
+        setUploadingEmail(false);
+      }
+    }
+    else{
+      toast({
+        title: "Login required",
+        description: "Login first to subscribe our newsletter"
+      })
+    }
+  }
+
   return (
     <footer className="bg-space-dark text-white py-12 border-t border-white/10">
       <div className="container mx-auto px-4">
@@ -14,11 +56,7 @@ const Footer = () => {
                 alt="ISA Logo" 
                 className="h-10 w-auto"
               />
-              {/* <span className="font-bold text-xl">ISA</span> */}
             </div>
-            {/* <div className="font-bold text-xl flex pb-3 sm:hidden  justify-center">
-              <p className='text-center w-full'>Intersteller Space Astronomy</p>
-            </div> */}
             <p className="text-gray-400 mb-4 flex flex-col items-center text-center sm:flex-row sm:items-start sm:text-left">
               A dedicated platform for space enthusiasts, researchers, and professionals fostering learning, collaboration, and innovation.
             </p>
@@ -38,7 +76,6 @@ const Footer = () => {
               rel="noopener noreferrer"
               className="bg-gray-700 hover:bg-gray-600 text-white w-10 h-10 rounded-full p-2 transition-colors"
             >
-              {/* <MessageCircle /> */}
               <i className="fa-brands fa-whatsapp fa-xl"></i>
             </a>
 
@@ -85,12 +122,14 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
             <p className="text-gray-400 mb-4">Subscribe to our newsletter for updates on astronomical events and club activities.</p>
             <div className="flex flex-col space-y-3">
-              <input 
-                type="email" 
+              {/* <input 
+                type="email"
+                value={userEmail}
                 placeholder="Your email address" 
                 className="px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
-              />
-              <button className="px-4 py-2 bg-space-accent hover:bg-space-accent/80 text-white rounded-md transition-colors">
+                onChange={(e) => setUserEmail(e.target.value)}
+              /> */}
+              <button onClick={subscribeToNewsletter} className="px-4 py-2 bg-space-accent hover:bg-space-accent/80 text-white rounded-md transition-colors">
                 Subscribe
               </button>
             </div>
