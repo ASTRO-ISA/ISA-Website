@@ -343,7 +343,7 @@ const UserBlogs = () => {
 
           {/* View all blogs button */}
           {/* if there are no blpgs, no need to show the see all events button */}
-          {savedBlogs.length > 3 && !showAllSavedBlogs && (
+          {savedBlogs?.length > 3 && !showAllSavedBlogs && (
             <div className="text-center mt-10">
               <button onClick={() => setShowAllSavedBlogs(true)}>
                 View All Blogs
