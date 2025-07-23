@@ -17,7 +17,7 @@ const About = () => {
     {
       name: "Vinod Mali",
 
-      role: "Full Stack Devrloper",
+      role: "Full Stack Developer",
 
       // bio: "Award-winning educator...",
 
@@ -285,12 +285,15 @@ const About = () => {
                 className="text-center"
               >
                 <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
+                <div className="relative">
                   <img
                     src={member.image}
                     alt={member.name}
                     loading="lazy"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover select-none"
                   />
+                  <div className="absolute inset-0 z-10" />
+                  </div>
                 </div>
                 <h3 className="text-base font-semibold text-white">
                   {member.name}
@@ -338,7 +341,7 @@ const About = () => {
             viewport={{ once: true }}
             className="text-3xl md:text-4xl font-bold text-center mb-10"
           >
-            Core team Menmbers
+            Core team Members
           </motion.h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
