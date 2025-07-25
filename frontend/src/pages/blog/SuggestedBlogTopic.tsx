@@ -1,12 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TabsContent } from "@radix-ui/react-tabs";
 import React, { useEffect, useState } from "react";
-
-
-
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 
 const SuggestedBlogTopic = () => {
+  const { toast } = useToast();
+  const { isLoggedIn } = useAuth();
   const [suggestions, setSuggestions] = useState([]);
   const [formData, setFormData] = useState({});
 
@@ -31,30 +32,31 @@ const SuggestedBlogTopic = () => {
   };
 
   useEffect(() => {
-    const fetchSuggestions = async () => {
-      try {
-        const res = await axios.get(
-          "http://localhost:3000/api/v1/suggestBlog/",
-          {
-            withCredentials: true,
-          }
-        );
 
-        setSuggestions(res.data.data || []);
-        const initialFormData = {};
-        res.data.data.forEach((s) => {
-          initialFormData[s._id] = {
-            status: s.status || "pending",
-            response: s.response || "",
-          };
-        });
-        setFormData(initialFormData);
-      } catch (err) {
-        console.error("Failed to fetch suggestions", err);
-      }
-    };
+    const fetchSuggetions = async () => {
+        try {
+          const res = await axios.get(
+            "http://localhost:3000/api/v1/suggestBlog/",
+            {
+              withCredentials: true,
+            }
+          );
+  
+          setSuggestions(res.data.data || []);
+          const initialFormData = {};
+          res.data.data.forEach((s) => {
+            initialFormData[s._id] = {
+              status: s.status || "pending",
+              response: s.response || "",
+            };
+          });
+          setFormData(initialFormData);
+        } catch (err) {
+          console.error("Failed to fetch suggestions", err);
+        }
+      } 
 
-    fetchSuggestions();
+    fetchSuggetions();
   }, []);
 
   const handleUpdate = async (id, status, response) => {

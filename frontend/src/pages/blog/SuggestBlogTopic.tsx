@@ -2,8 +2,10 @@ import axios from "axios";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
+import { useAuth } from "@/context/AuthContext";
 
 const SuggestBlogTopic = () => {
+  const { isLoggedIn } = useAuth();
   const { toast } = useToast();
   const [blogSuggest, setBlogSuggest] = useState({
     title: "",
@@ -18,25 +20,34 @@ const SuggestBlogTopic = () => {
 
   const handleSubmitTopic = async (e) => {
     e.preventDefault();
-    try {
-      setSubmitting(true);
-      const res = await axios.post(
-        "http://localhost:3000/api/v1/suggestBlog/",
-        blogSuggest,
-        {
-          withCredentials: true,
-        }
-      );
-      setBlogSuggest({
-        title: "",
-        description: "",
+    if(isLoggedIn){
+      try {
+        setSubmitting(true);
+        const res = await axios.post(
+          "http://localhost:3000/api/v1/suggestBlog/",
+          blogSuggest,
+          {
+            withCredentials: true,
+          }
+        );
+        setBlogSuggest({
+          title: "",
+          description: "",
+        })
+        setSubmitting(false);
+        toast({ title: 'Suggesion posted successfully.'})
+      } catch (error) {
+        console.error("Post failed", error);
+        toast({ title: 'something went wrong'})
+        setSubmitting(false);
+      }
+    }
+    else{
+      toast({
+        title: "Hold on!",
+        description: "Login to suggest your beautiful ideas.",
+        variant: "destructive"
       })
-      setSubmitting(false);
-      toast({ title: 'Suggesion posted successfully.'})
-    } catch (error) {
-      console.error("Post failed", error);
-      toast({ title: 'something went wrong'})
-      setSubmitting(false);
     }
   };
 

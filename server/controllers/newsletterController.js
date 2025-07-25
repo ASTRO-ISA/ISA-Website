@@ -19,7 +19,7 @@ exports.subscribeToNewsletter = async (req, res) => {
     
     const alreadySubscribed = newsletter.subscribers.some(sub => {
       if (!sub.user) return false
-      console.log("Checking subscriber", sub.user.toString())
+      // console.log('Checking subscriber', sub.user.toString())
       return sub.user.toString() === userId
     })
 
@@ -38,6 +38,56 @@ exports.subscribeToNewsletter = async (req, res) => {
     return res.status(500).json({ message: 'Server error' })
   }
 }
+
+exports.checkSubscribe = async (req, res) => {
+  try{
+    const userId = req.user._id
+
+    const newsletterSubs = await NewsletterSubscribers.findOne({'subscribers.user': userId})
+
+    // if found extract the specific user
+    if (newsletterSubs) {
+
+      const subscriber = newsletterSubs.subscribers.find(
+        s => s.user.equals(userId)
+      )
+
+      return res.status(200).json(subscriber)
+    } else {
+      return res.status(404).json({message: 'User have not subscribed'})
+    }
+  }
+  catch (err) {
+    res.status(500).json('Server error while checking subsciber')
+  }
+}
+
+exports.unsubscribeFromNewsletter = async (req, res) => {
+  try {
+    const userId = req.user.id
+    const newsletter = await NewsletterSubscribers.findOne()
+
+    if (!newsletter) {
+      return res.status(404).json({ message: 'No newsletter found.' })
+    }
+
+    const index = newsletter.subscribers.findIndex(
+      (subscriber) => subscriber.user.toString() === userId
+    )
+
+    if (index === -1) {
+      return res.status(400).json({ message: 'User is not subscribed.' })
+    }
+
+    newsletter.subscribers.splice(index, 1)
+    await newsletter.save()
+
+    return res.status(200).json({ message: 'Unsubscribed successfully.' })
+  } catch (error) {
+    console.error('Unsubscribe error', error);
+    return res.status(500).json({ message: 'Server error while unsubscribing' })
+  }
+};
 
 exports.addToNewsletterDraft = async (req, res) => {
     try{
