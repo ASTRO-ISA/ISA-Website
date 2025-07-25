@@ -16,33 +16,22 @@ const About = () => {
   const teamMembers = [
     {
       name: "Vinod Mali",
-
       role: "Full Stack Developer",
-
-      // bio: "Award-winning educator...",
-
       image: "/images/vinod.png",
       github: "https://github.com/vinodM09",
       linkedin: "https://www.linkedin.com/in/vinodm09",
     },
-
     {
-      name: " Suyash Nagar",
+      name: "Suyash Nagar",
       role: "Full Stack Developer",
-
-      // bio: "Expert in deep space observation...",
-
       image: "/images/suyash.png",
-      github: " https://github.com/suysah",
+      github: "https://github.com/suysah",
       linkedin: "https://www.linkedin.com/in/suyash-nagar-867027256/",
     },
-
     {
       name: "Naman Meravi",
       role: "Full Stack Developer",
-      // bio: "Simulates astronaut cognitive responses under deep space conditions to improve training modules.",
       image: "/images/naman.png",
-      // isAI: true,
       github: "https://github.com/NamanMeravi",
       linkedin: "https://www.linkedin.com/in/naman-meravi-660a1b257/",
     },
@@ -51,82 +40,70 @@ const About = () => {
       role: "Frontend Developer",
       image: "/images/sunaina.png",
       github: "https://github.com/Sunaina-Chaurasiya",
-      linkedin: "https://www.linkedin.com/in/sunaina-chaurasiya-252a06285/ ",
+      linkedin: "https://www.linkedin.com/in/sunaina-chaurasiya-252a06285/",
     },
     {
       name: "Anadi Gupta",
       role: "Frontend Developer",
-
-      // bio: "Award-winning educator...",
-
       image: "/images/anadi.png",
-      github: " https://github.com/Anadi-Gupta1",
-      linkedin: "https://www.linkedin.com/in/anadigupta/ ",
+      github: "https://github.com/Anadi-Gupta1",
+      linkedin: "https://www.linkedin.com/in/anadigupta/",
     },
   ];
 
   const clubDepartments = [
     {
-      name: "Jyotsana ",
-      role: "Rocket Engineering Lead",
+      name: "Jyotsana",
+      role: "Core Team Member",
       image: "/images/Jyotsana.png",
       github: "https://github.com/jyotsana20",
-      linkedin:
-        "https://www.linkedin.com/in/jyotsana-rani-3a7a18298?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+      linkedin: "https://www.linkedin.com/in/jyotsana-rani-3a7a18298",
     },
     {
-      name: " Chanchal Bairagi",
-      role: "Space Technology Coordinator",
+      name: "Chanchal Bairagi",
+      role: "Core Team Member",
       image: "/images/Chanchal.png",
       github: "https://github.com/lisawang",
-      linkedin:
-        "https://www.linkedin.com/in/chanchal-bairagi-1502b8293?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+      linkedin: "https://www.linkedin.com/in/chanchal-bairagi-1502b8293",
     },
     {
       name: "Akshay Jain",
-      role: "Space Technology Coordinator",
+      role: "Core Team Member",
       image: "/images/Akshay.png",
       github: "https://github.com/Akshay-Jain08",
-      linkedin:
-        "https://www.linkedin.com/in/akshay-jain-88776b20b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+      linkedin: "https://www.linkedin.com/in/akshay-jain-88776b20b",
     },
     {
-      name: " AMIT KUMAR",
-      role: "Space Technology Coordinator",
+      name: "Amit Kumar",
+      role: "Core Team Member",
       image: "/images/Amit.png",
       github: "https://github.com/amitakr0027",
-      linkedin: " http://www.linkedin.com/in/amitkumar0027",
+      linkedin: "http://www.linkedin.com/in/amitkumar0027",
     },
     {
       name: "Mayank Manan",
-      role: "Space Technology Coordinator",
+      role: "Core Team Member",
       image: "/images/Mayank.png",
       github: "https://github.com/MayankManan",
-      linkedin: " https://in.linkedin.com/in/manan-mayank",
+      linkedin: "https://in.linkedin.com/in/manan-mayank",
     },
     {
-      name: " Niyati Richhariya",
-      role: "Space Technology Coordinator",
+      name: "Niyati Richhariya",
+      role: "Core Team Member",
       image: "/images/Niyati.png",
-
-      linkedin:
-        " https://www.linkedin.com/in/niyati-richhariya-83a019334?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+      linkedin: "https://www.linkedin.com/in/niyati-richhariya-83a019334",
     },
     {
-      name: " Akshat Shevalkar ",
-      role: "Space Technology Coordinator",
+      name: "Akshat Shevalkar",
+      role: "Core Team Member",
       image: "/images/Akshat.png",
-
-      linkedin:
-        " https://www.linkedin.com/in/akshat-shevalkar-380711329?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+      linkedin: "https://www.linkedin.com/in/akshat-shevalkar-380711329",
     },
     {
-      name: "   Srijan Mishra ",
-      role: "Space Technology Coordinator",
+      name: "Srijan Mishra",
+      role: "Technical",
       image: "/images/Srijan.png",
-
-      linkedin:
-        " https://www.linkedin.com/in/srijan-mishra-7b95692b5?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app ",
+      linkedin: "https://www.linkedin.com/in/srijan-mishra-7b95692b5",
     },
   ];
 
@@ -260,6 +237,54 @@ const About = () => {
           </motion.div>
         </div>
       </section>
+
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto text-center"
+          >
+            <Card className="cosmic-card p-8 bg-gradient-to-br from-space-purple/20 to-transparent border-space-accent/30">
+              <CardContent className="space-y-6">
+                <h2 className="text-3xl font-bold text-white mb-4">
+                  Our Mission
+                </h2>
+                <p className="text-xl text-space-light leading-relaxed">
+                  "Empowering space explorers through education, innovation, and
+                  community. We believe that the cosmos belongs to everyone, and
+                  through accessible, high-quality space education, we're
+                  building the foundation for humanity's multi-planetary
+                  future."
+                </p>
+                <div className="flex justify-center space-x-8 pt-6">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-space-accent">
+                      500+
+                    </div>
+                    <div className="text-space-light">Students Inspired</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-space-accent">
+                      10+
+                    </div>
+                    <div className="text-space-light">Events Per Year</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-space-accent">
+                      5+
+                    </div>
+                    <div className="text-space-light">Expert Speakers</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Meet Our Team */}
       <section className="py-16">
         <div className="container mx-auto px-4">
@@ -446,53 +471,6 @@ const About = () => {
         />
         <p className="text-sm text-space-light mt-2">Scan to join our WhatsApp group</p>
       </div> */}
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center"
-          >
-            <Card className="cosmic-card p-8 bg-gradient-to-br from-space-purple/20 to-transparent border-space-accent/30">
-              <CardContent className="space-y-6">
-                <h2 className="text-3xl font-bold text-white mb-4">
-                  Our Mission
-                </h2>
-                <p className="text-xl text-space-light leading-relaxed">
-                  "Empowering space explorers through education, innovation, and
-                  community. We believe that the cosmos belongs to everyone, and
-                  through accessible, high-quality space education, we're
-                  building the foundation for humanity's multi-planetary
-                  future."
-                </p>
-                <div className="flex justify-center space-x-8 pt-6">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-space-accent">
-                      500+
-                    </div>
-                    <div className="text-space-light">Students Inspired</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-space-accent">
-                      50+
-                    </div>
-                    <div className="text-space-light">Projects Completed</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-space-accent">
-                      15+
-                    </div>
-                    <div className="text-space-light">Expert Instructors</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </motion.div>
         </div>
       </section>

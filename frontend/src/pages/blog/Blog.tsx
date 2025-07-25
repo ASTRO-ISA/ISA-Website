@@ -14,8 +14,10 @@ import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import SuggestBlogTopic from "./SuggestBlogTopic";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { error } from "console";
+// import { error } from "console";
 import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Mail } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const Blog = () => {
   const { toast } = useToast();
@@ -56,6 +58,7 @@ const Blog = () => {
 
   // 3 dot menu
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [openFeaturedMenuId, setOpenFeaturedMenuId] = useState(null);
 
   // to get all blogs
   useEffect(() => {
@@ -227,6 +230,7 @@ const Blog = () => {
       queryClient.invalidateQueries({ queryKey: ["saved-blogs"] });
       toast({
         title: "Blog saved!",
+        description: "Saved blogs appears on the dashboard."
       });
     },
     onError: (error) => {
@@ -240,6 +244,14 @@ const Blog = () => {
 
   //saving blogs to user
   const handleSaveBlog = (blogId) => {
+    if (!isLoggedIn) {
+      toast({
+        title: "Hold on!",
+        description: "You need to login to save blogs.",
+        variant: "destructive",
+      });
+      return;
+    }
     mutateSaveBlog.mutate(blogId);
   };
 
@@ -301,7 +313,7 @@ const Blog = () => {
           <h1 className="text-4xl font-bold mb-4">Blogs & News</h1>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             Explore real-time discoveries and personal perspectives from
-            scientists, astronomers, and industry insiders — all in one cosmic
+            scientists, astronomers, and industry insiders; all in one cosmic
             stream.
           </p>
         </div>
@@ -368,49 +380,104 @@ const Blog = () => {
                     Author: {(featured.author?.name || "Unknown").toUpperCase()}
                   </h4>
 
-                  {isAdmin && (
+                  {/* {isAdmin && ( */}
+
+                  {/* <div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="text-white bg-white/40 hover:bg-black/60 rounded-full p-1">
+                        <MoreVertical size={18} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-black border border-gray-800 text-white text-sm shadow-xl">
+                      <DropdownMenuItem
+                        onClick={() => navigator.share
+                          ? navigator.share({
+                              title: featured.title,
+                              text: "Check out this event!",
+                              url: `${window.location.origin}/events/${featured._id}`,
+                            })
+                          : alert("Sharing not supported on this browser.")
+                        }
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <Share size={14} /> Share
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                      onClick={() => handleSaveBlog(featured._id)}
+                      >
+                        Save
+                      </DropdownMenuItem>
+                      {isLoggedIn && isAdmin ? 
+                      (<DropdownMenuItem
+                        onClick={() => handleAddToNewsletter(event)}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <Mail size={14} /> Add to Newsletter
+                      </DropdownMenuItem>) : ""}
+
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div> */}
+
+
                     <div className="relative z-10">
                       <Button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          setOpenMenuId(
-                            openMenuId === featured._id ? null : featured._id
+                          setOpenFeaturedMenuId(
+                            openFeaturedMenuId === featured._id ? null : featured._id
                           );
                         }}
-                        className="p-1 rounded-full hover:bg-gray-800"
+                        className="p-1 text-white bg-transparent hover:bg-transparent"
                       >
-                        <MoreVertical className="w-5 h-5 text-gray-400" />
+                        <MoreVertical className="w-5 h-5 text-white" />
                       </Button>
 
-                      {openMenuId === featured._id && (
+                      {openFeaturedMenuId === featured._id && (
                         <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
                           <button
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               handleShare(featured);
-                              setOpenMenuId(null);
+                              setOpenFeaturedMenuId(null);
                             }}
                             className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
                           >
                             Share
+
                           </button>
+
                           <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleSaveBlog(featured._id);
+                                  setOpenFeaturedMenuId(null);
+                                }}
+                                className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
+                              >
+                                Save
+                          </button>
+
+                          {isAdmin && (
+                            <button
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               handleRemoveFeatured(featured);
-                              setOpenMenuId(null);
+                              setOpenFeaturedMenuId(null);
                             }}
                             className="w-full px-4 py-2 hover:bg-red-100 rounded-b-md text-red-600 flex items-center gap-2"
                           >
                             Remove Featured
                           </button>
+                          )}
+                          
                         </div>
                       )}
                     </div>
-                  )}
                 </div>
               </div>
             </Link>
@@ -498,9 +565,9 @@ const Blog = () => {
                                 openMenuId === blog._id ? null : blog._id
                               );
                             }}
-                            className="p-1 rounded-full hover:bg-gray-800"
+                            className="p-1 bg-transparent hover:bg-transparent"
                           >
-                            <MoreVertical className="w-5 h-5 text-black-400" />
+                            <MoreVertical className="w-5 h-5 text-white" />
                           </Button>
 
                           {openMenuId === blog._id && (

@@ -15,14 +15,11 @@ const uploadDocument = multer({
   storage: documentStorage('researchPaper-attachments')
 })
 
+router.route('/').get(getAllPapers)
 router.use(authenticateToken)
 
-router.route('/').get(getAllPapers)
-
 router.use(restrictTo('admin'))
-
 router.route('/').post(uploadDocument.single('file'), uploadPaper)
-
 router
   .route('/:id')
   .patch(uploadDocument.single('file'), updatePaper)

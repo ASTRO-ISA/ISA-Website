@@ -12,7 +12,7 @@ import Spinner from "@/components/ui/Spinner";
 
 const EventDetails = () => {
   const { id } = useParams();
-  const { userInfo } = useAuth();
+  const { userInfo, isLoggedIn } = useAuth();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -20,11 +20,12 @@ const EventDetails = () => {
   const [deleting, setDeleting] = useState(false);
 
   // const [userInfo, setUserInfo] = useState(user);
-  console.log("kdsjk", userInfo);
+  // console.log("kdsjk", userInfo);
 
   // //registering a user for event
   const handleRegister = async (userId) => {
-    const res = axios
+    if(isLoggedIn){
+      const res = axios
       .patch(`http://localhost:3000/api/v1/events/register/${id}/${userId}`)
       .then((res) => {
         fetchEvent();
@@ -34,6 +35,13 @@ const EventDetails = () => {
         console.error("Error regstering user for event", err);
         setLoading(false);
       });
+    } else {
+      toast({
+        title: "Hold on!",
+        description: "Login first to register for the event.",
+        variant: "destructive"
+      })
+    }
   };
 
   // get event from database
@@ -163,13 +171,13 @@ const EventDetails = () => {
               onClick={() => handleRegister(userInfo?.user._id)}
               disabled={event.registeredUsers.includes(String(userInfo?.user._id))}
               className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold
-                ${
+                ${isLoggedIn && 
                   event.registeredUsers.includes(String(userInfo.user._id))
                     ? 'bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed'
                     : 'bg-space-accent hover:bg-space-accent/80'
                 }`}
             >
-              {event.registeredUsers.includes(String(userInfo?.user._id))
+              {isLoggedIn && event.registeredUsers.includes(String(userInfo?.user._id))
                 ? "Already Registered"
                 : "Register for this Event"}
             </button>

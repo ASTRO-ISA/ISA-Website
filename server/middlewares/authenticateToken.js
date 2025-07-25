@@ -8,7 +8,7 @@ const setUser = async (req, user) => {
     if (!userDoc) return null
     req.user = userDoc
 
-    console.log('authenticate', req.user)
+    // console.log('authenticate', req.user)
     return true
   } catch (error) {
     console.error('Error setting user:', error)

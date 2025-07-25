@@ -1,6 +1,6 @@
 const Webinar = require('../models/webinarModel')
 const User = require('../models/userModel')
-const sendEmail = require('../utils/sendEmail')
+const {sendEmail} = require('../utils/sendEmail')
 const getVideoId = require('../utils/getVideoId')
 const cloudinary = require('cloudinary').v2
 
