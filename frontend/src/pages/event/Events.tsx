@@ -14,7 +14,7 @@ const Events = () => {
   const [launches, setLaunches] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
-  const { isLoggedIn, userInfo } = useAuth();
+  const { isLoggedIn, userInfo, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -30,13 +30,15 @@ const Events = () => {
       toast({
         title: "Hold on!",
         description: "Log in first to host an event.",
+        variant: "destructive"
       });
     }
   };
 
   // //registering a user for event
   const handleRegister = async (userId, eventId) => {
-    const res = axios
+    if(isLoggedIn){
+      const res = axios
       .patch(
         `http://localhost:3000/api/v1/events/register/${eventId}/${userId}`
       )
@@ -58,6 +60,13 @@ const Events = () => {
         console.error("Error regstering user for event", err);
         setLoading(false);
       });
+    } else {
+      toast({
+        title: "Hold on!",
+        description: "Please login first to register for the event.",
+        variant: "destructive"
+      })
+    }
   };
 
   const handleAddToNewsletter = async (event) => {
@@ -250,12 +259,14 @@ const Events = () => {
             >
               <Share size={14} /> Share
             </DropdownMenuItem>
-            <DropdownMenuItem
+            {isLoggedIn && isAdmin ? 
+            (<DropdownMenuItem
               onClick={() => handleAddToNewsletter(event)}
               className="flex items-center gap-2 cursor-pointer"
             >
               <Mail size={14} /> Add to Newsletter
-            </DropdownMenuItem>
+            </DropdownMenuItem>) : ""}
+
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -402,17 +413,17 @@ const Events = () => {
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-2/3">
               <h2 className="text-2xl font-bold mb-4">
-                Host Your Own Stargazing Event
+                Host Your Own Event
               </h2>
               <p className="text-gray-300 mb-6">
-                ISA Club members can organize their own astronomical observation
+                ISA Club members can organize their own astronomical
                 events with our equipment and guidance. Share your passion for
                 astronomy with others!
               </p>
               <ul className="text-gray-400 mb-6 space-y-2">
                 <li className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-space-accent"></div>
-                  <span>Access to telescopes and observation equipment</span>
+                  <span>Access to required equipments</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-space-accent"></div>

@@ -15,7 +15,7 @@ const UserProfile = () => {
   const { refetchUser, userInfo } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
 
-  console.log(userInfo);
+  // console.log(userInfo);
 
   const handleLogout = async () => {
     try {
