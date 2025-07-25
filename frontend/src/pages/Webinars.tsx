@@ -60,6 +60,10 @@ const Webinars = () => {
     const fetchFeatured = async () => {
       try {
         const res = await axios.get("http://localhost:3000/api/v1/webinars/featured", { withCredentials: true });
+        if(res.status === 404){
+          console.log("No featured blog at the moment.");
+        }
+        else{
           setFeatured({
             _id: res.data._id,
             thumbnail: res.data.thumbnail,
@@ -70,8 +74,10 @@ const Webinars = () => {
             videoId: res.data.videoId
           });
           setFeaturedId(res.data._id);
+        }
+
       } catch (err) {
-          console.error("Error fetching blogs", err);
+          console.error("Error fetching webinar", err);
           setFeaturedId(null);
       }
     };
@@ -85,7 +91,8 @@ const Webinars = () => {
     if(featuredId !== null){
       toast({
         title: "Already exist a featured webinar.",
-        description: "Remove previous featured to set it featured."
+        description: "Remove previous featured to set it featured.",
+        variant: "destructive"
       })
       return;
     }
@@ -127,7 +134,8 @@ const Webinars = () => {
     catch (err) {
       console.error(`Failed to remove webinar "${webinar.title}" from featured!`, err.message)
       toast({
-        title: `Failed to remove webinar "${webinar.title}" from featured!`
+        title: `Failed to remove webinar "${webinar.title}" from featured!`,
+        variant: "destructive"
       })
     }
   };
@@ -135,7 +143,11 @@ const Webinars = () => {
  // registering a user for event
  const handleRegister = async (userId, webinarId) => {
   if (!userId) {
-    toast({ title: "Please log in to register for the webinar." });
+    toast({ 
+      title: "Hold on!",
+      description: "Please log in to register for the webinar.",
+      variant: "destructive"
+    });
     return;
   }
 
@@ -181,6 +193,7 @@ const Webinars = () => {
     toast({
       title: "Registration failed",
       description: err?.response?.data?.message || "Something went wrong.",
+      variant: "destructive"
     });
   } finally {
     setRegistering(false);
@@ -502,17 +515,22 @@ const Webinars = () => {
                 <p className="text-sm text-gray-400">
                   <span className="font-semibold text-white">Presenter: </span>{(featured.presenter || "Unknown").toUpperCase()}
                 </p>
+                {isAdmin && isLoggedIn ? 
+              (
                 <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleRemoveFeatured(featured);
-                        setOpenMenuId(null);
-                      }}
-                      className="p-2 border border-red-600 hover:text-red-800 hover:border-red-800 rounded text-red-600 flex items-center gap-2"
-                    >
-                      Remove Featured
-                    </button>
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleRemoveFeatured(featured);
+                  setOpenMenuId(null);
+                }}
+                className="p-2 border border-red-600 hover:text-red-800 hover:border-red-800 rounded text-red-600 flex items-center gap-2"
+              >
+                Remove Featured
+              </button>
+              )  : ""
+              }
+
               </div>
 
             </div>

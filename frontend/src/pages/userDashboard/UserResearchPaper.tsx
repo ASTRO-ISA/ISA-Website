@@ -115,68 +115,76 @@ const UserResearchPaper = () => {
   return (
     <SpinnerOverlay show={isEditingDeleting}>
       <ul className="space-y-4 mt-4">
-        {papers.map((paper) => (
-          <li
-            key={paper._id}
-            className="flex flex-col gap-3 p-4 border mb-4 bg-space-purple/20 rounded"
+        {papers.length === 0 ? (
+    <p className="text-gray-500 italic">
+      Nothing to see here right now!. The reaserch papers you upload will appear here.
+    </p>
+  ) : (
+    <ul className="space-y-4 mt-4">
+      {papers.map((paper) => (
+        <li
+          key={paper._id}
+          className="flex flex-col gap-3 p-4 border mb-4 bg-space-purple/20 rounded"
+        >
+          <p className="text-3xl font-semibold text-orange-200">
+            {paper.title}
+          </p>
+          <p>{paper.authors}</p>
+          <p>
+            Published on:{" "}
+            <span className="font-semibold">
+              {new Date(paper.publishedOn).toLocaleDateString()}
+            </span>
+          </p>
+
+          <button
+            onClick={() => toggleAbstract(paper._id)}
+            className="text-sm text-blue-400 hover:underline w-fit"
           >
-            <p className="text-3xl font-semibold text-orange-200">
-              {paper.title}
-            </p>
-            <p>{paper.authors}</p>
-            <p>
-              Published on:{" "}
-              <span className="font-semibold">
-                {new Date(paper.publishedOn).toLocaleDateString()}
-              </span>
-            </p>
+            {expanded[paper._id] ? "Hide Abstract" : "Show Abstract"}
+          </button>
 
-            <button
-              onClick={() => toggleAbstract(paper._id)}
-              className="text-sm text-blue-400 hover:underline w-fit"
-            >
-              {expanded[paper._id] ? "Hide Abstract" : "Show Abstract"}
-            </button>
-
-            {expanded[paper._id] && (
-              <div className="text-sm text-gray-200">
-                <p>{paper.abstract}</p>
-              </div>
-            )}
-
-            <div className="flex flex-wrap justify-between gap-4 mt-2">
-              <div>
-                {paper.paperUrl && (
-                  <a
-                    href={`https://docs.google.com/viewer?url=${encodeURIComponent(
-                      paper.paperUrl
-                    )}&embedded=true`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button>View Paper</Button>
-                  </a>
-                )}
-              </div>
-              <div className="flex w-62 gap-4">
-                <Button
-                  size="sm"
-                  onClick={() => handleEditPaper(paper)}
-                  variant="outline"
-                >
-                  <Pencil className="w-4 h-4 mr-1" /> Edit
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => handleDeletePaper(paper._id)}
-                  variant="destructive"
-                >
-                  <Trash2 className="w-4 h-4 mr-1" /> Delete
-                </Button>
-              </div>
+          {expanded[paper._id] && (
+            <div className="text-sm text-gray-200">
+              <p>{paper.abstract}</p>
             </div>
-          </li>
-        ))}
+          )}
+
+          <div className="flex flex-wrap justify-between gap-4 mt-2">
+            <div>
+              {paper.paperUrl && (
+                <a
+                  href={`https://docs.google.com/viewer?url=${encodeURIComponent(
+                    paper.paperUrl
+                  )}&embedded=true`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button>View Paper</Button>
+                </a>
+              )}
+            </div>
+            <div className="flex w-62 gap-4">
+              <Button
+                size="sm"
+                onClick={() => handleEditPaper(paper)}
+                variant="outline"
+              >
+                <Pencil className="w-4 h-4 mr-1" /> Edit
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => handleDeletePaper(paper._id)}
+                variant="destructive"
+              >
+                <Trash2 className="w-4 h-4 mr-1" /> Delete
+              </Button>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )}
       </ul>
 
       {/* Edit Form */}

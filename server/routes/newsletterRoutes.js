@@ -6,6 +6,8 @@ const restrictTo = require('../middlewares/restrictTo')
 
 router.use(authenticateToken)
 router.route('/subscribe').post(newsletterController.subscribeToNewsletter)
+router.route('/subscribe/check').get(newsletterController.checkSubscribe)
+router.route('/unsubscribe').patch(newsletterController.unsubscribeFromNewsletter)
 
 router.use(restrictTo('admin'))
 router.route('/draft').get(newsletterController.getNewsletterDraft)

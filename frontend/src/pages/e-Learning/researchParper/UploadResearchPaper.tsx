@@ -4,8 +4,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Spinner from "@/components/ui/Spinner";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const UploadResearchPaper = () => {
+  const { isLoggedIn } = useAuth();
+  const { toast } = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [form, setForm] = useState({
     title: "",
@@ -57,7 +61,15 @@ const UploadResearchPaper = () => {
   });
 
   const handleUpload = () => {
-    mutate();
+    if(isLoggedIn){
+      mutate();
+    } else {
+      toast({
+        title: "Hold on!",
+        description: "Please login first to upload a research paper.",
+        variant: "destructive"
+      })
+    }
   };
 
   return (
