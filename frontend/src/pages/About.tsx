@@ -35,20 +35,20 @@ const About = () => {
       github: "https://github.com/NamanMeravi",
       linkedin: "https://www.linkedin.com/in/naman-meravi-660a1b257/",
     },
-    {
-      name: "Sunaina Chaurasiya",
-      role: "Frontend Developer",
-      image: "/images/sunaina.png",
-      github: "https://github.com/Sunaina-Chaurasiya",
-      linkedin: "https://www.linkedin.com/in/sunaina-chaurasiya-252a06285/",
-    },
-    {
-      name: "Anadi Gupta",
-      role: "Frontend Developer",
-      image: "/images/anadi.png",
-      github: "https://github.com/Anadi-Gupta1",
-      linkedin: "https://www.linkedin.com/in/anadigupta/",
-    },
+    // {
+    //   name: "Sunaina Chaurasiya",
+    //   role: "Frontend Developer",
+    //   image: "/images/sunaina.png",
+    //   github: "https://github.com/Sunaina-Chaurasiya",
+    //   linkedin: "https://www.linkedin.com/in/sunaina-chaurasiya-252a06285/",
+    // },
+    // {
+    //   name: "Anadi Gupta",
+    //   role: "Frontend Developer",
+    //   image: "/images/anadi.png",
+    //   github: "https://github.com/Anadi-Gupta1",
+    //   linkedin: "https://www.linkedin.com/in/anadigupta/",
+    // },
   ];
 
   const clubDepartments = [
@@ -298,7 +298,7 @@ const About = () => {
             Meet Our Development Team
           </motion.h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
+          <div className="grid  grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {teamMembers.map((member, index) => (
               <motion.div
                 key={member.name}
@@ -310,14 +310,14 @@ const About = () => {
                 className="text-center"
               >
                 <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
-                <div className="relative">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover select-none"
-                  />
-                  <div className="absolute inset-0 z-10" />
+                  <div className="relative">
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover select-none"
+                    />
+                    <div className="absolute inset-0 z-10" />
                   </div>
                 </div>
                 <h3 className="text-base font-semibold text-white">
