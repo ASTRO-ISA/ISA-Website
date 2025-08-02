@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface User {
@@ -26,9 +26,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const fetchCurrentUser = async (): Promise<User> => {
-  const res = await axios.get("http://localhost:3000/api/v1/users/me", {
-    withCredentials: true,
-  });
+  const res = await api.get("/users/me");
   return res.data;
 };
 
@@ -49,9 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = async () => {
     try {
-      await axios.get("http://localhost:3000/api/v1/users/logout", {
-        withCredentials: true,
-      });
+      await api.get("/users/logout");
       queryClient.invalidateQueries({ queryKey: ["user-info"] });
     } catch (err) {
       console.error("Logout failed", err);

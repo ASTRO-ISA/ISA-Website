@@ -1,41 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// import {
-//   User,
-//   BookOpen,
-//   Award,
-//   ShoppingBag,
-//   Calendar,
-//   Settings,
-//   BarChart3,
-//   Trophy,
-//   Clock,
-//   Download,
-//   Eye,
-//   Heart,
-//   MessageCircle,
-//   Star,
-//   TrendingUp,
-//   CheckCircle,
-//   PlayCircle,
-//   FileText,
-//   CreditCard,
-//   Bell,
-//   Edit,
-//   Camera,
-//   LogOut,
-// } from "lucide-react";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import { Button } from "@/components/ui/button";
-// import { Badge } from "@/components/ui/badge";
-// import { Progress } from "@/components/ui/progress";
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-// import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label";
-// import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import UserProfile from "./UserProfile";
 import UserSettings from "./UserSettings";
@@ -208,9 +174,6 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 pt-24 pb-16">
         {/* Header Section */}
         <UserProfile />
-
-        {/* Quick Actions */}
-        {/* <QuickActions /> */}
 
         {/* Main Content Tabs */}
         <Tabs

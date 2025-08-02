@@ -20,9 +20,9 @@ exports.createEvent = async (req, res) => {
 
     // setting an event end time which will help us delete after the event ends
     // if user have not entered a end time then we will assume it to last 1 day
-    const eventEndTime = req.body.eventEndTime 
-    ? new Date(req.body.eventEndTime)
-    : new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h later
+    const eventEndTime = req.body.eventEndTime
+      ? new Date(req.body.eventEndTime)
+      : new Date(Date.now() + 24 * 60 * 60 * 1000) // 24h later
 
     // hostedBy is sent as JSON string from frontend because we can have multiple hosts
     const hostedBy = JSON.parse(req.body.hostedBy || '[]')
@@ -59,7 +59,10 @@ exports.createEvent = async (req, res) => {
 // instead of making separate api routes for them, we can import all and separate in the frontend
 exports.Events = async (req, res) => {
   try {
-    const events = await Event.find({})
+    const events = await Event.find({}).populate(
+      'registeredUsers',
+      'avatar name email'
+    )
     if (!events) {
       return res.status(404).json({ message: 'Event not found' })
     }
@@ -74,7 +77,10 @@ exports.Events = async (req, res) => {
 exports.getEvent = async (req, res) => {
   const { id } = req.params
   try {
-    const event = await Event.findById(id).populate('createdBy', '_id name email')
+    const event = await Event.findById(id).populate(
+      'createdBy',
+      '_id name email'
+    )
     if (!event) {
       return res.status(404).json({ message: 'Event not found' })
     }
@@ -109,9 +115,9 @@ exports.registerEvent = async (req, res) => {
     const text = `Hi ${user.name},
     You have successfully registered for "${event.title}" on ${new Date(event.eventDate).toDateString()} at ${event.location}.
     See you there!
-    – ISA`;
+    – ISA`
 
-    await sendEmail(user.email, `Registered for ${event.title}`, text);
+    await sendEmail(user.email, `Registered for ${event.title}`, text)
 
     res.status(200).json({
       success: true,
@@ -128,27 +134,27 @@ exports.registerEvent = async (req, res) => {
 }
 
 exports.updateEvent = async (req, res) => {
-    const { id } = req.params;
-    const updates = req.body;
+  const { id } = req.params
+  const updates = req.body
 
-    try {
-        const event = await Event.findByIdAndUpdate(id, updates, { new: true });
-        if (!event) return res.status(404).json({ message: 'Event not found' });
-        res.status(200).json(event);
-    } catch (error) {
-        res.status(500).json({ message: 'Error updating event', error });
-    }
-};
+  try {
+    const event = await Event.findByIdAndUpdate(id, updates, { new: true })
+    if (!event) return res.status(404).json({ message: 'Event not found' })
+    res.status(200).json(event)
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating event', error })
+  }
+}
 
 exports.deleteEvent = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const event = await Event.findById(id)
-        if (!event) return res.status(404).json({ message: 'Event not found' })
-        await cloudinary.uploader.destroy(event.publicId)
-        await event.deleteOne()
-        res.status(200).json({ message: 'Event deleted successfully' })
-    } catch (error) {
-        res.status(500).json({ message: 'Error deleting event', error })
-    }
-};
+  const { id } = req.params
+  try {
+    const event = await Event.findById(id)
+    if (!event) return res.status(404).json({ message: 'Event not found' })
+    await cloudinary.uploader.destroy(event.publicId)
+    await event.deleteOne()
+    res.status(200).json({ message: 'Event deleted successfully' })
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting event', error })
+  }
+}

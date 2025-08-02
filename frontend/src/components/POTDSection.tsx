@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import Captions from "yet-another-react-lightbox/plugins/captions";
@@ -16,7 +16,7 @@ const POTDSection = () => {
   const fetchPOTD = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:3000/api/v1/picture/potd");
+      const res = await api.get("api/picture/potd");
       const image = {
         copyright: res.data.copyright,
         date: res.data.date,
@@ -34,9 +34,7 @@ const POTDSection = () => {
 
   const fetchFeaturedImage = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/v1/gallery/featured", {
-        withCredentials: true,
-      });
+      const res = await api.get("api/gallery/featured");
       setFeaturedImageData(res.data[0]);
     } catch (err) {
       console.error("Error fetching featured image:", err);
@@ -58,7 +56,7 @@ const POTDSection = () => {
       ]
     : [];
 
-    const featuredSlides = featuredImageData
+  const featuredSlides = featuredImageData
     ? [
         {
           src: featuredImageData.imageUrl,
@@ -71,10 +69,12 @@ const POTDSection = () => {
   return (
     <section className="mb-4 py-4 px-4 sm:px-6">
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Spotlight Gallery</h2>
+        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+          Spotlight Gallery
+        </h2>
         <p className="text-xl hidden md:block text-gray-400 max-w-3xl mx-auto">
-          A daily glimpse into the wonders of space from official NASA selections to exceptional
-          images by our own club members.
+          A daily glimpse into the wonders of space from official NASA
+          selections to exceptional images by our own club members.
         </p>
       </div>
 
@@ -95,10 +95,14 @@ const POTDSection = () => {
               <div className="absolute inset-0" />
             </div>
             <div className="p-4 sm:p-6">
-              <h3 className="text-lg sm:text-xl font-bold mb-2">Picture of the Day</h3>
-              <p className="text-sm text-gray-300 mb-3">{pictureOfTheDay.title}</p>
+              <h3 className="text-lg sm:text-xl font-bold mb-2">
+                Picture of the Day
+              </h3>
+              <p className="text-sm text-gray-300 mb-3">
+                {pictureOfTheDay.title}
+              </p>
               <p className="text-sm text-gray-400 mb-3 hidden sm:block">
-                {(pictureOfTheDay.explanation).slice(0, 300)}...
+                {pictureOfTheDay.explanation.slice(0, 300)}...
               </p>
               <p className="text-xs text-gray-500">
                 Courtesy: {pictureOfTheDay.copyright || "NASA"}
@@ -110,8 +114,9 @@ const POTDSection = () => {
         {/* Club Featured Card */}
         {featuredImageData && (
           <div className="cosmic-card overflow-hidden shadow-lg">
-            <div className="relative aspect-[16/9] sm:aspect-video"
-            onClick={() => setOpenFeaturedPic(true)}
+            <div
+              className="relative aspect-[16/9] sm:aspect-video"
+              onClick={() => setOpenFeaturedPic(true)}
             >
               <img
                 src={featuredImageData.imageUrl}
@@ -122,13 +127,15 @@ const POTDSection = () => {
               <div className="absolute inset-0" />
             </div>
             <div className="p-4 sm:p-6">
-                  <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
-                    Featured Pic
-                  </p>
+              <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
+                Featured Pic
+              </p>
               <h3 className="text-lg sm:text-xl font-bold mb-2">
                 Club Member’s Featured Picture
               </h3>
-              <p className="text-sm text-gray-400 mb-3">{featuredImageData.caption}</p>
+              <p className="text-sm text-gray-400 mb-3">
+                {featuredImageData.caption}
+              </p>
               <div className="flex items-center gap-2">
                 {/* <img
                   src="images/placeholder.svg"
@@ -137,11 +144,16 @@ const POTDSection = () => {
                   className="w-8 h-8 rounded-full object-cover"
                 /> */}
                 <div>
-                  <h4 className="text-sm font-semibold">Pictured by: {featuredImageData.author}</h4>
+                  <h4 className="text-sm font-semibold">
+                    Pictured by: {featuredImageData.author}
+                  </h4>
                   <p className="text-xs text-gray-400 mb-2">ISA Club</p>
-                  <hr className="mb-2"/>
-                  <p className="text-xs text-gray-400">* We’re looking for amazing space shots from the community!
-                  Send us your best astro photos for a chance to be featured here.</p>
+                  <hr className="mb-2" />
+                  <p className="text-xs text-gray-400">
+                    * We’re looking for amazing space shots from the community!
+                    Send us your best astro photos for a chance to be featured
+                    here.
+                  </p>
                 </div>
               </div>
             </div>
