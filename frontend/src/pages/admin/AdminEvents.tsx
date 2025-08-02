@@ -8,6 +8,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function AdminEvents() {
   const [editingEventId, setEditingEventId] = useState(null);
+  const [showRegisteredUsers, setShowRegisteredUsers] = useState(false);
   const [eventFormData, setEventFormData] = useState({
     title: "",
     description: "",
@@ -28,6 +29,8 @@ export default function AdminEvents() {
       return response.data;
     },
   });
+
+  console.log(events);
 
   // Update Event Mutation
   const updateEventMutation = useMutation<
@@ -96,106 +99,146 @@ export default function AdminEvents() {
   if (isError) return <p className="text-red-500">Failed to load events</p>;
 
   return (
-    <Card className="bg-space-purple/10 border-space-purple/30">
-      <CardHeader>
-        <CardTitle>Manage Events</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {events.length === 0 ? (
-          <p className="text-gray-400">No events available.</p>
-        ) : (
-          <ul className="space-y-4">
-            {events.map((event) => (
-              <li
-                key={event._id}
-                className="p-4 border bg-space-purple/20 rounded"
-              >
-                {editingEventId === event._id ? (
-                  <form onSubmit={handleEventSubmit} className="space-y-2">
-                    <label>
-                      Title:
-                      <input
-                        type="text"
-                        name="title"
-                        value={eventFormData.title}
-                        onChange={handleEventChange}
-                        className="w-full p-2 rounded bg-gray-800 text-white"
-                        required
-                      />
-                    </label>
-                    <label>
-                      Description:
-                      <textarea
-                        name="description"
-                        value={eventFormData.description}
-                        onChange={handleEventChange}
-                        rows={4}
-                        className="w-full p-2 rounded bg-gray-800 text-white"
-                        required
-                      ></textarea>
-                    </label>
-                    <label>
-                      Event Date:
-                      <input
-                        type="date"
-                        name="eventDate"
-                        value={eventFormData.eventDate}
-                        onChange={handleEventChange}
-                        className="w-full p-2 rounded bg-gray-800 text-white"
-                        required
-                        min={new Date().toISOString().split("T")[0]}
-                      />
-                    </label>
-                    <div className="flex gap-2">
-                      <Button type="submit">
-                        {updateEventMutation.isPending ? "Saving..." : "Save"}
-                      </Button>
-                      <Button
-                        type="button"
-                        onClick={handleCancelEventEdit}
-                        variant="outline"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </form>
-                ) : (
-                  <>
-                    <p className="font-semibold">
-                      <span className="text-gray-400">Title: </span>
-                      {event.title}
-                    </p>
-                    <p>
-                      <span className="text-gray-400">Description: </span>
-                      {event.description}
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      <span className="text-gray-400">Date: </span>
-                      {new Date(event.eventDate).toLocaleDateString()}
-                    </p>
-                    <div className="flex gap-2 mt-2">
-                      <Button
-                        size="sm"
-                        onClick={() => handleEditEventClick(event)}
-                        variant="outline"
-                      >
-                        <Pencil className="w-4 h-4 mr-1" /> Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => deleteEventMutation.mutate(event._id)}
-                        variant="destructive"
-                      >
-                        <Trash2 className="w-4 h-4 mr-1" /> Delete
-                      </Button>
-                    </div>
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
+    <>
+      <Card className="bg-space-purple/10 border-space-purple/30">
+        <CardHeader>
+          <CardTitle>Manage Events</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {events.length === 0 ? (
+            <p className="text-gray-400">No events available.</p>
+          ) : (
+            <ul className="space-y-4">
+              {events.map((event) => (
+                <li
+                  key={event._id}
+                  className="p-4 border bg-space-purple/20 rounded"
+                >
+                  {editingEventId === event._id ? (
+                    <form onSubmit={handleEventSubmit} className="space-y-2">
+                      <label>
+                        Title:
+                        <input
+                          type="text"
+                          name="title"
+                          value={eventFormData.title}
+                          onChange={handleEventChange}
+                          className="w-full p-2 rounded bg-gray-800 text-white"
+                          required
+                        />
+                      </label>
+                      <label>
+                        Description:
+                        <textarea
+                          name="description"
+                          value={eventFormData.description}
+                          onChange={handleEventChange}
+                          rows={4}
+                          className="w-full p-2 rounded bg-gray-800 text-white"
+                          required
+                        ></textarea>
+                      </label>
+                      <label>
+                        Event Date:
+                        <input
+                          type="date"
+                          name="eventDate"
+                          value={eventFormData.eventDate}
+                          onChange={handleEventChange}
+                          className="w-full p-2 rounded bg-gray-800 text-white"
+                          required
+                          min={new Date().toISOString().split("T")[0]}
+                        />
+                      </label>
+                      <div className="flex gap-2">
+                        <Button type="submit">
+                          {updateEventMutation.isPending ? "Saving..." : "Save"}
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={handleCancelEventEdit}
+                          variant="outline"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </form>
+                  ) : (
+                    <>
+                      <p className="font-semibold">
+                        <span className="text-gray-400">Title: </span>
+                        {event.title}
+                      </p>
+                      <p>
+                        <span className="text-gray-400">Description: </span>
+                        {event.description}
+                      </p>
+                      <p className="text-sm text-gray-400">
+                        <span className="text-gray-400">Date: </span>
+                        {new Date(event.eventDate).toLocaleDateString()}
+                      </p>
+                      <div className="flex gap-2 mt-2">
+                        <Button
+                          size="sm"
+                          onClick={() => handleEditEventClick(event)}
+                          variant="outline"
+                        >
+                          <Pencil className="w-4 h-4 mr-1" /> Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => deleteEventMutation.mutate(event._id)}
+                          variant="destructive"
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" /> Delete
+                        </Button>
+                      </div>
+                    </>
+                  )}
+
+                  <Button
+                    size="sm"
+                    className="mt-4"
+                    onClick={() => setShowRegisteredUsers((prev) => !prev)}
+                  >
+                    {showRegisteredUsers
+                      ? "Hide registered Users"
+                      : "View registered Users"}
+                  </Button>
+                  <div
+                    className="h-72 overflow-y-scroll mt-4 "
+                    style={{ display: showRegisteredUsers ? null : "none" }}
+                  >
+                    <ul>
+                      {event.registeredUsers.map((user) => {
+                        return (
+                          <li key={user._id} className="mt-2 mb-4">
+                            <div className="flex gap-2">
+                              <img
+                                className="rounded-full h-12 w-12"
+                                src={
+                                  user.avatar === "profile-dark.webp"
+                                    ? `images/${user.avatar}`
+                                    : user.avatar
+                                }
+                                alt={user._id}
+                              />
+                              <div>
+                                <p>{user.name}</p>
+                                <p>{user.email}</p>
+                              </div>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+    </>
   );
 }

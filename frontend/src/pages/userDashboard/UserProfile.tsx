@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Edit, Camera, LogOut } from "lucide-react";
+import { Camera, LogOut } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import axios from "axios";
+import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
@@ -19,9 +19,7 @@ const UserProfile = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:3000/api/v1/users/logout", {
-        withCredentials: true,
-      });
+      await api.get("/users/logout");
       toast({
         title: "Logout successful!",
         description: "See you again!",
