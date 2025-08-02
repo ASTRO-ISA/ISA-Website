@@ -1,11 +1,10 @@
 // this is the main blog page where we will see all the featured blogs, recent blogs etc.
 import { Calendar, Clock, MoreVertical } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import axios from "axios";
+import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -18,7 +17,7 @@ const UserBlogs = () => {
   const { toast } = useToast();
 
   const fetchBlogs = async () => {
-    const res = await axios.get("http://localhost:3000/api/v1/blogs");
+    const res = await api.get("http://localhost:3000/api/v1/blogs");
     const userBlogs = res.data.filter(
       (blog) => blog.author._id == userInfo.user._id
     );
@@ -26,11 +25,8 @@ const UserBlogs = () => {
   };
 
   const fetchSavedBlogs = async () => {
-    const res = await axios.get(
-      "http://localhost:3000/api/v1/users/savedBlogs",
-      {
-        withCredentials: true,
-      }
+    const res = await api.get(
+      "http://localhost:3000/api/v1/users/savedBlogs"
     );
     return res.data.savedBlogs;
   };
@@ -52,11 +48,8 @@ const UserBlogs = () => {
   //mutate unsave Blogs
   const mutateUnSaveBlog = useMutation({
     mutationFn: async (blogId) => {
-      await axios.delete(
-        `http://localhost:3000/api/v1/users/unSaveBlog/${blogId}`,
-        {
-          withCredentials: true,
-        }
+      await api.delete(
+        `http://localhost:3000/api/v1/users/unSaveBlog/${blogId}`
       );
     },
     onSuccess: () => {
