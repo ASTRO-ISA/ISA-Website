@@ -344,7 +344,7 @@ const Events = () => {
                 (
                   launch // for time being using just events
                 ) => (
-                  <Link to={`/events/${launch.id}`} key={launch.id}>
+                  // <Link to={launch.url} key={launch.url}>
                     <div className="cosmic-card overflow-hidden group flex flex-col min-h-[28rem]">
                       {/* Image */}
                       <div className="h-48 overflow-hidden">
@@ -390,7 +390,7 @@ const Events = () => {
                         </div>
                       </div>
                     </div>
-                  </Link>
+                  // </Link>
                 )
               )
             )}
@@ -471,9 +471,9 @@ const Events = () => {
             <div className="md:w-1/3">
               <img
                 loading="lazy"
-                src="https://images.unsplash.com/photo-1509773896068-7fd415d91e2e?q=80&w=500"
+                src="images/host_an_event.png"
                 alt="Stargazing Event"
-                className="rounded-lg h-auto w-full"
+                className="rounded-lg h-auto w-full aspect-[16/9] object-cover hidden sm:block"
               />
             </div>
           </div>

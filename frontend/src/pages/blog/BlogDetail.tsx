@@ -17,6 +17,7 @@ const BlogDetail = () => {
 
   // to get all the blog data form database
   useEffect(() => {
+    setLoading(true);
     api
       .get(`/blogs/${id}`)
       .then((res) => {
@@ -47,8 +48,8 @@ const BlogDetail = () => {
     }
   };
 
-  if (loading) return <p>Loading blog...</p>;
-  if (!blog) return <p>Blog not found.</p>;
+  if (loading) return <p className="min-h-screen flex justify-center items-center text-gray-400">Loading blog...</p>;
+  if (!blog) return <p className="min-h-screen flex justify-center items-center text-gray-400">Blog not found.</p>;
 
   // to split the created date and time
   const date = new Date(blog.createdAt);
@@ -74,7 +75,7 @@ const BlogDetail = () => {
             <img
               src={blog.thumbnail}
               alt={blog.title}
-              className="w-full h-auto object-cover"
+              className="w-full rounded-lg h-auto object-cover"
             />
           </div>
 
@@ -89,7 +90,7 @@ const BlogDetail = () => {
               <div className="flex items-center gap-1">
                 {/* <Calendar className="w-4 h-4 text-space-accent" /> */}
                 <span className="text-xs text-gray-400">
-                  BY: {blog.author.name.toUpperCase()} {formattedDate} at{" "}
+                  BY: {blog.author.name.toUpperCase()}&nbsp;&nbsp;&nbsp;{formattedDate} at{" "}
                   {formattedTime}
                 </span>
               </div>
