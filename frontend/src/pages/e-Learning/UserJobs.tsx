@@ -1,13 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/Spinner";
 import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
 
 const fetchJobs = async () => {
-  const res = await axios.get("http://localhost:3000/api/v1/jobs/", {
-    withCredentials: true,
-  });
+  const res = await api.get("/jobs/");
   return res.data.data;
 };
 

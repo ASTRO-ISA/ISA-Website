@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "@/lib/api";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
@@ -20,34 +20,26 @@ const SuggestBlogTopic = () => {
 
   const handleSubmitTopic = async (e) => {
     e.preventDefault();
-    if(isLoggedIn){
+    if (isLoggedIn) {
       try {
         setSubmitting(true);
-        const res = await axios.post(
-          "http://localhost:3000/api/v1/suggestBlog/",
-          blogSuggest,
-          {
-            withCredentials: true,
-          }
-        );
+        await api.post("/suggestBlog/", blogSuggest);
         setBlogSuggest({
           title: "",
           description: "",
-        })
+        });
         setSubmitting(false);
-        toast({ title: 'Suggesion posted successfully.'})
+        toast({ title: "Suggesion posted successfully." });
       } catch (error) {
-        console.error("Post failed", error);
-        toast({ title: 'something went wrong'})
+        toast({ title: "something went wrong" });
         setSubmitting(false);
       }
-    }
-    else{
+    } else {
       toast({
         title: "Hold on!",
         description: "Login to suggest your beautiful ideas.",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     }
   };
 
@@ -62,7 +54,6 @@ const SuggestBlogTopic = () => {
             </p>
 
             <form className="space-y-4">
-
               <input
                 type="text"
                 name="title"

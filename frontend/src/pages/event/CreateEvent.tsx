@@ -1,6 +1,5 @@
-// components/EventForm.jsx
-import React, { useState } from "react";
-import axios from "axios";
+import { useState } from "react";
+import api from "@/lib/api";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
@@ -58,14 +57,15 @@ const CreateEvent = () => {
 
     if (selected < now) {
       toast({
-        description: "You can’t set an event in the past. Please select correct date." 
-      })
+        description:
+          "You can’t set an event in the past. Please select correct date.",
+      });
       return;
     }
-    if(formData.description.length < 100){
+    if (formData.description.length < 100) {
       toast({
-        description: "Mininum 100 characters required for description."
-      })
+        description: "Mininum 100 characters required for description.",
+      });
       return;
     }
     setIsSubmitting(true);
@@ -87,14 +87,9 @@ const CreateEvent = () => {
         data.append("thumbnail", thumbnailFile);
       }
 
-      const res = await axios.post(
-        "http://localhost:3000/api/v1/events/create",
-        data,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true,
-        }
-      );
+      const res = await api.post("/events/create", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       setSuccessMsg("Event created successfully!");
       setFormData({
@@ -130,7 +125,7 @@ const CreateEvent = () => {
       <main className="container mx-auto px-4 pb-16">
         <div className="max-w-4xl mx-auto space-y-8">
           <h2 className="text-2xl font-bold pt-10">Create Event</h2>
-  
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Banner */}
             <div>
@@ -144,7 +139,7 @@ const CreateEvent = () => {
                 className="block w-full text-sm text-gray-300 file:bg-space-purple/30 file:border-0 file:px-4 file:py-2 file:rounded file:text-white hover:file:bg-space-purple/50 transition"
               />
             </div>
-  
+
             {/* Title */}
             <input
               name="title"
@@ -154,21 +149,25 @@ const CreateEvent = () => {
               placeholder="Title *"
               required
             />
-  
+
             {/* Description */}
             <div>
-              <label htmlFor="description" className="text-sm text-gray-400">Description (min 100 characters)</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full p-2 rounded bg-zinc-800"
-              placeholder="Description"
-              required
-            />
-            <p className="text-xs text-gray-400 mt-0">{formData.description.length}</p>
+              <label htmlFor="description" className="text-sm text-gray-400">
+                Description (min 100 characters)
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full p-2 rounded bg-zinc-800"
+                placeholder="Description"
+                required
+              />
+              <p className="text-xs text-gray-400 mt-0">
+                {formData.description.length}
+              </p>
             </div>
-  
+
             {/* Dates */}
             <label htmlFor="eventDate" className="block text-gray-400 text-xs">
               Start Date and Time* (use given calender option for precision)
@@ -182,8 +181,11 @@ const CreateEvent = () => {
                 min={new Date().toISOString().split("T")[0]}
               />
             </label>
-  
-            <label htmlFor="eventEndTime" className="block text-gray-400 text-xs">
+
+            <label
+              htmlFor="eventEndTime"
+              className="block text-gray-400 text-xs"
+            >
               End Time*
               <input
                 type="datetime-local"
@@ -193,7 +195,7 @@ const CreateEvent = () => {
                 className="block p-2 mt-1 rounded bg-zinc-800"
               />
             </label>
-  
+
             {/* Other Inputs */}
             <input
               name="location"
@@ -203,7 +205,7 @@ const CreateEvent = () => {
               placeholder="Location *"
               required
             />
-  
+
             <input
               name="eventType"
               value={formData.eventType}
@@ -212,7 +214,7 @@ const CreateEvent = () => {
               placeholder="Event Type (Virtual/In-Person) *"
               required
             />
-  
+
             <input
               name="presentedBy"
               value={formData.presentedBy}
@@ -220,10 +222,15 @@ const CreateEvent = () => {
               className="w-full p-2 rounded bg-zinc-800"
               placeholder="Presented By"
             />
-  
+
             {/* Hosted By */}
             <div>
-              <label htmlFor="host" className="block mb-1 text-sm text-gray-400">Hosted By:</label>
+              <label
+                htmlFor="host"
+                className="block mb-1 text-sm text-gray-400"
+              >
+                Hosted By:
+              </label>
               {formData.hostedBy.map((host, idx) => (
                 <input
                   key={idx}
@@ -243,44 +250,47 @@ const CreateEvent = () => {
                 + Add another host
               </button>
             </div>
-  
+
             {/* Dropdowns */}
             <div>
-            <label htmlFor="event-type"  className="block text-sm text-gray-400">
-              Event Category:
-            </label>
-            <select
-              id="event-type"
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-              className="w-full p-2 rounded bg-zinc-800"
-              required
-            >
-              <option value="">-- Select Event Category --</option>
-              <option value="community">Community</option>
-              <option value="astronomical">Astronomical</option>
-            </select>
+              <label
+                htmlFor="event-type"
+                className="block text-sm text-gray-400"
+              >
+                Event Category:
+              </label>
+              <select
+                id="event-type"
+                name="type"
+                value={formData.type}
+                onChange={handleChange}
+                className="w-full p-2 rounded bg-zinc-800"
+                required
+              >
+                <option value="">-- Select Event Category --</option>
+                <option value="community">Community</option>
+                <option value="astronomical">Astronomical</option>
+              </select>
             </div>
-  
-              <div>
-            <label htmlFor="status" className="block text-sm text-gray-400">
-              Event Status:
-            </label>
-            <select
-              id="status"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full p-2 rounded bg-zinc-800"
-              required
-            >
-              <option value="">-- Event Status --</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="completed">Completed</option>
-            </select>
+
+            <div>
+              <label htmlFor="status" className="block text-sm text-gray-400">
+                Event Status:
+              </label>
+              <select
+                id="status"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full p-2 rounded bg-zinc-800"
+                required
+              >
+                <option value="">-- Event Status --</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="completed">Completed</option>
+              </select>
             </div>
-  
+
             {/* Submit Button */}
             <button
               type="submit"
@@ -289,7 +299,7 @@ const CreateEvent = () => {
             >
               {isSubmitting ? "Submitting..." : "Create Event"}
             </button>
-  
+
             {successMsg && <p className="text-green-500 mt-2">{successMsg}</p>}
             {errorMsg && <p className="text-red-500 mt-2">{errorMsg}</p>}
           </form>

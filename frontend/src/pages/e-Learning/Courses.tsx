@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { ExternalLink } from "lucide-react";
 
 const Courses = () => {
@@ -8,7 +8,7 @@ const Courses = () => {
 
   const fetchCourses = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/v1/courses/");
+      const res = await api.get("/courses/");
       setCourses(res.data);
     } catch (err) {
       console.error("Error fetching courses:", err.message);
