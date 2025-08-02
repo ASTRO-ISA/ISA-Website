@@ -37,8 +37,8 @@ const Footer = () => {
     }
     else{
       toast({
-        title: "Hold on!",
-        description: "You need to login to save blogs.",
+        title: "Login required!",
+        description: "Please login first to subscribe to our newsletter.",
         variant: "destructive",
       });
     }
