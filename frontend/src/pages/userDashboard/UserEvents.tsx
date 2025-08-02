@@ -1,10 +1,8 @@
 import { Calendar, MapPin, Clock, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import { useToast } from "@/hooks/use-toast";
 
 const UserEvents = () => {
   const [events, setEvents] = useState([]);
@@ -14,8 +12,8 @@ const UserEvents = () => {
   const { userInfo } = useAuth();
 
   useEffect(() => {
-    const res = axios
-      .get("http://localhost:3000/api/v1/events")
+    const res = api
+      .get("/events")
       .then((res) => {
         const userRegisteredEvents = res.data.filter((event) => {
           return event.registeredUsers.some((u) => {

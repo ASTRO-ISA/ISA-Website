@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@radix-ui/react-label";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { toast } from "react-toastify";
+import api from "@/lib/api";
 
 interface PasswordFields {
   currentPassword: string;
@@ -27,21 +28,11 @@ const PasswordChange: React.FC = () => {
     setDisBtn(true);
 
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/v1/users/updatePassword`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(password),
-        }
-      );
-
-      if (!res.ok) {
-        throw new Error("Password update failed! Please try again.");
-      }
+      const res = await api.patch("/users/updatePassword", password, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       toast.success("Password changed successfully");
       setPassword({
@@ -50,7 +41,7 @@ const PasswordChange: React.FC = () => {
         passwordConfirm: "",
       });
     } catch (error) {
-      toast.error("Error: " + error.message);
+      toast.error(error.response?.data?.message || "Error: " + error.message);
     } finally {
       setDisBtn(false);
     }
@@ -59,7 +50,7 @@ const PasswordChange: React.FC = () => {
   return (
     <div>
       <div className="space-y-2">
-        <h1>CHANGE PASSSWORD</h1>
+        <h1>CHANGE PASSWORD</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
           <Label className="flex flex-col items-start gap-2">
             Current password

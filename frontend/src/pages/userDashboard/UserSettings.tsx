@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Edit, Settings, Camera } from "lucide-react";
+import { Edit, Camera } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -8,7 +8,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import PasswordChange from "./PasswordChange";
-import axios from "axios";
+import api from "@/lib/api";
 import Spinner from "@/components/ui/Spinner";
 
 const UserSettings = () => {
@@ -30,12 +30,11 @@ const UserSettings = () => {
         formData.append("avatar", avatarFile);
       }
 
-      await axios.patch(
-        `http://localhost:3000/api/v1/users/updateUser/${userInfo.user._id}`,
+      await api.patch(
+        `/users/updateUser/${userInfo.user._id}`,
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" }
         }
       );
 

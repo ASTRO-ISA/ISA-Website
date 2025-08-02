@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import api from "@lib/api";
 
 const useBlogs = () => {
   const [blogs, setBlogs] = useState([]);
@@ -7,9 +8,8 @@ const useBlogs = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await fetch("http://localhost:3000/blogs");
-        const data = await res.json();
-        setBlogs(data);
+        const res = await api.get("/blogs");
+        setBlogs(res.data);
       } catch (err) {
         console.error("Failed to fetch blogs:", err);
       } finally {
