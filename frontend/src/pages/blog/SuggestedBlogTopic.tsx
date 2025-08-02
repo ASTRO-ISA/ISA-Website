@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TabsContent } from "@radix-ui/react-tabs";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
-import axios from "axios";
+import api from "@/lib/api";
 
 const SuggestedBlogTopic = () => {
   const { toast } = useToast();
@@ -32,59 +32,59 @@ const SuggestedBlogTopic = () => {
   };
 
   useEffect(() => {
-
     const fetchSuggetions = async () => {
-        try {
-          const res = await axios.get(
-            "http://localhost:3000/api/v1/suggestBlog/",
-            {
-              withCredentials: true,
-            }
-          );
-  
-          setSuggestions(res.data.data || []);
-          const initialFormData = {};
-          res.data.data.forEach((s) => {
-            initialFormData[s._id] = {
-              status: s.status || "pending",
-              response: s.response || "",
-            };
-          });
-          setFormData(initialFormData);
-        } catch (err) {
-          console.error("Failed to fetch suggestions", err);
-        }
-      } 
+      try {
+        const res = await api.get("/suggestBlog/");
+
+        setSuggestions(res.data.data || []);
+        const initialFormData = {};
+        res.data.data.forEach((s) => {
+          initialFormData[s._id] = {
+            status: s.status || "pending",
+            response: s.response || "",
+          };
+        });
+        setFormData(initialFormData);
+      } catch (err) {
+        console.error("Failed to fetch suggestions", err);
+      }
+    };
 
     fetchSuggetions();
   }, []);
 
   const handleUpdate = async (id, status, response) => {
     try {
-      await axios.patch(
-        `http://localhost:3000/api/v1/suggestBlog/${id}`,
-        {
-          status,
-          response,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-      alert("Updated successfully!");
+      await api.patch(`/suggestBlog/${id}`, {
+        status,
+        response,
+      });
+      toast({
+        title: "Updated successfully!",
+      });
     } catch (err) {
       console.error("Update failed", err);
+      toast({
+        title: "Update failed",
+        description: err,
+        variant: "destructive",
+      });
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/v1/suggestBlog/${id}`, {
-        withCredentials: true,
-      });
+      await api.delete(`/suggestBlog/${id}`);
       setSuggestions((prev) => prev.filter((s) => s._id !== id));
+      toast({
+        title: "deleted",
+      });
     } catch (err) {
-      console.error("Delete failed", err);
+      toast({
+        title: "Deletion failed",
+        description: err,
+        variant: "destructive",
+      });
     }
   };
 

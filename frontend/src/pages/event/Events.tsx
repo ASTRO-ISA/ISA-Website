@@ -1,12 +1,18 @@
 import { Calendar, MapPin, Clock, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { MoreHorizontal, Share, Mail } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 // import StarBackground from "@/components/StarBackground";
 
 const Events = () => {
@@ -30,49 +36,47 @@ const Events = () => {
       toast({
         title: "Hold on!",
         description: "Log in first to host an event.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
 
   // //registering a user for event
   const handleRegister = async (userId, eventId) => {
-    if(isLoggedIn){
-      const res = axios
-      .patch(
-        `http://localhost:3000/api/v1/events/register/${eventId}/${userId}`
-      )
-      .then((res) => {
-        // setting a particular event as registered, since we are registering from the events page so to update the button to 'alredy registerd'
-        setEvents((prevEvents) =>
-          prevEvents.map((event) =>
-            event._id === eventId
-              ? {
-                  ...event,
-                  registeredUsers: [...event.registeredUsers, String(userId)],
-                }
-              : event
-          )
-        );
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error regstering user for event", err);
-        setLoading(false);
-      });
+    if (isLoggedIn) {
+      const res = api
+        .patch(`/events/register/${eventId}/${userId}`)
+        .then((res) => {
+          // setting a particular event as registered, since we are registering from the events page so to update the button to 'alredy registerd'
+          setEvents((prevEvents) =>
+            prevEvents.map((event) =>
+              event._id === eventId
+                ? {
+                    ...event,
+                    registeredUsers: [...event.registeredUsers, String(userId)],
+                  }
+                : event
+            )
+          );
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error regstering user for event", err);
+          setLoading(false);
+        });
     } else {
       toast({
         title: "Hold on!",
         description: "Please login first to register for the event.",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     }
   };
 
   const handleAddToNewsletter = async (event) => {
     try {
-      await axios.post(
-        "http://localhost:3000/api/v1/newsletter/draft/add",
+      await api.post(
+        "/newsletter/draft/add",
         {
           type: "event",
           id: event._id,
@@ -91,8 +95,8 @@ const Events = () => {
   };
 
   useEffect(() => {
-    const res = axios
-      .get("http://localhost:3000/api/v1/events")
+    const res = api
+      .get("/events")
       .then((res) => {
         setEvents(res.data);
         setLoading(false);
@@ -107,7 +111,7 @@ const Events = () => {
     const fetchLaunches = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:3000/api/v1/launches");
+        const res = await api.get("/launches");
         setLaunches(res.data);
       } catch (err) {
         console.error("Error fetching blogs from api", err);
@@ -184,110 +188,131 @@ const Events = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Upcoming events */}
             {loading ? (
-  <p>Loading...</p>
-) : events.length === 0 ? (
-  <p>Nothing to see here right now!</p>
-) : ( 
-  (showAll ? events : events.slice(0, 3)).map((event) => (
-    <div key={event._id} className="cosmic-card overflow-hidden group relative flex flex-col">
-      <Link to={`/events/${event._id}`} className="flex-1 flex flex-col">
-        <div className="h-48 overflow-hidden">
-          <img
-            loading="lazy"
-            src={event.thumbnail}
-            alt={event.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-        </div>
-        <div className="p-5 flex-1 flex flex-col justify-between">
-          <div>
-          <span
-          className={`${
-            new Date(event.eventDate) > new Date()
-              ? "text-space-accent"
-              : "text-space-purple"
-          } uppercase text-xs font-bold tracking-widest mb-2`}
-          >
-          {new Date(event.eventDate) > new Date() ? "Upcoming" : "Completed"}
-          </span>
-            {/* <p className={`uppercase text-xs font-bold tracking-widest text-space-accent mb-2`}>{getStatus(event.eventDate)}</p> */}
-            <h3 className="text-xl font-semibold mb-3">{event.title}</h3>
+              <p>Loading...</p>
+            ) : events.length === 0 ? (
+              <p>Nothing to see here right now!</p>
+            ) : (
+              (showAll ? events : events.slice(0, 3)).map((event) => (
+                <div
+                  key={event._id}
+                  className="cosmic-card overflow-hidden group relative flex flex-col"
+                >
+                  <Link
+                    to={`/events/${event._id}`}
+                    className="flex-1 flex flex-col"
+                  >
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        loading="lazy"
+                        src={event.thumbnail}
+                        alt={event.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div>
+                        <span
+                          className={`${
+                            new Date(event.eventDate) > new Date()
+                              ? "text-space-accent"
+                              : "text-space-purple"
+                          } uppercase text-xs font-bold tracking-widest mb-2`}
+                        >
+                          {new Date(event.eventDate) > new Date()
+                            ? "Upcoming"
+                            : "Completed"}
+                        </span>
+                        {/* <p className={`uppercase text-xs font-bold tracking-widest text-space-accent mb-2`}>{getStatus(event.eventDate)}</p> */}
+                        <h3 className="text-xl font-semibold mb-3">
+                          {event.title}
+                        </h3>
 
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-gray-400">
-                <Calendar className="h-4 w-4 mr-2 text-space-accent" />
-                <span>{formatDate(event.eventDate)}</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-400">
-                <Clock className="h-4 w-4 mr-2 text-space-accent" />
-                <span>{formatTime(event.eventDate)}</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-400">
-                <MapPin className="h-4 w-4 mr-2 text-space-accent" />
-                <span>{event.location}</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-400">
-                <Users className="h-4 w-4 mr-2 text-space-accent" />
-                <span>{event.registeredUsers.length} attending</span>
-              </div>
-            </div>
+                        <div className="space-y-2 mb-4">
+                          <div className="flex items-center text-sm text-gray-400">
+                            <Calendar className="h-4 w-4 mr-2 text-space-accent" />
+                            <span>{formatDate(event.eventDate)}</span>
+                          </div>
+                          <div className="flex items-center text-sm text-gray-400">
+                            <Clock className="h-4 w-4 mr-2 text-space-accent" />
+                            <span>{formatTime(event.eventDate)}</span>
+                          </div>
+                          <div className="flex items-center text-sm text-gray-400">
+                            <MapPin className="h-4 w-4 mr-2 text-space-accent" />
+                            <span>{event.location}</span>
+                          </div>
+                          <div className="flex items-center text-sm text-gray-400">
+                            <Users className="h-4 w-4 mr-2 text-space-accent" />
+                            <span>
+                              {event.registeredUsers.length} attending
+                            </span>
+                          </div>
+                        </div>
 
-            <p className="text-gray-400 text-sm">
-              {event?.description?.split(" ").slice(0, 20).join(" ")}...
-            </p>
-          </div>
-        </div>
-      </Link>
-      <div className="absolute top-3 right-3 z-10">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="text-white bg-black/40 hover:bg-black/60 rounded-full p-1">
-              <MoreHorizontal size={18} />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-black border border-gray-800 text-white text-sm shadow-xl">
-            <DropdownMenuItem
-              onClick={() => navigator.share
-                ? navigator.share({
-                    title: event.title,
-                    text: "Check out this event!",
-                    url: `${window.location.origin}/events/${event._id}`,
-                  })
-                : alert("Sharing not supported on this browser.")
-              }
-              className="flex items-center gap-2 cursor-pointer"
-            >
-              <Share size={14} /> Share
-            </DropdownMenuItem>
-            {isLoggedIn && isAdmin ? 
-            (<DropdownMenuItem
-              onClick={() => handleAddToNewsletter(event)}
-              className="flex items-center gap-2 cursor-pointer"
-            >
-              <Mail size={14} /> Add to Newsletter
-            </DropdownMenuItem>) : ""}
+                        <p className="text-gray-400 text-sm">
+                          {event?.description
+                            ?.split(" ")
+                            .slice(0, 20)
+                            .join(" ")}
+                          ...
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                  <div className="absolute top-3 right-3 z-10">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button className="text-white bg-black/40 hover:bg-black/60 rounded-full p-1">
+                          <MoreHorizontal size={18} />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="bg-black border border-gray-800 text-white text-sm shadow-xl">
+                        <DropdownMenuItem
+                          onClick={() =>
+                            navigator.share
+                              ? navigator.share({
+                                  title: event.title,
+                                  text: "Check out this event!",
+                                  url: `${window.location.origin}/events/${event._id}`,
+                                })
+                              : alert("Sharing not supported on this browser.")
+                          }
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
+                          <Share size={14} /> Share
+                        </DropdownMenuItem>
+                        {isLoggedIn && isAdmin ? (
+                          <DropdownMenuItem
+                            onClick={() => handleAddToNewsletter(event)}
+                            className="flex items-center gap-2 cursor-pointer"
+                          >
+                            <Mail size={14} /> Add to Newsletter
+                          </DropdownMenuItem>
+                        ) : (
+                          ""
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
 
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      <button
-        onClick={() => handleRegister(userInfo?.user._id, event._id)}
-        disabled={event.registeredUsers.includes(String(userId))}
-        className={`w-full py-2 transition-colors mt-auto
+                  <button
+                    onClick={() =>
+                      handleRegister(userInfo?.user._id, event._id)
+                    }
+                    disabled={event.registeredUsers.includes(String(userId))}
+                    className={`w-full py-2 transition-colors mt-auto
           ${
             event.registeredUsers.includes(String(userId))
               ? "bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed"
               : "bg-space-accent hover:bg-space-accent/90"
           }`}
-      >
-        {event.registeredUsers.includes(String(userId))
-          ? "Registered"
-          : "Register for this Event"}
-              </button>
-            </div>
-          ))
-        )}
+                  >
+                    {event.registeredUsers.includes(String(userId))
+                      ? "Registered"
+                      : "Register for this Event"}
+                  </button>
+                </div>
+              ))
+            )}
           </div>
 
           {/* View all events button */}
@@ -320,47 +345,51 @@ const Events = () => {
                   launch // for time being using just events
                 ) => (
                   <Link to={`/events/${launch.id}`} key={launch.id}>
-                  <div className="cosmic-card overflow-hidden group flex flex-col min-h-[28rem]">
-                    {/* Image */}
-                    <div className="h-48 overflow-hidden">
-                      <img
-                        loading="lazy"
-                        src={launch.image?.image_url}
-                        alt={launch.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    </div>
+                    <div className="cosmic-card overflow-hidden group flex flex-col min-h-[28rem]">
+                      {/* Image */}
+                      <div className="h-48 overflow-hidden">
+                        <img
+                          loading="lazy"
+                          src={launch.image?.image_url}
+                          alt={launch.name}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                      </div>
 
-                    {/* Card Content */}
-                    <div className="p-5 flex flex-col flex-1 justify-between">
-                      <div>
-                        <h3 className="text-xl font-semibold mb-3 min-h-[3rem]">{launch.name}</h3>
+                      {/* Card Content */}
+                      <div className="p-5 flex flex-col flex-1 justify-between">
+                        <div>
+                          <h3 className="text-xl font-semibold mb-3 min-h-[3rem]">
+                            {launch.name}
+                          </h3>
 
-                        <div className="space-y-2 mb-4 text-sm text-gray-400">
-                          <div className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{formatDate(launch.window_start)}</span>
+                          <div className="space-y-2 mb-4 text-sm text-gray-400">
+                            <div className="flex items-center">
+                              <Calendar className="h-4 w-4 mr-2 text-space-accent" />
+                              <span>{formatDate(launch.window_start)}</span>
+                            </div>
+                            <div className="flex items-center">
+                              <Clock className="h-4 w-4 mr-2 text-space-accent" />
+                              <span>{formatTime(launch.window_start)}</span>
+                            </div>
+                            <div className="flex items-center">
+                              <MapPin className="h-4 w-4 mr-2 text-space-accent" />
+                              <span>
+                                {launch.launch_service_provider?.name}
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex items-center">
-                            <Clock className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{formatTime(launch.window_start)}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <MapPin className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{launch.launch_service_provider?.name}</span>
-                          </div>
+
+                          <p className="text-gray-400 text-sm line-clamp-3">
+                            {launch.mission?.description
+                              ?.split(" ")
+                              .slice(0, 30)
+                              .join(" ")}
+                            ...
+                          </p>
                         </div>
-
-                        <p className="text-gray-400 text-sm line-clamp-3">
-                          {launch.mission?.description
-                            ?.split(" ")
-                            .slice(0, 30)
-                            .join(" ")}
-                          ...
-                        </p>
                       </div>
                     </div>
-                  </div>
                   </Link>
                 )
               )
@@ -412,13 +441,11 @@ const Events = () => {
         <section className="cosmic-card p-8">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-2/3">
-              <h2 className="text-2xl font-bold mb-4">
-                Host Your Own Event
-              </h2>
+              <h2 className="text-2xl font-bold mb-4">Host Your Own Event</h2>
               <p className="text-gray-300 mb-6">
-                ISA Club members can organize their own astronomical
-                events with our equipment and guidance. Share your passion for
-                astronomy with others!
+                ISA Club members can organize their own astronomical events with
+                our equipment and guidance. Share your passion for astronomy
+                with others!
               </p>
               <ul className="text-gray-400 mb-6 space-y-2">
                 <li className="flex items-center gap-2">

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
 
@@ -13,8 +13,8 @@ const ForgotPassword = () => {
     e.preventDefault();
     setSending(true);
     try {
-      await axios.post(
-        "http://localhost:3000/api/v1/users/forgotPassword",
+      await api.post(
+        "/forgotPassword",
         { email },
         {
           headers: {
