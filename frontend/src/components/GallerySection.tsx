@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/lib/api';
 import { useEffect, useRef, useState } from 'react';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
@@ -18,7 +18,7 @@ const GallerySection = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios
+    api
       .get('http://localhost:3000/api/v1/gallery')
       .then((res) => {
         setImages(

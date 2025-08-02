@@ -17,15 +17,11 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post(
-        "/users/login",
-        form,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          }
-        }
-      );
+      const response = await api.post("/users/login", form, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       toast({
         title: "Login successful!",
@@ -92,7 +88,7 @@ const Login = () => {
           </button>
 
           {/* Forgot Password */}
-          <p className=" mt-4 text-center text-sm text-space-accent mt-1">
+          <p className=" mt-4 text-center text-sm text-space-accent">
             <Link to="/forgot-password" className="hover:underline">
               Forgot Password?
             </Link>
