@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,16 +32,11 @@ const UploadResearchPaper = () => {
       formData.append(key, val);
     });
 
-    const res = await axios.post(
-      "http://localhost:3000/api/v1/researchPapers/",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      }
-    );
+    const res = await api.post("/researchPapers/", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     return res.data;
   };
@@ -61,14 +56,14 @@ const UploadResearchPaper = () => {
   });
 
   const handleUpload = () => {
-    if(isLoggedIn){
+    if (isLoggedIn) {
       mutate();
     } else {
       toast({
         title: "Hold on!",
         description: "Please login first to upload a research paper.",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     }
   };
 

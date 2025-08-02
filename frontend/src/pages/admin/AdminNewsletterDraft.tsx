@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
@@ -14,8 +14,7 @@ const AdminNewsletterDraft = () => {
 
   const fetchDraft = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/v1/newsletter/draft", { withCredentials: true });
-      console.log(res.data)
+      const res = await api.get("/newsletter/draft");
       setDraft({
         blogs: res.data.blogs || [],
         events: res.data.events || [],
@@ -30,7 +29,7 @@ const AdminNewsletterDraft = () => {
   const handleSendNewsletter = async () => {
     try {
       setSending(true);
-      await axios.post("http://localhost:3000/api/v1/newsletter/draft/send", {}, { withCredentials: true });
+      await api.post("/newsletter/draft/send", {});
       toast({ title: "Newsletter sent!" });
       setDraft(null);
     } catch (err) {
@@ -42,7 +41,7 @@ const AdminNewsletterDraft = () => {
 
   const handleRemove = async (type, id) => {
     try {
-      await axios.post("http://localhost:3000/api/v1/newsletter/draft/remove", { type, id }, { withCredentials: true });
+      await api.post("/newsletter/draft/remove", { type, id });
       toast({ title: `${type} removed from draft` });
       fetchDraft();
     } catch (err) {
@@ -73,12 +72,18 @@ const AdminNewsletterDraft = () => {
               <CardContent>
                 <ul className="space-y-2">
                   {draft.blogs.map((blog) => (
-                    <li key={blog._id} className="flex justify-between items-start bg-gray-800 p-3 rounded">
+                    <li
+                      key={blog._id}
+                      className="flex justify-between items-start bg-gray-800 p-3 rounded"
+                    >
                       <div>
                         <p className="font-semibold">{blog.title}</p>
                         <p className="text-sm text-gray-400">{blog.summary}</p>
                       </div>
-                      <Button variant="ghost" onClick={() => handleRemove("blog", blog._id)}>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleRemove("blog", blog._id)}
+                      >
                         <Trash2 className="w-4 h-4 text-red-400" />
                       </Button>
                     </li>
@@ -96,12 +101,20 @@ const AdminNewsletterDraft = () => {
               <CardContent>
                 <ul className="space-y-2">
                   {draft.events?.map((event) => (
-                    <li key={event._id} className="flex justify-between items-start bg-gray-800 p-3 rounded">
+                    <li
+                      key={event._id}
+                      className="flex justify-between items-start bg-gray-800 p-3 rounded"
+                    >
                       <div>
                         <p className="font-semibold">{event.title}</p>
-                        <p className="text-sm text-gray-400">{event.description}</p>
+                        <p className="text-sm text-gray-400">
+                          {event.description}
+                        </p>
                       </div>
-                      <Button variant="ghost" onClick={() => handleRemove("event", event._id)}>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleRemove("event", event._id)}
+                      >
                         <Trash2 className="w-4 h-4 text-red-400" />
                       </Button>
                     </li>

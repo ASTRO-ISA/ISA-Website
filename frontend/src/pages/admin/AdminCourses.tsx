@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
+import api from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
 import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
@@ -31,7 +31,7 @@ const AdminCourses = () => {
 
   const fetchCourses = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/v1/courses/", {
+      const res = await api.get("/courses/", {
         withCredentials: true,
       });
       setCourses(res.data);
@@ -50,8 +50,7 @@ const AdminCourses = () => {
       formData.append("applyLink", newCourse.applyLink);
       formData.append("image", newCourse.image);
 
-      await axios.post("http://localhost:3000/api/v1/courses/create", formData, {
-        withCredentials: true,
+      await api.post("/courses/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -76,9 +75,7 @@ const AdminCourses = () => {
   const handleDeleteCourse = async (id) => {
     try {
       setIsDeleting(true);
-      await axios.delete(`http://localhost:3000/api/v1/courses/${id}`, {
-        withCredentials: true,
-      });
+      await api.delete(`/courses/${id}`);
       toast({ title: "Course deleted successfully!" });
       fetchCourses();
     } catch (error) {

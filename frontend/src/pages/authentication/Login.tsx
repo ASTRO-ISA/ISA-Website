@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 
@@ -17,14 +17,13 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/v1/users/login",
+      const response = await api.post(
+        "/users/login",
         form,
         {
           headers: {
             "Content-Type": "application/json",
-          },
-          withCredentials: true,
+          }
         }
       );
 

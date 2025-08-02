@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-// import { AccordionContent } from "@radix-ui/react-accordion";
-import axios from "axios";
+import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -34,8 +33,8 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/v1/users/signup",
+      const response = await api.post(
+        "/users/signup",
         form,
         {
           headers: {
@@ -45,7 +44,7 @@ const Signup = () => {
         }
       );
 
-      console.log("Account created!:", response.data);
+      // console.log("Account created!:", response.data);
       toast({
         title: "Account created!:",
         description: "Welcome!",
