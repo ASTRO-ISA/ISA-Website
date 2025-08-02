@@ -1,8 +1,7 @@
 import { Calendar, MapPin, Clock, Users, Video } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "@/lib/api";
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -25,8 +24,8 @@ const EventDetails = () => {
   // //registering a user for event
   const handleRegister = async (userId) => {
     if(isLoggedIn){
-      const res = axios
-      .patch(`http://localhost:3000/api/v1/events/register/${id}/${userId}`)
+      const res = api
+      .patch(`/events/register/${id}/${userId}`)
       .then((res) => {
         fetchEvent();
         setLoading(false);
@@ -46,8 +45,8 @@ const EventDetails = () => {
 
   // get event from database
   const fetchEvent = async () => {
-    const res = await axios
-      .get(`http://localhost:3000/api/v1/events/${id}`)
+    const res = await api
+      .get(`/events/${id}`)
       .then((res) => {
         setEvent(res.data);
         setLoading(false);
@@ -65,9 +64,7 @@ const EventDetails = () => {
   const deleteEvent = async (id) => {
     setDeleting(true);
     try {
-        await axios.delete(`http://localhost:3000/api/v1/events/${id}`, {
-            withCredentials: true,
-        });
+        await api.delete(`/events/${id}`);
         toast({
             title: "Event deleted successfully!"
         })

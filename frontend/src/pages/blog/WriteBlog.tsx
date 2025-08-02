@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import imageCompression from "browser-image-compression";
@@ -19,10 +19,12 @@ const WriteBlog = () => {
     const options = {
       maxSizeMB: 1,
       useWebWorker: true,
-    }
+    };
     try {
       const compressedFile = await imageCompression(image, options);
-      const fileWithName = new File([compressedFile], image.name, { type: compressedFile.type });
+      const fileWithName = new File([compressedFile], image.name, {
+        type: compressedFile.type,
+      });
       setThumbnail(fileWithName);
     } catch (err) {
       console.error("Image compression failed:", err);
@@ -37,7 +39,10 @@ const WriteBlog = () => {
       return;
     }
     if (content.length < 1000) {
-      toast({ title: "Content must be at least 1000 characters.", variant: "destructive" });
+      toast({
+        title: "Content must be at least 1000 characters.",
+        variant: "destructive",
+      });
       return;
     }
     setLoading(true);
@@ -48,13 +53,7 @@ const WriteBlog = () => {
     formData.append("description", description);
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/v1/blogs/create",
-        formData,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await api.post("/blogs/create", formData);
 
       console.log("Blog published:", response.data);
       setContent("");
@@ -66,7 +65,6 @@ const WriteBlog = () => {
       toast({ title: "Blog published successfully!" });
     } catch (err) {
       setLoading(false);
-      console.error("Failed to publish blog", err);
       toast({ title: "Error publishing blog.", variant: "destructive" });
     }
   };
@@ -139,7 +137,9 @@ const WriteBlog = () => {
               rows={3}
               className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
             ></textarea>
-            <p className="text-gray-500 text-xs">{180 - description.length}/180</p>
+            <p className="text-gray-500 text-xs">
+              {180 - description.length}/180
+            </p>
           </div>
 
           {/* Submit Button */}

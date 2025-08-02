@@ -17,7 +17,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 // import { error } from "console";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Mail } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const Blog = () => {
   const { toast } = useToast();
@@ -230,7 +229,7 @@ const Blog = () => {
       queryClient.invalidateQueries({ queryKey: ["saved-blogs"] });
       toast({
         title: "Blog saved!",
-        description: "Saved blogs appears on the dashboard."
+        description: "Saved blogs appears on the dashboard.",
       });
     },
     onError: (error) => {
@@ -420,49 +419,49 @@ const Blog = () => {
                   </DropdownMenu>
                 </div> */}
 
+                  <div className="relative z-10">
+                    <Button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setOpenFeaturedMenuId(
+                          openFeaturedMenuId === featured._id
+                            ? null
+                            : featured._id
+                        );
+                      }}
+                      className="p-1 text-white bg-transparent hover:bg-transparent"
+                    >
+                      <MoreVertical className="w-5 h-5 text-white" />
+                    </Button>
 
-                    <div className="relative z-10">
-                      <Button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setOpenFeaturedMenuId(
-                            openFeaturedMenuId === featured._id ? null : featured._id
-                          );
-                        }}
-                        className="p-1 text-white bg-transparent hover:bg-transparent"
-                      >
-                        <MoreVertical className="w-5 h-5 text-white" />
-                      </Button>
+                    {openFeaturedMenuId === featured._id && (
+                      <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleShare(featured);
+                            setOpenFeaturedMenuId(null);
+                          }}
+                          className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
+                        >
+                          Share
+                        </button>
 
-                      {openFeaturedMenuId === featured._id && (
-                        <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSaveBlog(featured._id);
+                            setOpenFeaturedMenuId(null);
+                          }}
+                          className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
+                        >
+                          Save
+                        </button>
+
+                        {isAdmin && (
                           <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleShare(featured);
-                              setOpenFeaturedMenuId(null);
-                            }}
-                            className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
-                          >
-                            Share
-
-                          </button>
-
-                          <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleSaveBlog(featured._id);
-                                  setOpenFeaturedMenuId(null);
-                                }}
-                                className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
-                              >
-                                Save
-                          </button>
-
-                          {isAdmin && (
-                            <button
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -473,11 +472,10 @@ const Blog = () => {
                           >
                             Remove Featured
                           </button>
-                          )}
-                          
-                        </div>
-                      )}
-                    </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </Link>

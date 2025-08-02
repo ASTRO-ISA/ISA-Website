@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+import api from "@/lib/api";
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -28,8 +28,8 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await axios.post(
-        `http://localhost:3000/api/v1/users/resetPassword`,
+      const response = await api.post(
+        `/users/resetPassword`,
         {
           token, // JWT token from URL
           newPassword: form.newPassword,
@@ -38,7 +38,6 @@ const ResetPassword = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
         }
       );
 
