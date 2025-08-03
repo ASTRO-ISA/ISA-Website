@@ -1,5 +1,5 @@
 const cron = require('node-cron')
-const Event = require('../models/eventModel')
+const Event = require('../../models/eventModel')
 const cloudinary = require('cloudinary').v2
 
 cron.schedule('0 1 * * *', async () => {
