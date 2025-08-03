@@ -21,9 +21,9 @@ const AdminJobs = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const [creatingJob, setCreatingJob] = useState(false);
+  // const [creatingJob, setCreatingJob] = useState(false);
   const [editingJobId, setEditingJobId] = useState(null);
-  const [isEditingDeleting, setIsEditingDeleting] = useState(false);
+  // const [isEditingDeleting, setIsEditingDeleting] = useState(false);
 
   const [newJobFormData, setNewJobFormData] = useState({
     title: "",

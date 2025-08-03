@@ -17,6 +17,9 @@ const featuredSchema = new mongoose.Schema({
     author: {
         type: String,
     },
+    socialLink: {
+        type: String,
+    }
 })
 
 const Featured = mongoose.model('Featured', featuredSchema)

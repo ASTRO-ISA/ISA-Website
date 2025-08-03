@@ -25,7 +25,14 @@ const UserJobs = () => {
       <p className="text-center mt-4 text-red-500">
         Error fetching jobs: {error.message}
       </p>
-    );
+  );
+
+  if (!jobs || jobs.length === 0)
+    return (
+      <p className="text-gray-400 italic flex justify-center items-center">
+        Nothing to see here right now. Future job and internship postings will appear here!
+      </p>
+  );
 
   return (
     <div>
