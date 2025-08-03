@@ -19,6 +19,7 @@ const courseRouter = require('./routes/courseRoutes.js')
 const featuredRouter = require('./routes/featuredRoutes.js')
 const webinarRouter = require('./routes/webinarRoutes.js')
 const newsletterRouter = require('./routes/newsletterRoutes.js')
+const userPicsPotdRouter = require('./routes/userPicsPotdRoutes.js')
 
 
 // middlewares
@@ -49,6 +50,7 @@ app.use('/api/v1/gallery', galleryRouter)
 app.use('/api/v1/blogs/featured', featuredRouter)
 app.use('/api/v1/webinars', webinarRouter)
 app.use('/api/v1/newsletter', newsletterRouter)
+app.use('/api/v1/userPotdPics', userPicsPotdRouter)
 
 app.get('/', (req, res) => {
   res.status(200).json({

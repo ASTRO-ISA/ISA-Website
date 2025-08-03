@@ -31,6 +31,7 @@ import AdminDashboard from "./pages/admin/Admin";
 import About from "./pages/About";
 import ResetPassword from "./pages/authentication/ResetPassword";
 import ForgotPassword from "./pages/authentication/ForgotPassword";
+import PotdPicsUpload from "./pages/PotdPicsUpload";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +82,7 @@ const App = () => {
             <Route path="/profile" element={<Profile />} />
             <Route path="/host-event" element={<CreateEvent />} />
             <Route path="/about" element={<About />} />
+            <Route path="/upload-pic" element={<PotdPicsUpload />} />
             <Route path="/events/:id" element={<EventDetails />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
