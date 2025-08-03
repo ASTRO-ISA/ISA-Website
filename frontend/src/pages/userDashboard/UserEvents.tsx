@@ -17,7 +17,7 @@ const UserEvents = () => {
       .then((res) => {
         const userRegisteredEvents = res.data.filter((event) => {
           return event.registeredUsers.some((u) => {
-            return u == userInfo.user._id;
+            return u._id == userInfo.user._id;
           });
         });
         setEvents(userRegisteredEvents);
@@ -65,11 +65,20 @@ const UserEvents = () => {
             {loading ? (
               <p>Loading...</p>
             ) : events.length === 0 ? (
-              <p className="text-gray-500 italic">Nothing to see here right now! Registerd events will appear here.</p>
+              <p className="text-gray-500 italic">
+                Nothing to see here right now! Registerd events will appear
+                here.
+              </p>
             ) : (
               (showAll ? events : events.slice(0, 3)).map((event) => (
-                <div key={event._id} className="cosmic-card overflow-hidden group relative flex flex-col">
-                  <Link to={`/events/${event._id}`} className="flex-1 flex flex-col">
+                <div
+                  key={event._id}
+                  className="cosmic-card overflow-hidden group relative flex flex-col"
+                >
+                  <Link
+                    to={`/events/${event._id}`}
+                    className="flex-1 flex flex-col"
+                  >
                     <div className="h-48 overflow-hidden">
                       <img
                         loading="lazy"
@@ -80,7 +89,9 @@ const UserEvents = () => {
                     </div>
                     <div className="p-5 flex-1 flex flex-col justify-between">
                       <div>
-                        <h3 className="text-xl font-semibold mb-3">{event.title}</h3>
+                        <h3 className="text-xl font-semibold mb-3">
+                          {event.title}
+                        </h3>
 
                         <div className="space-y-2 mb-4">
                           <div className="flex items-center text-sm text-gray-400">
@@ -97,31 +108,22 @@ const UserEvents = () => {
                           </div>
                           <div className="flex items-center text-sm text-gray-400">
                             <Users className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{event.registeredUsers.length} attending</span>
+                            <span>
+                              {event.registeredUsers.length} attending
+                            </span>
                           </div>
                         </div>
 
                         <p className="text-gray-400 text-sm">
-                          {event?.description?.split(" ").slice(0, 20).join(" ")}...
+                          {event?.description
+                            ?.split(" ")
+                            .slice(0, 20)
+                            .join(" ")}
+                          ...
                         </p>
                       </div>
                     </div>
                   </Link>
-
-                  <button
-                    // onClick={() => handleRegister(userInfo?.user._id, event._id)}
-                    disabled={event.registeredUsers.includes(String(userInfo?.user._id))}
-                    className={`w-full py-2 transition-colors mt-auto
-                      ${
-                        event.registeredUsers.includes(String(userInfo.user._id))
-                          ? "bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed"
-                          : "bg-space-accent hover:bg-space-accent/90"
-                      }`}
-                  >
-                    {event.registeredUsers.includes(String(userInfo?.user._id))
-                      ? "Registered"
-                      : "Register for this Event"}
-                  </button>
                 </div>
               ))
             )}

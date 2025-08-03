@@ -298,15 +298,21 @@ const Events = () => {
                     onClick={() =>
                       handleRegister(userInfo?.user._id, event._id)
                     }
-                    disabled={event.registeredUsers.includes(String(userId))}
-                    className={`w-full py-2 transition-colors mt-auto
-          ${
-            event.registeredUsers.includes(String(userId))
-              ? "bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed"
-              : "bg-space-accent hover:bg-space-accent/90"
-          }`}
+                    disabled={event.registeredUsers.some(
+                      (e) => e._id === userInfo?.user._id
+                    )}
+                    className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold
+    ${
+      isLoggedIn &&
+      event.registeredUsers.some((e) => e._id === userInfo?.user._id)
+        ? "bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed"
+        : "bg-space-accent hover:bg-space-accent/80"
+    }`}
                   >
-                    {event.registeredUsers.includes(String(userId))
+                    {isLoggedIn &&
+                    event.registeredUsers.some(
+                      (e) => e._id === userInfo?.user._id
+                    )
                       ? "Registered"
                       : "Register for this Event"}
                   </button>
