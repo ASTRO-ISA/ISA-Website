@@ -95,6 +95,43 @@ export default function AdminEvents() {
     });
   };
 
+  // downloading csv
+
+  const convertToCSV = (jsonData) => {
+    const headers = Object.keys(jsonData[0]);
+    const rows = jsonData.map((obj) =>
+      headers
+        .map((field) => JSON.stringify(obj[field], (_, v) => v ?? ""))
+        .join(",")
+    );
+    return [headers.join(","), ...rows].join("\n");
+  };
+
+  const downloadCSV = (csv, filename = "data.csv") => {
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleDownload = async (title, registeredUsers) => {
+    const regUsers = registeredUsers.reduce((acc, user) => {
+      acc.push({
+        name: user.name,
+        email: user.email,
+      });
+      return acc;
+    }, []);
+
+    const csv = convertToCSV(regUsers);
+    downloadCSV(csv, `${title}.csv`);
+  };
+
   if (isLoading) return <p className="text-gray-400">Loading events...</p>;
   if (isError) return <p className="text-red-500">Failed to load events</p>;
 
@@ -196,15 +233,27 @@ export default function AdminEvents() {
                     </>
                   )}
 
-                  <Button
-                    size="sm"
-                    className="mt-4"
-                    onClick={() => setShowRegisteredUsers((prev) => !prev)}
-                  >
-                    {showRegisteredUsers
-                      ? "Hide registered Users"
-                      : "View registered Users"}
-                  </Button>
+                  <div className="flex gap-2 items-center ">
+                    <Button
+                      size="sm"
+                      className="mt-4"
+                      onClick={() => setShowRegisteredUsers((prev) => !prev)}
+                    >
+                      {showRegisteredUsers
+                        ? "Hide registered Users"
+                        : "View registered Users"}
+                    </Button>
+
+                    <Button
+                      onClick={() =>
+                        handleDownload(event.title, event.registeredUsers)
+                      }
+                      size="sm"
+                      className="mt-4"
+                    >
+                      Download CSV
+                    </Button>
+                  </div>
                   <div
                     className="h-72 overflow-y-scroll mt-4 "
                     style={{ display: showRegisteredUsers ? null : "none" }}
