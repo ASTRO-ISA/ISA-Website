@@ -2,15 +2,26 @@ import { useState, useEffect, useRef } from "react";
 import api from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash } from "lucide-react";
+import { Plus, Trash, MoreVertical } from "lucide-react";
 import Lightbox from "yet-another-react-lightbox";
 import { useToast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Captions from "yet-another-react-lightbox/plugins/captions";
+import "yet-another-react-lightbox/plugins/captions.css";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
 
 const AdminGallerySection = () => {
   const { toast } = useToast();
   const [images, setImages] = useState([]);
+  const [userImages, setUserImages] = useState([]);
   const [open, setOpen] = useState(false);
+  const [openUserPic, setOpenUserPic] = useState(false);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [featuredLoading, setFeaturedLoading] = useState(false);
@@ -189,6 +200,52 @@ const AdminGallerySection = () => {
     );
   };
 
+  const fetchUserPicsForPotd = async () => {
+    const res = await api.get("/userPotdPics/", {
+      withCredentials: true,
+    });
+    setUserImages(
+      res.data.map((img) => ({
+        _id: img._id,
+        src: img.imageUrl,
+        social: img.socialLink,
+        caption: img.caption || "",
+      }))
+    );
+  };
+
+  const deleteUserPicsForPotd = async (id) => {
+    try {
+      setDeletingId(id);
+      await api.delete(`/userPotdPics/delete/${id}`);
+      setUserImages((prev) => prev.filter((img) => img._id !== id));
+      toast({ title: "Deleted Successfully." });
+      setDeletingId(null);
+    } catch (err) {
+      console.error("Error deleting image", err);
+      toast({ title: "Error deleting image" });
+      setDeletingId(null);
+    }
+  };
+
+  const setImageAsFeatured = async (imageId) => {
+    if (featuredImageData.length > 0) {
+      toast({
+        title: "Featured image already exists.",
+        description:
+          "Please delete the previous featured image before uploading a new one.",
+        variant: "destructive",
+      });
+      return;
+    }
+    try {
+      const res = await api.post('/userPotdPics/setFeatured', { imageId }, { withCredentials: true })
+      toast({description: 'Image set as featured!'})
+    } catch (err) {
+      toast({description: 'Failed to set as featured'})
+    }
+  }
+
   const fetchFeaturedImage = async () => {
     try {
       const res = await api.get("/gallery/featured");
@@ -201,6 +258,7 @@ const AdminGallerySection = () => {
   useEffect(() => {
     fetchImages();
     fetchFeaturedImage();
+    fetchUserPicsForPotd();
   }, []);
 
   return (
@@ -372,6 +430,70 @@ const AdminGallerySection = () => {
               close={() => setOpen(false)}
               index={index}
               slides={images.map((img) => ({ src: img.src, type: "image" }))}
+            />
+          </>
+        )}
+
+        <hr className="w-full mb-5 mt-5" />
+
+
+        {/* user pics for potd Gallery */}
+        <h3 className="font-semibold text-lg mb-2">User uploaded pics</h3>
+        {userImages.length === 0 ? (
+          <p className="text-gray-400">No pics found.</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {userImages.map((image, i) => (
+                <div
+                  key={image._id}
+                  className="group overflow-hidden rounded-lg relative animate-fade-in"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                >
+                  <img
+                    src={image.src}
+                    alt={image.caption}
+                    onClick={() => {
+                      setOpenUserPic(true);
+                      setIndex(i);
+                    }}
+                    className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110 cursor-pointer"
+                  />
+                  {/* Dropdown and Delete Button */}
+                  <div className="absolute top-2 right-2 flex items-center gap-2 pointer-events-auto">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="icon" variant="ghost" className="text-white bg-black/40 hover:bg-black/60">
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => setImageAsFeatured(image._id)}>
+                          Set as Featured
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      onClick={() => deleteUserPicsForPotd(image._id)}
+                    >
+                      {deletingId === image._id ? <Spinner /> : <Trash className="w-4 h-4" />}
+                    </Button>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 pointer-events-none">
+                    <p className="text-white font-medium">{image.caption}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Lightbox
+              open={openUserPic}
+              close={() => setOpenUserPic(false)}
+              index={index}
+              slides={userImages.map((img) => ({ src: img.src, type: "image" }))}
+              plugins={[Captions, Zoom]}
             />
           </>
         )}

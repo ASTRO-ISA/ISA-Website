@@ -46,7 +46,7 @@ const HeroSection = () => {
   return (
     <div
       ref={heroRef}
-      className="relative mb-16 min-h-[600px] sm:min-h-[600px] md:min-h-screen flex flex-col items-center justify-center overflow-hidden bg-space-dark"
+      className="relative mb-16 min-h-[700px] sm:min-h-[700px] md:min-h-screen flex flex-col items-center justify-center overflow-hidden bg-space-dark"
     >
       {/* Background elements */}
       <div className="absolute inset-0 bg-space-gradient" />
@@ -85,7 +85,7 @@ const HeroSection = () => {
           transition={{ duration: 0.6 }}
           className="md:w-1/2 text-center"
         >
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white space-glow">
+          <h1 className="text-5xl sm:text-4xl md:text-6xl font-bold mb-4 text-white space-glow">
             <span className="text-space-accent">Interstellar</span> SpaceTech Astronomy Club
           </h1>
           <p className="text-base sm:text-lg md:text-xl mb-8 text-gray-300">
