@@ -5,6 +5,8 @@ import "yet-another-react-lightbox/styles.css";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import "yet-another-react-lightbox/plugins/captions.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 const POTDSection = () => {
   const [pictureOfTheDay, setPictureOfTheDay] = useState(null);
@@ -12,11 +14,12 @@ const POTDSection = () => {
   const [loading, setLoading] = useState(false);
   const [openFeaturedPic, setOpenFeaturedPic] = useState(false);
   const [openLightbox, setOpenLightbox] = useState(false);
+  const { isLoggedIn } = useAuth();
 
   const fetchPOTD = async () => {
     try {
       setLoading(true);
-      const res = await api.get("api/picture/potd");
+      const res = await api.get("/picture/potd");
       const image = {
         copyright: res.data.copyright,
         date: res.data.date,
@@ -34,7 +37,7 @@ const POTDSection = () => {
 
   const fetchFeaturedImage = async () => {
     try {
-      const res = await api.get("api/gallery/featured");
+      const res = await api.get("/gallery/featured");
       setFeaturedImageData(res.data[0]);
     } catch (err) {
       console.error("Error fetching featured image:", err);
@@ -137,25 +140,25 @@ const POTDSection = () => {
                 {featuredImageData.caption}
               </p>
               <div className="flex items-center gap-2">
-                {/* <img
-                  src="images/placeholder.svg"
+                <img
+                  src={featuredImageData.imageUrl}
                   loading="lazy"
                   alt={featuredImageData.author}
-                  className="w-8 h-8 rounded-full object-cover"
-                /> */}
+                  className="w-8 h-8 mb-2 rounded-full object-cover"
+                />
                 <div>
                   <h4 className="text-sm font-semibold">
-                    Pictured by: {featuredImageData.author}
+                    <a href={featuredImageData.socialLink} className="text-white hover:text-space-accent">{featuredImageData.author}</a>
                   </h4>
                   <p className="text-xs text-gray-400 mb-2">ISA Club</p>
-                  <hr className="mb-2" />
-                  <p className="text-xs text-gray-400">
-                    * We’re looking for amazing space shots from the community!
-                    Send us your best astro photos for a chance to be featured
-                    here.
-                  </p>
                 </div>
               </div>
+              <hr className="mb-2" />
+              <p className="text-xs text-gray-400">
+                    * We’re looking for amazing space shots from the community!
+                    Send us your best astro photos for a chance to be featured
+                    here. {!isLoggedIn && <span>Login to see the details.</span>} {isLoggedIn && <Link to={'/upload-pic'} className="text-space-accent underline">Send here</Link>}
+                  </p>
             </div>
           </div>
         )}

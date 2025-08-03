@@ -16,7 +16,13 @@ import SuggestBlogTopic from "./SuggestBlogTopic";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 // import { error } from "console";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Mail } from "lucide-react";
+// import { MoreHorizontal, Mail } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const Blog = () => {
   const { toast } = useToast();
@@ -419,7 +425,7 @@ const Blog = () => {
                   </DropdownMenu>
                 </div> */}
 
-                  <div className="relative z-10">
+                  {/* <div className="relative z-10">
                     <Button
                       onClick={(e) => {
                         e.preventDefault();
@@ -475,7 +481,52 @@ const Blog = () => {
                         )}
                       </div>
                     )}
-                  </div>
+                  </div> */}
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="p-1 text-white bg-transparent hover:bg-transparent"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <MoreVertical className="w-5 h-5 text-white" />
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent 
+                className="bg-white text-black border border-gray-200 shadow-md z-[9999]"
+                side="top"
+                align="end" 
+                onClick={(e) => e.stopPropagation()}
+                >
+                  <DropdownMenuItem
+                    onClick={() => handleShare(featured)}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    Share
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => handleSaveBlog(featured._id)}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    Save
+                  </DropdownMenuItem>
+
+                  {isAdmin && (
+                    <DropdownMenuItem
+                      onClick={() => handleRemoveFeatured(featured)}
+                      className="text-red-600 hover:bg-red-100 flex items-center gap-2 cursor-pointer"
+                    >
+                      Remove Featured
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
                 </div>
               </div>
             </Link>
@@ -504,18 +555,15 @@ const Blog = () => {
             {loadingUserBlogs ? (
               <p>Loading...</p>
             ) : userBlogs.length === 0 ? (
-              <p className="text-gray-500 italic">
-                Nothing to see here right now!
-              </p>
+              <p className="text-gray-500 italic">Nothing to see here right now!</p>
             ) : (
-              (showAllUserBlogs ? userBlogs : userBlogs.slice(0, 3)).map(
-                (blog) => (
+              (showAllUserBlogs ? userBlogs : userBlogs.slice(0, 3)).map((blog) => (
+                <div key={blog._id} className="relative group">
                   <Link
-                    key={blog._id}
                     to={`/blogs/${blog._id}`}
                     className="cosmic-card group flex flex-col cursor-pointer relative"
                   >
-                    {/* Image with overflow-hidden for zoom effect only */}
+                    {/* Image */}
                     <div className="h-48 w-full relative overflow-hidden">
                       <img
                         loading="lazy"
@@ -528,12 +576,8 @@ const Blog = () => {
                     {/* Card Content */}
                     <div className="p-5 flex-1 flex flex-col justify-between">
                       <div>
-                        <h3 className="text-xl font-semibold mb-3">
-                          {blog.title}
-                        </h3>
-                        <p className="text-gray-400 text-sm mb-4">
-                          {blog.description}
-                        </p>
+                        <h3 className="text-xl font-semibold mb-3">{blog.title}</h3>
+                        <p className="text-gray-400 text-sm mb-4">{blog.description}</p>
 
                         <div className="space-y-2 mb-4">
                           <div className="flex items-center text-sm text-gray-400">
@@ -547,107 +591,95 @@ const Blog = () => {
                         </div>
                       </div>
 
-                      {/* author and drop-up menu */}
+                      {/* Footer with author and dropdown */}
                       <div className="flex items-center justify-between">
                         <h4 className="text-sm text-gray-400">
-                          Author:{" "}
-                          {(blog.author?.name || "Unknown").toUpperCase()}
+                          Author: {(blog.author?.name || "Unknown").toUpperCase()}
                         </h4>
 
-                        <div className="relative z-10">
-                          <Button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setOpenMenuId(
-                                openMenuId === blog._id ? null : blog._id
-                              );
-                            }}
-                            className="p-1 bg-transparent hover:bg-transparent"
+                        {/* Dropdown Menu */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="p-1 h-auto bg-transparent hover:bg-transparent"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreVertical className="w-5 h-5 text-white" />
+                            </Button>
+                          </DropdownMenuTrigger>
+
+                          <DropdownMenuContent
+                            className="w-48"
+                            onClick={(e) => e.stopPropagation()}
+                            align="end"
+                            // className="bg-white text-black border border-gray-200 shadow-md z-[9999]"
+                            side="top"
                           >
-                            <MoreVertical className="w-5 h-5 text-white" />
-                          </Button>
+                            <DropdownMenuItem
+                              onSelect={(e) => {
+                                e.preventDefault()
+                                handleShare(blog)
+                              }}
+                            >
+                              Share
+                            </DropdownMenuItem>
 
-                          {openMenuId === blog._id && (
-                            <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleShare(blog);
-                                  setOpenMenuId(null);
+                            <DropdownMenuItem
+                              onSelect={(e) => {
+                                e.preventDefault()
+                                handleSaveBlog(blog._id)
+                              }}
+                            >
+                              Save
+                            </DropdownMenuItem>
+
+                            {isAdmin && (
+                              <DropdownMenuItem
+                                onSelect={(e) => {
+                                  e.preventDefault()
+                                  handleAddToNewsletter(blog)
                                 }}
-                                className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
                               >
-                                Share
-                              </button>
+                                Add to Newsletter
+                              </DropdownMenuItem>
+                            )}
 
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleSaveBlog(blog._id);
+                            {isAdmin && featuredId !== blog._id && (
+                              <DropdownMenuItem
+                                onSelect={(e) => {
+                                  e.preventDefault()
+                                  handleSetFeatured(blog)
                                 }}
-                                className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
                               >
-                                Save
-                              </button>
+                                Set as Featured
+                              </DropdownMenuItem>
+                            )}
 
-                              {/* If you are admin then only you will see the button */}
-                              {isAdmin && (
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleAddToNewsletter(blog);
-                                  }}
-                                  className="w-full px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-                                >
-                                  Add to Newsletter
-                                </button>
-                              )}
-
-                              {/* if you are admin then only you will see the button */}
-                              {isAdmin && featuredId !== blog._id && (
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleSetFeatured(blog);
-                                    setOpenMenuId(null);
-                                  }}
-                                  className="w-full px-4 py-2 hover:bg-gray-100 rounded-b-md flex items-center gap-2"
-                                >
-                                  Set as Featured
-                                </button>
-                              )}
-
-                              {isAdmin && featuredId === blog._id && (
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleRemoveFeatured(blog);
-                                    setOpenMenuId(null);
-                                  }}
-                                  className="w-full px-4 py-2 hover:bg-red-100 rounded-b-md  text-red-600 flex items-center gap-2"
-                                >
-                                  Remove Featured
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </div>
+                            {isAdmin && featuredId === blog._id && (
+                              <DropdownMenuItem
+                                className="text-red-600"
+                                onSelect={(e) => {
+                                  e.preventDefault()
+                                  handleRemoveFeatured(blog)
+                                }}
+                              >
+                                Remove Featured
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
                   </Link>
-                )
-              )
+                </div>
+              ))
             )}
           </div>
 
           {/* View all blogs button */}
           {/* if there are no blpgs, no need to show the see all events button */}
-          {externalBlogs.length > 3 && !showAllUserBlogs && (
+          {userBlogs.length > 3 && !showAllUserBlogs && (
             <div className="text-center mt-10">
               <button
                 onClick={() => setShowAllUserBlogs(true)}

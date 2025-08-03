@@ -24,6 +24,13 @@ const DisplayResearchPaper = ({ papers }: DisplayPaperProps) => {
     }));
   };
 
+  if (!papers || papers.length === 0)
+    return (
+      <p className="min-h-screen text-gray-400 italic flex justify-center items-center">
+        Nothing to see here right now.
+      </p>
+  );
+
   return (
     <ul className="space-y-4 mt-4">
       {papers.map((paper) => (

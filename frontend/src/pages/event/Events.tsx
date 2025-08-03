@@ -40,6 +40,7 @@ const Events = () => {
       });
     }
   };
+  console.log(events);
 
   // //registering a user for event
   const handleRegister = async (userId, eventId) => {
@@ -114,7 +115,7 @@ const Events = () => {
         const res = await api.get("/launches");
         setLaunches(res.data);
       } catch (err) {
-        console.error("Error fetching blogs from api", err);
+        console.error("Error fetching launches from api", err);
       } finally {
         setLoading(false);
       }
@@ -317,7 +318,7 @@ const Events = () => {
 
           {/* View all events button */}
           {/* if there are no events, no need to show the see all events button */}
-          {launches.length > 6 && !showAll && (
+          {events.length > 3 && !showAll && (
             <div className="text-center mt-10">
               <button
                 onClick={() => setShowAll(true)}
@@ -345,7 +346,7 @@ const Events = () => {
                   launch // for time being using just events
                 ) => (
                   // <Link to={launch.url} key={launch.url}>
-                    <div className="cosmic-card overflow-hidden group flex flex-col min-h-[28rem]">
+                    <div className="cosmic-card overflow-hidden group flex flex-col min-h-[28rem]" key={launch.name}>
                       {/* Image */}
                       <div className="h-48 overflow-hidden">
                         <img
