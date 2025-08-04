@@ -7,6 +7,8 @@ import axios from "axios";
 import "yet-another-react-lightbox/styles.css";
 import { Trash2, Pencil } from "lucide-react";
 import SuggestedBlogTopic from "../blog/SuggestedBlogTopic";
+ 
+import  ApprovedBlogSuggestions from  "../blog/ApprovedBlogSuggestions"
 import { useToast } from "@/hooks/use-toast";
 import AdminGallerySection from "./AdminGallerySection";
 import AdminJobs from "./AdJob";
@@ -58,6 +60,7 @@ export default function AdminDashboard() {
           {/* Blog Suggestions */}
           <TabsContent value="suggestions" className="space-y-6">
             <SuggestedBlogTopic />
+              <ApprovedBlogSuggestions /> 
           </TabsContent>
 
           {/* Manage Webinars */}
