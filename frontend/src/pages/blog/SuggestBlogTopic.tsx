@@ -33,7 +33,7 @@ const SuggestBlogTopic = () => {
 
     try {
       setSubmitting(true);
-      await api.post("/suggestBlog/", blogSuggest);
+      await api.post("/suggestBlog", blogSuggest);
       setBlogSuggest({ title: "", description: "" });
       toast({ title: "Suggestion posted successfully." });
       setShowForm(false); // 🔴 hide form after submit
@@ -111,4 +111,4 @@ const SuggestBlogTopic = () => {
   );
 };
 
-export default SuggestBlogTopic;
+export default SuggestBlogTopic; 
