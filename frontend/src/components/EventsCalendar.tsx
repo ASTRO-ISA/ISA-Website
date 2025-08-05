@@ -41,11 +41,10 @@ const EventsCalendar = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-            Upcoming Astronomical Events
+            Upcoming Rocket Launches
           </h2>
           <p className="text-xl hidden md:block text-gray-400 max-w-3xl mx-auto">
-            Mark your calendar for these celestial phenomena and join our
-            community observation sessions.
+            Mark your calendar for these thrilling space launches and join our community watch parties as we witness history being made beyond Earth’s atmosphere.
           </p>
         </div>
 
@@ -67,21 +66,23 @@ const EventsCalendar = () => {
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
                     {/* <div className="text-white font-semibold">{formatDate(launch.window_start)}</div> */}
-                    <h3 className="text-xl font-bold text-white">
+                    {/* <h3 className="text-xl font-bold text-white">
                       {formatTime(launch.window_start)} IST
-                    </h3>
+                    </h3> */}
                   </div>
                 </div>
                 <CardContent className="p-4">
-                  <p className="text-sm mb-2">
-                    {formatDate(launch.window_start)}
+                  <p className="text-sm mb-2 text-space-accent">
+                    {formatDate(launch.window_start)} at {formatTime(launch.window_start)} IST
                   </p>
-                  <p className="text-gray-400 text-sm">
+                  <p className="mb-2 min-h-[3rem]">{launch.name}</p>
+                  <p className="text-gray-400 min-h-[5rem] mb-2">
                     {launch.mission?.description
                       ?.split(" ")
                       .slice(0, 20)
                       .join(" ")}
                   </p>
+                  <p className="text-xs text-gray-500">Launched By: {launch.launch_service_provider.name}</p>
                   {/* <Link
             to={`/events/${launch.id}`}
             className="mt-4 text-space-accent hover:text-space-accent/80 text-sm font-medium"
@@ -92,7 +93,7 @@ const EventsCalendar = () => {
               </Card>
             ))}
 
-            {/* Show "View Full Calendar" button inline on mobile */}
+            {/* for xs screens - view full and hide */}
             {!showAll && launches.length > 4 && (
               <div className="flex-shrink-0 w-72 md:hidden flex items-center justify-center snap-start">
                 <button
@@ -103,9 +104,20 @@ const EventsCalendar = () => {
                 </button>
               </div>
             )}
+            {showAll && (
+              <div className="flex-shrink-0 w-72 md:hidden flex items-center justify-center snap-start">
+                <button
+                  onClick={() => setShowAll(false)}
+                  className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
+                >
+                  Show Less
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
+            {/* for large screens - view all and hide */}
         {launches.length > 3 && !showAll && (
           <div className="text-center mt-10 hidden md:block">
             <button
@@ -113,6 +125,16 @@ const EventsCalendar = () => {
               className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
             >
               View Full Calendar
+            </button>
+          </div>
+        )}
+        {launches.length > 3 && showAll && (
+          <div className="text-center mt-10 hidden md:block">
+            <button
+              onClick={() => setShowAll(false)}
+              className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
+            >
+              Show Less
             </button>
           </div>
         )}

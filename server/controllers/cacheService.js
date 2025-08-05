@@ -63,12 +63,20 @@ fetchBlogs()
 fetchArticles()
 
 // every 20 minutes but not at the same time, we are calling them at differnt time so they dont fire at once
-cron.schedule('0,20,40 * * * *', fetchLaunches)
-cron.schedule('5,25,45 * * * *', fetchBlogs)
-cron.schedule('10,30,50 * * * *', fetchArticles)
+cron.schedule('0,20,40 * * * *', async() => {
+  await fetchLaunches()
+})
+cron.schedule('5,25,45 * * * *', async() => {
+  await fetchBlogs()
+})
+cron.schedule('10,30,50 * * * *', async() => {
+  await fetchArticles()
+})
 
 // only once a day at 00:10 AM
-cron.schedule('0 */3 * * *', pictureOfTheDay)
+cron.schedule('0 */3 * * *', async() => {
+  await pictureOfTheDay()
+})
 
 module.exports = {
   pictureOfTheDay: () => cache.potd,
