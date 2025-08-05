@@ -34,7 +34,7 @@ const AdminGallerySection = () => {
   const [featuredFile, setFeaturedFile] = useState(null);
   const [featuredPreviewUrl, setFeaturedPreviewUrl] = useState(null);
   const [featuredCaption, setFeaturedCaption] = useState("");
-  const [featuredAuthor, setFeaturedAuthor] = useState("");
+  // const [featuredAuthor, setFeaturedAuthor] = useState("");
   const [featuredImageData, setFeaturedImageData] = useState([]);
   const featuredFileInputRef = useRef(null);
 
@@ -138,10 +138,10 @@ const AdminGallerySection = () => {
       return;
     }
 
-    if (!featuredAuthor) {
+    if (!featuredCaption) {
       toast({
         title: "Missing Fields",
-        description: "Please enter the author name.",
+        description: "Please enter a valid caption.",
         variant: "destructive",
       });
       return;
@@ -150,7 +150,7 @@ const AdminGallerySection = () => {
     const formData = new FormData();
     formData.append("image", featuredFile);
     formData.append("caption", featuredCaption);
-    formData.append("author", featuredAuthor);
+    // formData.append("author", featuredAuthor);
 
     setFeaturedLoading(true);
     try {
@@ -159,7 +159,7 @@ const AdminGallerySection = () => {
       setFeaturedFile(null);
       setFeaturedPreviewUrl(null);
       setFeaturedCaption("");
-      setFeaturedAuthor("");
+      // setFeaturedAuthor("");
       if (featuredFileInputRef.current) {
         featuredFileInputRef.current.value = "";
       }
@@ -266,13 +266,14 @@ const AdminGallerySection = () => {
       <CardHeader>
         <CardTitle>Gallery Uploads</CardTitle>
       </CardHeader>
+      <hr className="w-full mb-5" />
       <CardContent>
         {/* Regular Upload Section */}
         <h3 className="font-semibold text-lg mb-2">
-          Uploaded images will appear in gallery
+          Uploaded images will appear in gallery on home page
         </h3>
         <p className="text-gray-500 text-sm mb-3">
-          You can upload 'png', 'jpg' and 'jpeg'
+          You can upload 'png', 'jpg' and 'jpeg'. Image size should be max 8MB
         </p>
         <div className="mb-8">
           <Button
@@ -308,80 +309,6 @@ const AdminGallerySection = () => {
             </div>
           )}
         </div>
-        <hr className="w-full mb-5" />
-
-        {/* Featured Upload Section */}
-        <div className="mb-8">
-          <h3 className="font-semibold text-lg mb-2">
-            Upload Featured Picture
-          </h3>
-          <p className="text-gray-500 text-sm mb-3">
-            Please delete the previous featured image before uploading a new one
-          </p>
-          <input
-            type="file"
-            onChange={handleFeaturedSelect}
-            accept=".png, .jpg, .jpeg"
-            ref={featuredFileInputRef}
-          />
-          {featuredPreviewUrl && (
-            <img
-              src={featuredPreviewUrl}
-              alt="Featured Preview"
-              className="w-48 h-48 object-cover mt-2 rounded"
-            />
-          )}
-          <input
-            type="text"
-            placeholder="Caption"
-            value={featuredCaption}
-            onChange={(e) => setFeaturedCaption(e.target.value)}
-            className="w-full p-2 rounded bg-gray-800 text-white mt-2"
-          />
-          <input
-            type="text"
-            placeholder="Author Name*"
-            value={featuredAuthor}
-            onChange={(e) => setFeaturedAuthor(e.target.value)}
-            className="w-full p-2 rounded bg-gray-800 text-white mt-2 mb-2"
-          />
-          <Button onClick={handleFeaturedUpload} disabled={featuredLoading}>
-            {featuredLoading ? <Spinner /> : "Upload Featured"}
-          </Button>
-        </div>
-
-        <hr className="w-full mb-5" />
-
-        {/* Featured Display */}
-        {featuredImageData?.length > 0 ? (
-          <div className="mb-6">
-            <h3 className="font-semibold text-lg mb-2">
-              Current Featured Image
-            </h3>
-            <img
-              src={featuredImageData[0].imageUrl}
-              alt="Featured"
-              className="w-48 h-48 object-cover rounded"
-            />
-            <p className="text-sm text-white mt-1">
-              {featuredImageData[0].caption}
-            </p>
-            <p className="text-xs text-gray-400">
-              By: {featuredImageData[0].author}
-            </p>
-            <Button
-              onClick={handleDeleteFeatured}
-              disabled={deleting}
-              variant="destructive"
-              className="mt-2"
-            >
-              {deleting ? <Spinner /> : "Delete Featured"}
-            </Button>
-          </div>
-        ) : (
-          <p className="text-gray-400 mb-6">No featured image uploaded yet.</p>
-        )}
-
         <hr className="w-full mb-5" />
 
         {/* Regular Gallery */}
@@ -434,11 +361,88 @@ const AdminGallerySection = () => {
           </>
         )}
 
-        <hr className="w-full mb-5 mt-5" />
+        <hr className="w-full mt-5 mb-5" />
 
+        {/* Featured Upload Section */}
+        <div className="mb-8">
+          <h3 className="font-semibold text-lg mb-2">
+            Upload Featured Picture
+          </h3>
+          <p className="text-gray-500 text-sm mb-3">
+            There can only be one featured image, delete the previous before uploading a new one (below section)
+          </p>
+          <input
+            type="file"
+            onChange={handleFeaturedSelect}
+            accept=".png, .jpg, .jpeg"
+            ref={featuredFileInputRef}
+          />
+          {featuredPreviewUrl && (
+            <img
+              src={featuredPreviewUrl}
+              alt="Featured Preview"
+              className="w-48 h-48 object-cover mt-2 rounded"
+            />
+          )}
+          <input
+            type="text"
+            placeholder="Caption*"
+            value={featuredCaption}
+            onChange={(e) => setFeaturedCaption(e.target.value)}
+            className="w-full p-2 rounded bg-gray-800 text-white mt-2 mb-2"
+          />
+          {/* <input
+            type="text"
+            placeholder="Author Name*"
+            value={featuredAuthor}
+            onChange={(e) => setFeaturedAuthor(e.target.value)}
+            className="w-full p-2 rounded bg-gray-800 text-white mt-2 mb-2"
+          /> */}
+          <Button onClick={handleFeaturedUpload} disabled={featuredLoading}>
+            {featuredLoading ? <Spinner /> : "Upload Featured"}
+          </Button>
+        </div>
+
+        <hr className="w-full mb-5" />
+
+        {/* Featured Display */}
+        {featuredImageData?.length > 0 ? (
+          <div className="mb-6">
+            <h3 className="font-semibold text-lg mb-2">
+              Current Featured Image
+            </h3>
+            <img
+              src={featuredImageData[0].imageUrl}
+              alt="Featured"
+              className="w-48 h-48 object-cover rounded"
+            />
+            <p className="text-sm text-white mt-1">
+              {featuredImageData[0].caption}
+            </p>
+            <p className="text-xs text-gray-400">
+              By: {featuredImageData[0].author?.name}
+            </p>
+            <Button
+              onClick={handleDeleteFeatured}
+              disabled={deleting}
+              variant="destructive"
+              className="mt-2"
+            >
+              {deleting ? <Spinner /> : "Delete Featured"}
+            </Button>
+          </div>
+        ) : (
+          <p className="text-gray-400 mb-6">No featured image uploaded yet.</p>
+        )}
+
+        <hr className="w-full mb-5 mt-5" />
 
         {/* user pics for potd Gallery */}
         <h3 className="font-semibold text-lg mb-2">User uploaded pics</h3>
+        <ul className="text-gray-500 text-sm mb-3">
+          <li>*These are the pics uploaded by the users for the feature of club member featured pic</li>
+          <li>*You can set a fetured by clicking on the three dot menu</li>
+        </ul>
         {userImages.length === 0 ? (
           <p className="text-gray-400">No pics found.</p>
         ) : (

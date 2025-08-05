@@ -10,16 +10,17 @@ const featuredSchema = new mongoose.Schema({
     publicId: {
         type: String,
     },
+    socialLink: {
+        type: String,
+    },
+    author: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     createdAt: {
         type: Date,
         default: Date.now
     },
-    author: {
-        type: String,
-    },
-    socialLink: {
-        type: String,
-    }
 })
 
 const Featured = mongoose.model('Featured', featuredSchema)

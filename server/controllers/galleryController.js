@@ -9,7 +9,7 @@ exports.uploadFeatured = async (req, res) => {
       caption: req.body.caption,
       imageUrl: cldImage,
       publicId: req.file.filename,
-      author: req.body.author
+      author: req.user.id
     })
     await newFeatured.save()
     res
@@ -49,7 +49,7 @@ exports.deleteFeatured = async (req, res) => {
 
 exports.getFeatured = async (req, res) => {
   try {
-    const pics = await Featured.find({})
+    const pics = await Featured.find({}).populate('author', 'name avatar')
     if (!pics) {
       res.status(404).json({ message: 'Nothing to see here right now!' })
     }

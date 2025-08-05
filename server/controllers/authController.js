@@ -39,7 +39,7 @@ exports.signup = async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       phoneNo: req.body.phoneNo,
-      role: req.body.role,
+      // role: req.body.role,
       password: req.body.password,
       confirmPassword: req.body.confirmPassword,
       country: req.body.country
