@@ -54,11 +54,7 @@ const UserProfile = () => {
             <div className="relative">
               <Avatar className="w-24 h-24">
                 <AvatarImage
-                  src={
-                    userInfo.user.avatar === "profile-dark.webp"
-                      ? `images/${userInfo.user.avatar}`
-                      : userInfo.user.avatar
-                  }
+                  src={userInfo.user.avatar}
                   alt={userInfo.user.name}
                 />{" "}
                 <AvatarFallback className="text-2xl bg-space-purple">
@@ -84,8 +80,8 @@ const UserProfile = () => {
                   </h1>
                   <p className="text-gray-400 mb-2">{userInfo.user.email}</p>
                   <div className="flex items-center gap-4 text-sm text-gray-400">
-                    <span>📍 {userInfo.user.country}</span>
-                    <span>🗓️ Joined {formatDate(userInfo.user.createdAt)}</span>
+                    <span>Country: {userInfo.user.country}</span>
+                    <span>Joined: {formatDate(userInfo.user.createdAt)}</span>
                   </div>
                 </div>
                 <div className="flex gap-6 mt-4 lg:mt-0">

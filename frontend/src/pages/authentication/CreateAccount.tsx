@@ -31,6 +31,15 @@ const Signup = () => {
       alert("Passwords do not match");
       return;
     }
+    else if(
+      form.country !== 'India' &&
+      form.country !== 'Canada' &&
+      form.country !== 'USA' &&
+      form.country !== 'Nepal'){
+        toast({
+          description: "Enter a valid country name",
+        })
+      }
 
     try {
       const response = await api.post(
