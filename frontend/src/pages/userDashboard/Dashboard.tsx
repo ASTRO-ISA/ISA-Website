@@ -9,6 +9,7 @@ import UserEvents from "./UserEvents";
 import QuickActions from "./QuickActions";
 import UserBlogs from "./UserBlogs";
 import UserResearchPaper from "./UserResearchPaper";
+import { Button } from "@/components/ui/button";
 
 interface Course {
   id: string;
@@ -181,7 +182,7 @@ const Dashboard = () => {
           onValueChange={setActiveTab}
           className="space-y-4 mt-8"
         >
-          <TabsList className="grid w-full grid-cols-4 bg-space-purple/20">
+          <TabsList className="grid w-full h-15 grid-cols-2 grid-rows-2 sm:grid-cols-4 sm:grid-rows-1 bg-space-purple/20">
             <TabsTrigger value="events">Registered Events</TabsTrigger>
             <TabsTrigger value="blogs">My Blogs</TabsTrigger>
             <TabsTrigger value="research_papers">
