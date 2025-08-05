@@ -7,6 +7,7 @@ import "yet-another-react-lightbox/plugins/captions.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const POTDSection = () => {
   const [pictureOfTheDay, setPictureOfTheDay] = useState(null);
@@ -140,13 +141,25 @@ const POTDSection = () => {
               <p className="text-sm text-gray-400 mb-3">
                 {featuredImageData.caption}
               </p>
-              <div className="flex items-center gap-2">
-                <img
+              <div className="flex items-center gap-2 pb-1">
+                {/* <img
                   src={featuredImageData.author?.avatar}
                   loading="lazy"
                   alt={featuredImageData.author?.name}
                   className="w-8 h-8 mb-2 rounded-full object-cover"
-                />
+                /> */}
+                <Avatar>
+                <AvatarImage
+                  src={featuredImageData.author?.avatar}
+                  alt={featuredImageData.author?.name}
+                />{" "}
+                <AvatarFallback className="bg-space-purple">
+                  {featuredImageData.author?.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
                 <div>
                   <h4 className="text-sm font-semibold">
                     <a href={featuredImageData.socialLink} className="text-white hover:text-space-accent">{featuredImageData.author?.name}</a>

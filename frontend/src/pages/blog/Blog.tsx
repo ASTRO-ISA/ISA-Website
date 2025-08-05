@@ -400,7 +400,7 @@ const Blog = () => {
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent 
-                className="bg-white text-black border border-gray-200 shadow-md z-[9999]"
+                // className=" text-white border border-gray-200 shadow-md z-[9999]"
                 side="top"
                 align="end" 
                 onClick={(e) => e.stopPropagation()}
