@@ -11,6 +11,8 @@ interface PasswordFields {
 }
 
 const PasswordChange: React.FC = () => {
+
+  const [open, setOpen] = useState(false);
   const [password, setPassword] = useState<PasswordFields>({
     currentPassword: "",
     newPassword: "",
@@ -50,7 +52,15 @@ const PasswordChange: React.FC = () => {
   return (
     <div>
       <div className="space-y-2">
-        <h1>CHANGE PASSWORD</h1>
+            {!open && 
+            <button
+            onClick={() => setOpen(true)}
+            className="bg-space-purple/80 hover:bg-space-purple/60 text-white px-6 py-2 rounded transition-colors">Change Password
+            </button>
+            }
+            {open && 
+            <>
+             <h1>CHANGE PASSWORD</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
           <Label className="flex flex-col items-start gap-2">
             Current password
@@ -89,8 +99,14 @@ const PasswordChange: React.FC = () => {
             <Button type="submit" disabled={disBtn}>
               {disBtn ? "SAVING..." : "SAVE PASSWORD"}
             </Button>
+            {/* <Button variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+            </Button> */}
           </div>
         </form>
+            </>
+            }
+       
       </div>
     </div>
   );

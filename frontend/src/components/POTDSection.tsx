@@ -39,6 +39,7 @@ const POTDSection = () => {
     try {
       const res = await api.get("/gallery/featured");
       setFeaturedImageData(res.data[0]);
+      console.log(res.data[0])
     } catch (err) {
       console.error("Error fetching featured image:", err);
     }
@@ -141,14 +142,14 @@ const POTDSection = () => {
               </p>
               <div className="flex items-center gap-2">
                 <img
-                  src={featuredImageData.imageUrl}
+                  src={featuredImageData.author?.avatar}
                   loading="lazy"
-                  alt={featuredImageData.author}
+                  alt={featuredImageData.author?.name}
                   className="w-8 h-8 mb-2 rounded-full object-cover"
                 />
                 <div>
                   <h4 className="text-sm font-semibold">
-                    <a href={featuredImageData.socialLink} className="text-white hover:text-space-accent">{featuredImageData.author}</a>
+                    <a href={featuredImageData.socialLink} className="text-white hover:text-space-accent">{featuredImageData.author?.name}</a>
                   </h4>
                   <p className="text-xs text-gray-400 mb-2">ISA Club</p>
                 </div>

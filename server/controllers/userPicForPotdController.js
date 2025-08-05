@@ -78,7 +78,7 @@ exports.setFeaturedFromUserPic = async (req, res) => {
       imageUrl: userPic.imageUrl,
       publicId: userPic.publicId,
       socialLink: userPic.socialLink,
-      author: userPic.author?.name || 'user',
+      author: userPic.author || 'user',
     })
 
     console.log(featured)
