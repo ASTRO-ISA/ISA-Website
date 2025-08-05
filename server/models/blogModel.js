@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const blogSchema = new mongoose.Schema({
     thumbnail: {
         type: String,
-        default: 'http://localhost:3000/uploads/blogThumbnail.webp'
+        // default: 'http://localhost:3000/uploads/blogThumbnail.webp'
     },
     title: {
         type: String,

@@ -14,10 +14,10 @@ const {
 const uploadImage = multer({ storage: imageStorage('user-pics-for-potd')})
 
 router.use(authenticateToken)
+router.route('/upload').post(uploadImage.single('image'), uploadPic)
 router.use(restrictTo('admin'))
 
 router.route('/').get(getAllPics)
-router.route('/upload').post(uploadImage.single('image'), uploadPic)
 router.route('/setFeatured').post(setFeaturedFromUserPic)
 router.route('/delete/:id').delete(deletePic)
 

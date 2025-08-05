@@ -26,13 +26,13 @@ const Navbar = () => {
 
   return (
     <motion.nav
-      // initial={{ y: -100 }}
-      // animate={{ y: 0 }}
-      // transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ type: 'spring', stiffness: 120, damping: 20 }}
       className="fixed top-0 left-0 right-0 z-50 bg-black border-b border-white/10"
       // className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-br from-space-purple/20 via-space-dark to-space-accent/20"
     >
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-5"> {/* py-4 before */}
         <div className="flex justify-between items-center">
           {/* mobile menu button */}
           <div className="w-full flex justify-between md:hidden">
