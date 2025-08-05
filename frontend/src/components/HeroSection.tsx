@@ -85,17 +85,17 @@ const HeroSection = () => {
           transition={{ duration: 0.6 }}
           className="md:w-1/2 text-center"
         >
-          <h1 className="text-5xl sm:text-4xl md:text-6xl font-bold mb-4 text-white space-glow">
+          <h1 className="text-left sm:text-center text-6xl sm:text-4xl md:text-6xl font-bold mb-4 text-white space-glow">
             <span className="text-space-accent">Interstellar</span> SpaceTech Astronomy Club
           </h1>
-          <p className="text-base sm:text-lg md:text-xl mb-8 text-gray-300">
+          <p className="text-left sm:text-center text-base sm:text-lg md:text-xl mb-8 text-gray-300">
             Bridging the gap between passion and profession by providing resources, networking, and
             hands-on projects for space enthusiasts.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col items-start sm:flex-row sm:items-center gap-4 justify-center">
             <Button
               asChild
-              className="bg-space-accent hover:bg-space-accent/80 text-white px-8 py-6 text-lg"
+              className="bg-space-accent min-w-[186px] hover:bg-space-accent/80 text-white px-8 py-6 text-lg"
             >
               <Link to="/about">About Us</Link>
             </Button>
