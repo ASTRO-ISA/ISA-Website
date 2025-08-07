@@ -31,3 +31,7 @@ exports.newsArticles = (req, res) => {
   }
   res.json(data)
 }
+
+exports.astroEvents = (req, res) => {
+  
+}

@@ -13,6 +13,22 @@ import {
 import { Link } from "react-router-dom";
 
 const About = () => {
+  const leaders = [
+    {
+      name: "Jayaditya Malviya",
+      role: "Founder & President of ISA-INDIA",
+      image: "/images/jayaditya.jpeg",
+      github: "https://github.com/sunnyjhl",
+      linkedin: "https://www.linkedin.com/in/jayaditya-malviya",
+    },
+    {
+      name: "Aditi Khare",
+      role: "Cofounder & Core Team",
+      image: "/images/aditi.jpeg",
+      github: "https://github.com/aditikhare137",
+      linkedin: "https://www.linkedin.com/in/aditikhare137",
+    },
+  ]
   const teamMembers = [
     {
       name: "Vinod Mali",
@@ -34,13 +50,6 @@ const About = () => {
       image: "/images/naman.png",
       github: "https://github.com/NamanMeravi",
       linkedin: "https://www.linkedin.com/in/naman-meravi-660a1b257/",
-    },
-    {
-      name: "Sunaina Chaurasiya",
-      role: "Frontend Developer",
-      image: "/images/sunaina.png",
-      github: "https://github.com/Sunaina-Chaurasiya",
-      linkedin: "https://www.linkedin.com/in/sunaina-chaurasiya-252a06285/",
     },
     {
       name: "Anadi Gupta",
@@ -104,6 +113,13 @@ const About = () => {
       role: "Technical",
       image: "/images/Srijan.png",
       linkedin: "https://www.linkedin.com/in/srijan-mishra-7b95692b5",
+    },
+        {
+      name: "Sunaina Chaurasiya",
+      role: "Frontend Developer",
+      image: "/images/sunaina.png",
+      github: "https://github.com/Sunaina-Chaurasiya",
+      linkedin: "https://www.linkedin.com/in/sunaina-chaurasiya-252a06285/",
     },
   ];
 
@@ -285,6 +301,78 @@ const About = () => {
         </div>
       </section>
 
+
+      {/* Meet Our Team - 1 */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-3xl md:text-4xl font-bold text-center mb-10"
+          >
+            Meet Our Team
+          </motion.h2>
+
+          <div className="flex justify-center grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            {leaders.map((member, index) => (
+              <motion.div
+                key={member.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -4 }}
+                className="text-center"
+              >
+                <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
+                <div className="relative">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover select-none"
+                  />
+                  <div className="absolute inset-0 z-10" />
+                  </div>
+                </div>
+                <h3 className="text-base font-semibold text-white">
+                  {member.name}
+                </h3>
+                <p className="text-sm text-space-accent">{member.role}</p>
+                <div className="flex justify-center space-x-4 mt-2 cursor-pointer">
+                  {member.github && (
+                    <a
+                      href={member.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Github
+                        size={18}
+                        className="text-space-light hover:text-space-accent transition-colors"
+                      />
+                    </a>
+                  )}
+                  {member.linkedin && (
+                    <a
+                      href={member.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Linkedin
+                        size={18}
+                        className="text-space-light hover:text-space-accent transition-colors"
+                      />
+                    </a>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Meet Our Team */}
       <section className="py-16">
         <div className="container mx-auto px-4">
@@ -295,10 +383,10 @@ const About = () => {
             viewport={{ once: true }}
             className="text-3xl md:text-4xl font-bold text-center mb-10"
           >
-            Meet Our Development Team
+            Developers Behind This Web
           </motion.h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {teamMembers.map((member, index) => (
               <motion.div
                 key={member.name}
@@ -369,7 +457,7 @@ const About = () => {
             Core team Members
           </motion.h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {clubDepartments.map((member, index) => (
               <motion.div
                 key={member.name}
