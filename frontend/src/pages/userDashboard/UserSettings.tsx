@@ -21,6 +21,20 @@ const UserSettings = () => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleSaveProfile = async () => {
+    // check if any changes are actually made
+    const isNameChanged = name !== userInfo.user.name;
+    const isLocationChanged = location !== userInfo.user.country;
+    const isAvatarChanged = Boolean(avatarFile);
+  
+    if (!isNameChanged && !isLocationChanged && !isAvatarChanged) {
+      toast({
+        title: "No changes detected",
+        description: "Make some changes before saving.",
+        variant: "destructive"
+      });
+      return;
+    }
+  
     try {
       setIsUpdating(true);
       const formData = new FormData();
@@ -29,30 +43,30 @@ const UserSettings = () => {
       if (avatarFile) {
         formData.append("avatar", avatarFile);
       }
-
+  
       await api.patch(
         `/users/updateUser/${userInfo.user._id}`,
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" }
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
-
+  
       await refetchUser();
-
+  
       toast({
         title: "Profile updated",
         description: "Your profile has been saved successfully.",
       });
-
+  
       setIsUpdating(false);
       setIsEditing(false);
     } catch (error) {
       setIsUpdating(false);
-      console.error(error);
+      const errorMessage = error?.response?.data || "Something went wrong.";
       toast({
         title: "Error updating profile",
-        description: "Something went wrong. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     }

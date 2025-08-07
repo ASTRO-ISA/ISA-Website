@@ -56,11 +56,24 @@ const fetchArticles = async () => {
   }
 }
 
+// const fetchAstroEvents = async () => {
+//   try{
+//     const res = await axios.get('https://astronomy-calender.p.repidapi.com/events.php?year=2024',   {headers: {
+//       'X-RapidAPI-Key': 'Tadb88acelesh240fa58883b8b88p1c6e6djsn4cfb9fe8b422',
+//       'X-RapidAPI-Host': 'astronomy-calender.p.repidapi.com'
+//     }})
+//     console.log(res.data)
+//   } catch (err) {
+//     console.error('Failed to fetch astroEvents')
+//   }
+// }
+
 // on first run
 pictureOfTheDay()
 fetchLaunches()
 fetchBlogs()
 fetchArticles()
+// fetchAstroEvents()
 
 // every 20 minutes but not at the same time, we are calling them at differnt time so they dont fire at once
 cron.schedule('0,20,40 * * * *', async() => {
