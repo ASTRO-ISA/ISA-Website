@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@radix-ui/react-label";
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { toast } from "react-toastify";
 import api from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 interface PasswordFields {
   currentPassword: string;
@@ -13,6 +13,7 @@ interface PasswordFields {
 const PasswordChange: React.FC = () => {
 
   const [open, setOpen] = useState(false);
+  const {toast} = useToast();
   const [password, setPassword] = useState<PasswordFields>({
     currentPassword: "",
     newPassword: "",
@@ -28,22 +29,35 @@ const PasswordChange: React.FC = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setDisBtn(true);
-
+  
+    if (
+      !password.currentPassword.trim() ||
+      !password.newPassword.trim() ||
+      !password.passwordConfirm.trim()
+    ) {
+      toast({
+        title:"Please fill in all password fields",
+        variant:"destructive"
+      });
+      setDisBtn(false);
+      return;
+    }
+  
     try {
       const res = await api.patch("/users/updatePassword", password, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-      toast.success("Password changed successfully");
+  
+      toast({description:"Password changed successfully"});
       setPassword({
         currentPassword: "",
         newPassword: "",
         passwordConfirm: "",
       });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Error: " + error.message);
+      toast({description:error.response?.data?.message || "Error: " + error.message});
     } finally {
       setDisBtn(false);
     }
@@ -95,13 +109,13 @@ const PasswordChange: React.FC = () => {
               className="p-2 bg-space-purple/10 border-space-purple/30"
             />
           </Label>
-          <div className="flex w-full">
+          <div className="flex w-full gap-4">
             <Button type="submit" disabled={disBtn}>
               {disBtn ? "SAVING..." : "SAVE PASSWORD"}
             </Button>
-            {/* <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="outline" onClick={() => setOpen(false)}>
                   Cancel
-            </Button> */}
+            </Button>
           </div>
         </form>
             </>

@@ -30,7 +30,7 @@ const POTDSection = () => {
       };
       setPictureOfTheDay(image);
     } catch (err) {
-      console.error("Error fetching potd:", err);
+      console.error("Error fetching potd");
     } finally {
       setLoading(false);
     }
@@ -40,9 +40,8 @@ const POTDSection = () => {
     try {
       const res = await api.get("/gallery/featured");
       setFeaturedImageData(res.data[0]);
-      console.log(res.data[0])
     } catch (err) {
-      console.error("Error fetching featured image:", err);
+      console.error("Error fetching featured image");
     }
   };
 
