@@ -131,7 +131,7 @@ const UserEvents = () => {
 
           {/* View all events button */}
           {/* if there are no events, no need to show the see all events button */}
-          {!showAll && (
+          {!showAll && events.length >= 3 && (
             <div className="text-center mt-10">
               <button
                 onClick={() => setShowAll(true)}
