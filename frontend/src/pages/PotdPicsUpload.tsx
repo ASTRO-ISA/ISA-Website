@@ -17,6 +17,16 @@ const UserPicUpload = () => {
   const handleUserPicSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Invalid File Type",
+          description: "Only PNG, JPG, and JPEG files are allowed.",
+          variant: "destructive",
+        });
+        e.target.value = "";
+        return;
+      }
       setUserPicFile(file);
       setUserPicPreviewUrl(URL.createObjectURL(file));
     }
@@ -64,7 +74,11 @@ const UserPicUpload = () => {
         userPicFileInputRef.current.value = "";
       }
     } catch (err) {
-      toast({ description: "Error uploading image." });
+      toast({ 
+        title: "Can't upload image.",
+        description: err.response?.data,
+        variant: "destructive"
+       });
     } finally {
       setUserPicLoading(false);
     }
@@ -82,13 +96,13 @@ const UserPicUpload = () => {
             <li>Provide a valid social media link (e.g., Instagram, LinkedIn, Facebook, or X (formerly Twitter) for attribution. Avoid fake or broken links. *This is not mendatory.</li>
             <li>Avoid any sensitive, offensive, inappropriate, restricted or copyrighted content. Doing so will lead to a<span className="text-red-500 font-semibold"> permanent ban</span> from the website.</li>
             <li>Prefer <span className="font-medium text-white">landscape orientation</span> (16:9) if possible.</li>
-            <li>Max file size: <span className="font-medium text-white">5MB</span>; Formats allowed are: <code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>.</li>
+            <li>Max file size: <span className="font-medium text-white">8MB</span>; Formats allowed are: <code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>.</li>
         </ul>
         <p className="mt-3 text-gray-400 italic">
-            Your image will be visible only to the admin and may be selected as a featured image. Avoid sending more than 3 images.
+            *Your image will be visible only to the admin and may be selected as a featured image. Avoid sending more than 2 images.
         </p>
         </div>
-        <h2 className="text-2xl font-bold mb-6">Upload User Picture</h2>
+        <h2 className="text-2xl font-bold mb-6">Upload Picture</h2>
 
         <form onSubmit={handleUserPicUpload} className="space-y-6">
           {/* Banner Upload */}

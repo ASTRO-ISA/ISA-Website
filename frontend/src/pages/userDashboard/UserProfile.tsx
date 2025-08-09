@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
@@ -11,11 +10,7 @@ import Spinner from "@/components/ui/Spinner";
 
 const UserProfile = () => {
   const navigate = useNavigate();
-
   const { refetchUser, userInfo } = useAuth();
-  const [isEditing, setIsEditing] = useState(false);
-
-  // console.log(userInfo);
 
   const handleLogout = async () => {
     try {
@@ -24,7 +19,7 @@ const UserProfile = () => {
         title: "Logout successful!",
         description: "See you again!",
       });
-      await refetchUser();
+      refetchUser();
       navigate("/");
     } catch (err) {
       toast({
@@ -64,12 +59,12 @@ const UserProfile = () => {
                     .join("")}
                 </AvatarFallback>
               </Avatar>
-              <Button
+              {/* <Button
                 className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0 bg-space-accent"
                 onClick={() => setIsEditing(true)}
               >
                 <Camera className="w-4 h-4" />
-              </Button>
+              </Button> */}
             </div>
 
             <div className="flex-1">
