@@ -21,6 +21,16 @@ const WriteBlog = () => {
       useWebWorker: true,
     };
     try {
+      const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+      if (!allowedTypes.includes(image.type)) {
+        toast({
+          title: "Invalid File Type",
+          description: "Only PNG, JPG, and JPEG files are allowed.",
+          variant: "destructive",
+        });
+        e.target.value = "";
+        return;
+      }
       const compressedFile = await imageCompression(image, options);
       const fileWithName = new File([compressedFile], image.name, {
         type: compressedFile.type,
@@ -65,7 +75,11 @@ const WriteBlog = () => {
       toast({ title: "Blog published successfully!" });
     } catch (err) {
       setLoading(false);
-      toast({ title: "Error publishing blog.", variant: "destructive" });
+      toast({
+        title: "Error publishing blog.",
+        description: err.response?.data,
+        variant: "destructive"
+      });
     }
   };
 
@@ -81,6 +95,25 @@ const WriteBlog = () => {
 
         {/* Form to write blog */}
         <form className="space-y-6 max-w-4xl mx-auto" onSubmit={handleSubmit}>
+          {/* Guidelines Section */}
+          <div className="bg-space-purple/10 border border-space-purple/30 rounded-lg p-4 mb-6">
+            <h2 className="text-lg font-semibold text-space-accent mb-3">Publishing Guidelines</h2>
+            <ul className="list-disc list-inside space-y-2 text-gray-300 text-sm">
+              <li>
+                For thumbnail: max file size <strong>5MB</strong>; formats allowed: <code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>.
+              </li>
+              <li>
+                You can publish a maximum of <strong>2 blogs per day</strong>.
+              </li>
+              <li>
+                Your blog will be <strong>reviewed before publishing</strong> to ensure it doesn’t contain offensive content or spam.
+              </li>
+              <li>
+                After submission, you can check your blog’s status on the dashboard as:
+                <em> Pending</em>, <em> Approved</em>, or <em> Rejected</em>.
+              </li>
+            </ul>
+          </div>
           {/* Thumbnail Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">

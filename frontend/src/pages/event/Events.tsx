@@ -40,7 +40,6 @@ const Events = () => {
       });
     }
   };
-  console.log(events);
 
   // //registering a user for event
   const handleRegister = async (userId, eventId) => {

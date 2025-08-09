@@ -1,4 +1,3 @@
-// models/BlogSuggestion.js
 const mongoose = require('mongoose');
 
 const blogSuggestionSchema = new mongoose.Schema({

@@ -9,12 +9,19 @@ const {
   deleteSuggestedBlog,
   updateSuggestedBlog
 } = require('../controllers/blogSuggestionController');
+const rateLimit = require('express-rate-limit')
 
-router.use(authenticateToken);
-router.route('/').post(postSuggestedBlog);
+const suggestionLimit = rateLimit({
+  windowMs: 7 * 24 * 60 * 60 * 1000,
+  limit: 1,
+  message: 'You can only suggest a blog per week.'
+})
 
-router.use(restrictTo('admin'));
-router.route('/').get(getAllBlogSuggestions);
-router.route('/:id').delete(deleteSuggestedBlog).patch(updateSuggestedBlog);
+router.use(authenticateToken)
+router.route('/').post(suggestionLimit, postSuggestedBlog)
 
-module.exports = router;
+router.use(restrictTo('admin'))
+router.route('/').get(getAllBlogSuggestions)
+router.route('/:id').delete(deleteSuggestedBlog).patch(updateSuggestedBlog)
+
+module.exports = router
