@@ -7,8 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 const SuggestBlogTopic = () => {
   const { isLoggedIn } = useAuth();
   const { toast } = useToast();
-
-  const [showForm, setShowForm] = useState(false); // 🔴 toggle form visibility
+  const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [blogSuggest, setBlogSuggest] = useState({
     title: "",
@@ -25,7 +24,7 @@ const SuggestBlogTopic = () => {
     if (!isLoggedIn) {
       toast({
         title: "Hold on!",
-        description: "Login to suggest your beautiful ideas.",
+        description: "Login to suggest your beautiful idea.",
         variant: "destructive",
       });
       return;
@@ -36,9 +35,13 @@ const SuggestBlogTopic = () => {
       await api.post("/suggestBlog", blogSuggest);
       setBlogSuggest({ title: "", description: "" });
       toast({ title: "Suggestion posted successfully." });
-      setShowForm(false); // 🔴 hide form after submit
+      setShowForm(false);
     } catch (error) {
-      toast({ title: "Something went wrong." });
+      toast({
+        title: "Something went wrong.",
+        description: error.response?.data,
+        variant: "destructive"
+        });
     } finally {
       setSubmitting(false);
     }
@@ -71,6 +74,8 @@ const SuggestBlogTopic = () => {
                   placeholder="Suggested Speaker or Topic"
                   className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
                 />
+                <div>
+                <label htmlFor="description" className="text-gray-400 text-xs">Description</label>
                 <textarea
                   name="description"
                   value={blogSuggest.description}
@@ -79,6 +84,8 @@ const SuggestBlogTopic = () => {
                   rows={3}
                   className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
                 ></textarea>
+                </div>
+                <p className="text-gray-400 text-xs">*You can only post a suggestion per week.</p>
                 <div className="flex gap-4">
                   <button
                     type="submit"
