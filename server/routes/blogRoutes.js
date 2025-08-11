@@ -14,8 +14,11 @@ const publishLimit = rateLimit({
   message: 'You can only publish 2 blogs a day.'
 })
 
-router.use(authenticateToken)
 router.route('/').get(blogController.allBlogs)
+router.route('/featured').get(blogController.featuredBlog)
+router.route('/:id').get(blogController.readBlog)
+
+router.use(authenticateToken)
 router
   .route('/create')
   .post(
@@ -23,9 +26,6 @@ router
     uploadImage.single('thumbnail'),
     blogController.createBlog
   )
-
-router.route('/featured').get(blogController.featuredBlog)
 router.route('/delete/:id').delete(blogController.deleteBlog)
-router.route('/:id').get(blogController.readBlog)
 
 module.exports = router
