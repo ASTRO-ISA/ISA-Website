@@ -1,24 +1,32 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import api from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import axios from "axios";
-import "yet-another-react-lightbox/styles.css";
-import { Trash2, Pencil } from "lucide-react";
+import AllBlogs from "./AllBlogs";
+import AllEvents from "./AllEvents";
+import AllResearchPapers from "./AllResearchPapers";
 import SuggestedBlogTopic from "../blog/SuggestedBlogTopic";
- 
-import  ApprovedBlogSuggestions from  "../blog/ApprovedBlogSuggestions"
-import { useToast } from "@/hooks/use-toast";
+import ApprovedBlogSuggestions from "../blog/ApprovedBlogSuggestions";
 import AdminGallerySection from "./AdminGallerySection";
 import AdminJobs from "./AdJob";
 import AdminCourses from "./AdminCourses";
 import AdminWebinars from "./AdminWebinar";
 import AdminNewsletterDraft from "./AdminNewsletterDraft";
 import AdminEvents from "./AdminEvents";
+import { useQuery } from "@tanstack/react-query";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("events");
+
+  // Fetch research papers
+  const fetchPapers = async () => {
+    const res = await api.get("/researchPapers/all");
+    return res.data.data;
+  };
+
+  const { data: papers = [], isLoading } = useQuery({
+    queryKey: ["research-paper"],
+    queryFn: fetchPapers,
+  });
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
@@ -30,16 +38,13 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="space-y-5"
-        >
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-5">
           <div className="mb-6 bg-space-purple/20 rounded">
             <TabsList className="grid h-full w-full grid-cols-2 grid-rows-2 sm:grid-cols-6 sm:grid-rows-1">
               <TabsTrigger value="events">Manage Events</TabsTrigger>
               <TabsTrigger value="training">Manage Jobs</TabsTrigger>
-              <TabsTrigger value="suggestions">Blog Suggestions</TabsTrigger>
+              <TabsTrigger value="papers">Research Papers</TabsTrigger>
+              <TabsTrigger value="suggestions">Blog</TabsTrigger>
               <TabsTrigger value="courses">Manage Courses</TabsTrigger>
               <TabsTrigger value="gallery">Manage Gallery</TabsTrigger>
               <TabsTrigger value="webinar">Manage Webinars</TabsTrigger>
@@ -49,6 +54,7 @@ export default function AdminDashboard() {
 
           {/* Manage Events */}
           <TabsContent value="events" className="space-y-6">
+            <AllEvents />
             <AdminEvents />
           </TabsContent>
 
@@ -57,10 +63,17 @@ export default function AdminDashboard() {
             <AdminJobs />
           </TabsContent>
 
+          {/* Research Papers */}
+          <TabsContent value="papers" className="space-y-6">
+            <AllResearchPapers papers={papers}/>
+          </TabsContent>
+
           {/* Blog Suggestions */}
           <TabsContent value="suggestions" className="space-y-6">
+            <AllBlogs />
+            <hr />
             <SuggestedBlogTopic />
-              <ApprovedBlogSuggestions /> 
+            <ApprovedBlogSuggestions />
           </TabsContent>
 
           {/* Manage Webinars */}
@@ -73,12 +86,12 @@ export default function AdminDashboard() {
             <AdminGallerySection />
           </TabsContent>
 
-          {/* Admin courses */}
+          {/* Admin Courses */}
           <TabsContent value="courses" className="space-y-6">
             <AdminCourses />
           </TabsContent>
 
-          {/*newsletter */}
+          {/* Newsletter */}
           <TabsContent value="newsletter" className="space-y-6">
             <AdminNewsletterDraft />
           </TabsContent>

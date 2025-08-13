@@ -74,6 +74,40 @@ exports.Events = async (req, res) => {
   }
 }
 
+exports.pendingEvents = async (req, res) => {
+  try {
+    const events = await Event.find({statusAR: 'pending'}).populate(
+      'registeredUsers',
+      'avatar name email'
+    )
+    if (!events) {
+      return res.status(404).json({ message: 'Event not found' })
+    }
+    res.status(200).json(events)
+  } catch (err) {
+    console.log(err)
+
+    res.status(500).json({ message: 'Server error in get events' })
+  }
+}
+
+exports.approvedEvents = async (req, res) => {
+  try {
+    const events = await Event.find({statusAR: 'approved'}).sort({createdAt: -1}).populate(
+      'registeredUsers',
+      'avatar name email'
+    )
+    if (!events) {
+      return res.status(404).json({ message: 'Event not found' })
+    }
+    res.status(200).json(events)
+  } catch (err) {
+    console.log(err)
+
+    res.status(500).json({ message: 'Server error in get events' })
+  }
+}
+
 exports.getEvent = async (req, res) => {
   const { id } = req.params
   try {
@@ -156,5 +190,31 @@ exports.deleteEvent = async (req, res) => {
     res.status(200).json({ message: 'Event deleted successfully' })
   } catch (error) {
     res.status(500).json({ message: 'Error deleting event', error })
+  }
+}
+
+exports.changeStatus = async (req, res) => {
+  try{
+    const { id } = req.params
+    const status = req.body.status
+
+    const event = await Event.findByIdAndUpdate(id, { statusAR: status }, {new: true, runValidators: true}).populate('createdBy', 'name email')
+    if(!event) {
+      res.status(404).json({message: 'Event not found.'})
+    }
+
+    if(status === 'approved'){
+    // sending confirmation email
+    const text = `Its live ${event.createdBy.name},
+    The event named "${event.title}" on ${new Date(event.eventDate).toDateString()} at ${event.location} is now listed. Share link with your friends to register.
+    Thank you for using our platform!
+    – ISA`
+
+    await sendEmail(event.createdBy.email, event.title, text)
+    }
+
+    res.status(200).json({message: 'Status changes successfully'})
+  } catch (err) {
+    res.status(500).json({message: 'Server error changing event status'})
   }
 }

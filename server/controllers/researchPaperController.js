@@ -1,15 +1,30 @@
 const ResearchPaper = require('../models/researchPaperModel')
 const cloudinary = require('cloudinary').v2
 
-exports.getAllPapers = async (req, res) => {
+exports.pendingPapers = async (req, res) => {
   try {
-    const response = await ResearchPaper.find({}).populate(
+    const response = await ResearchPaper.find({status: 'pending'}).populate(
       'uploadedBy',
       'name email'
     )
     res.status(200).json({ status: 'success', data: response })
   } catch (error) {
     res.status(500).json({ status: 'fail', error: error.message })
+  }
+}
+
+exports.approvedPapers = async (req, res) => {
+  try{
+    const papers = await ResearchPaper.find({status: 'approved'}).sort({createdAt: -1}).populate(
+      'uploadedBy',
+      'name email'
+    )
+    if(!papers){
+      res.status(404).json({message: 'Papers not found'})
+    }
+    res.status(200).json(papers)
+  } catch (err) {
+    res.status(500).json({status: 'fail', error: err.message})
   }
 }
 
@@ -139,5 +154,19 @@ exports.deletePaper = async (req, res) => {
       message: 'Server error, could not delete paper',
       error: error.message
     })
+  }
+}
+
+exports.changeStatus = async (req, res) => {
+  try{
+    const { id } = req.params
+    const status = req.body.status
+    const paper = await ResearchPaper.findByIdAndUpdate(id, {status: status}, {new: true, runValidators: true})
+    if(!paper){
+      res.status(404).json({message: 'Paper not found'})
+    }
+    res.status(200).json({message: 'Status changes sunccessfully.'})
+  } catch (err) {
+    res.status(500).json({message: 'Server error', error: err.message})
   }
 }

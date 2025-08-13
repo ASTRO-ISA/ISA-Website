@@ -50,8 +50,8 @@ const SuggestedBlogTopic = () => {
   const handleUpdate = async (id) => {
     try {
       const { status, response } = formData[id];
-      await api.patch(`/suggestBlog/${id}`, { status, response });
-      toast({ title: "Updated successfully!" });
+      await api.patch(`/status/${id}`, { status, response }, {withCredentials: true});
+      toast({ title: "Status updated successfully!" });
     } catch (err) {
       console.error("Update failed", err);
       toast({ title: "Update failed", variant: "destructive" });

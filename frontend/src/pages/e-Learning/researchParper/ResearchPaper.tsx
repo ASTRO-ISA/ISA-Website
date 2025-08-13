@@ -6,14 +6,17 @@ import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
 
 const fetchPapers = async () => {
   const res = await api.get("/researchPapers/");
-  return res.data.data;
+  console.log(res)
+  return res.data || [];
 };
 
 const ResearchPaper = () => {
+
   const { data: papers = [], isLoading } = useQuery({
     queryKey: ["research-paper"],
     queryFn: fetchPapers,
   });
+  console.log('paper', papers)
 
   return (
     <div>
