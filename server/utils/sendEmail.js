@@ -12,7 +12,7 @@ const sendEmail = async (to, subject, text) => {
     })
 
     const mailOptions = {
-      from: `noreply <${process.env.SENDER_EMAIL}>`,
+      from: `ISA-India <${process.env.SENDER_EMAIL}>`,
       to,
       subject,
       text

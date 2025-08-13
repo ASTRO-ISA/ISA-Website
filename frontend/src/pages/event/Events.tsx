@@ -1,11 +1,10 @@
-import { Calendar, MapPin, Clock, Users } from "lucide-react";
+import { Calendar, MapPin, Clock, Users, MoreHorizontal, Share, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api from "@/lib/api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { MoreHorizontal, Share, Mail } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,

@@ -25,12 +25,12 @@ export default function AdminEvents() {
   } = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
-      const response = await api.get("/events/");
+      const response = await api.get("/events/all");
       return response.data;
     },
   });
 
-  console.log(events);
+  // console.log(events);
 
   // Update Event Mutation
   const updateEventMutation = useMutation<
