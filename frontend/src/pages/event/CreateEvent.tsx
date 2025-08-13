@@ -109,6 +109,7 @@ const CreateEvent = () => {
       navigate("/events");
       toast({
         title: "Event created successfully!",
+        description: "It will be live once its been reviewd."
       });
     } catch (error) {
       setErrorMsg(error.response?.data?.message || "Something went wrong");

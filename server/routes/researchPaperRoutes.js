@@ -5,21 +5,25 @@ const restrictTo = require('./../middlewares/restrictTo')
 const multer = require('multer')
 const { documentStorage } = require('../utils/cloudinaryStorage')
 const {
-  getAllPapers,
+  pendingPapers,
   deletePaper,
   updatePaper,
-  uploadPaper
+  uploadPaper,
+  approvedPapers,
+  changeStatus
 } = require('../controllers/researchPaperController')
 
 const uploadDocument = multer({
   storage: documentStorage('researchPaper-attachments')
 })
 
-router.route('/').get(getAllPapers)
-router.use(authenticateToken)
+router.route('/').get(approvedPapers)
 
+router.use(authenticateToken)
 router.use(restrictTo('admin'))
+router.route('/all').get(pendingPapers)
 router.route('/').post(uploadDocument.single('file'), uploadPaper)
+router.route('/status/:id').patch(changeStatus)
 router
   .route('/:id')
   .patch(uploadDocument.single('file'), updatePaper)
