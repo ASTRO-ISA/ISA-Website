@@ -30,9 +30,14 @@ const researchPaperSchema = new mongoose.Schema(
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
+    },
+    status: {
+      type: String,
+      enum: ['approved', 'rejected', 'pending'],
+      default: 'pending'
     }
   },
-  { timestamps: true }
+  { timestamps: true },
 )
 
 const ResearchPaper = mongoose.model('ResearchPaper', researchPaperSchema)

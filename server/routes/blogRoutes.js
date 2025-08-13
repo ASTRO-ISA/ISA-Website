@@ -5,6 +5,7 @@ const authenticateToken = require('../middlewares/authenticateToken')
 const { imageStorage } = require('../utils/cloudinaryStorage')
 const rateLimit = require('express-rate-limit')
 const router = express.Router()
+const restrictTo = require('../middlewares/restrictTo')
 
 const uploadImage = multer({ storage: imageStorage('blog-thumbnails') })
 
@@ -14,8 +15,15 @@ const publishLimit = rateLimit({
   message: 'You can only publish 2 blogs a day.'
 })
 
-router.route('/').get(blogController.allBlogs)
+router.route('/').get(blogController.approvedBlogs)
 router.route('/featured').get(blogController.featuredBlog)
+router
+  .route('/all')
+  .get(
+    authenticateToken,
+    restrictTo('admin'),
+    blogController.pendingBlogs
+  )
 router.route('/:id').get(blogController.readBlog)
 
 router.use(authenticateToken)
@@ -27,5 +35,8 @@ router
     blogController.createBlog
   )
 router.route('/delete/:id').delete(blogController.deleteBlog)
+
+router.use(restrictTo('admin'))
+router.route('/status/:id').patch(blogController.changeStatus)
 
 module.exports = router

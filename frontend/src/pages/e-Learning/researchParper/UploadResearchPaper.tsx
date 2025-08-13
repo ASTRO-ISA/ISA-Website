@@ -50,14 +50,17 @@ const UploadResearchPaper = () => {
       queryClient.invalidateQueries({ queryKey: ["research-paper"] });
     },
     onError: (error) => {
-      console.error(error.message);
-      alert("Upload failed. Please try again.");
+      toast({description: "Upload failed. Please try again."});
     },
   });
 
   const handleUpload = () => {
     if (isLoggedIn) {
       mutate();
+      toast({
+        title: "Research paper uploaded successfully.",
+        description: "You can check the status of the paper on your profile."
+      })
     } else {
       toast({
         title: "Hold on!",
