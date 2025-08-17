@@ -219,7 +219,13 @@ exports.resetPassword = async (req, res) => {
 
 exports.getSavedBlogs = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate('savedBlogs')
+    const user = await User.findById(req.user._id).populate({
+      path: 'savedBlogs',
+      populate: {
+        path: 'author',
+        select: 'name'
+      }
+    })
 
     if (!user) {
       return res.status(404).json({

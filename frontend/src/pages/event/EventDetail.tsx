@@ -1,11 +1,9 @@
 import { Calendar, MapPin, Clock, Users, Video } from "lucide-react";
-import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import api from "@/lib/api";
-import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 import Spinner from "@/components/ui/Spinner";
 
 const EventDetails = () => {
@@ -13,84 +11,99 @@ const EventDetails = () => {
   const { userInfo, isLoggedIn } = useAuth();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const [loadingEventId, setLoadingEventId] = useState(null);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [deleting, setDeleting] = useState(false);
 
-  // const [userInfo, setUserInfo] = useState(user);
-  // console.log("kdsjk", userInfo);
-
-  // //registering a user for event
-  const handleRegister = async (userId) => {
-    if (isLoggedIn) {
-      const res = api
-        .patch(`/events/register/${id}/${userId}`)
-        .then((res) => {
-          fetchEvent();
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Error regstering user for event", err);
-          setLoading(false);
-        });
-    } else {
-      toast({
-        title: "Hold on!",
-        description: "Login first to register for the event.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // get event from database
   const fetchEvent = async () => {
-    const res = await api
-      .get(`/events/${id}`)
-      .then((res) => {
-        setEvent(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching event", err);
-        setLoading(false);
-      });
+    try {
+      const res = await api.get(`/events/${id}`);
+      setEvent(res.data);
+    } catch (err) {
+      console.error("Error fetching event:");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchEvent();
   }, [id]);
 
-  const deleteEvent = async (id) => {
+  const handleRegister = async (userId) => {
+    if (!isLoggedIn) {
+      toast({
+        title: "Hold on!",
+        description: "Please login first to register for the event.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoadingEventId(id);
+    try {
+      await api.patch(`/events/register/${id}/${userId}`);
+      fetchEvent();
+      setLoadingEventId(null);
+    } catch (err) {
+      console.error("Error registering for event:");
+      setLoadingEventId(null);
+    }
+  };
+
+  const handleUnregister = async (userId) => {
+    if (!isLoggedIn) {
+      toast({
+        title: "Hold on!",
+        description: "Please login first to unregister for the event.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoadingEventId(id);
+    try {
+      await api.patch(`/events/unregister/${id}/${userId}`);
+      fetchEvent();
+      setLoadingEventId(null);
+    } catch (err) {
+      console.error("Error unregistering for event:");
+      setLoadingEventId(null);
+    }
+  };
+
+  // Delete event
+  const deleteEvent = async () => {
     setDeleting(true);
     try {
-      await api.delete(`/events/${id}`);
-      toast({
-        title: "Event deleted successfully!",
-      });
+      await api.delete(`/events/${event._id}`);
+      toast({ title: "Event deleted successfully!" });
       navigate("/events");
-      setDeleting(false);
     } catch (error) {
-      setDeleting(false);
       console.error("Error deleting event:", error.message);
+    } finally {
+      setDeleting(false);
     }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-100 mb-4"></div>
-        <p className="text-gray-100">Loading event for you...</p>
+        <p className="text-gray-100">Loading...</p>
       </div>
     );
   }
-  if (!event)
+
+  if (!event) {
     return (
       <p className="min-h-screen flex flex-col items-center justify-center h-64">
         Event not found.
       </p>
     );
+  }
 
-  // to show the date in readable format
+  // Format date & time
   const formatDate = (dateStr) =>
     new Date(dateStr).toLocaleDateString("en-IN", {
       day: "numeric",
@@ -98,7 +111,6 @@ const EventDetails = () => {
       year: "numeric",
     });
 
-  // to set time in readable format
   const formatTime = (dateStr) =>
     new Date(dateStr).toLocaleTimeString("en-IN", {
       hour: "2-digit",
@@ -110,14 +122,14 @@ const EventDetails = () => {
     <div className="min-h-screen bg-space-dark text-white pt-20 px-4">
       <main className="container mx-auto px-4 pt-8 pb-16">
         <div className="max-w-4xl mx-auto space-y-8">
-          {/* Event Thumbnail */}
+          {/* Thumbnail */}
           <img
             src={event.thumbnail}
             alt={event.title}
             className="w-full max-h-[500px] object-cover rounded-xl mb-6"
           />
 
-          {/* Event Title and Description */}
+          {/* Title & Description */}
           <h1 className="text-4xl font-bold mb-4">{event.title}</h1>
           <p className="text-gray-400 text-lg mb-8">{event.description}</p>
 
@@ -164,44 +176,41 @@ const EventDetails = () => {
 
           {/* Register Button */}
           <button
-            onClick={() => handleRegister(userInfo?.user._id)}
-            disabled={event.registeredUsers.some(
-              (e) => e._id === userInfo?.user._id
-            )}
+            onClick={() =>
+              event.registeredUsers.some((e) => e._id === userInfo?.user?._id)
+                ? handleUnregister(userInfo?.user._id)
+                : handleRegister(userInfo?.user?._id)
+            }
             className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold
-    ${
-      isLoggedIn &&
-      event.registeredUsers.some((e) => e._id === userInfo?.user._id)
-        ? "bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed"
-        : "bg-space-accent hover:bg-space-accent/80"
-    }`}
+              ${
+                isLoggedIn &&
+                event.registeredUsers.some((e) => e._id === userInfo?.user._id)
+                  ? "bg-space-purple/30 hover:bg-space-purple/50"
+                  : "bg-space-accent hover:bg-space-accent/80"
+              }`}
           >
-            {isLoggedIn &&
-            event.registeredUsers.some((e) => e._id === userInfo?.user._id)
-              ? "Registered"
-              : "Register for this Event"}
+            {loadingEventId === event._id ? (
+              <Spinner />
+            ) : isLoggedIn &&
+              event.registeredUsers.some((e) => e._id === userInfo?.user._id) ? (
+              "Unregister"
+            ) : (
+              "Register for this Event"
+            )}
           </button>
 
-          {/* Back Link */}
-          {/* <div className="mt-6 mb-6">
-              <Link to="/events" className="text-space-light hover:underline text-sm">
-                ← Back to All Events
-              </Link>
-            </div> */}
-
-          <div>
-            {userInfo && event.createdBy._id === userInfo.user?._id && (
-              <div>
-                <hr className="mb-3" />
-                <button
-                  onClick={() => deleteEvent(event._id)}
-                  className="bg-red-600 text-white px-3 py-1 rounded mt-2"
-                >
-                  {deleting ? <Spinner /> : "Delete Event"}
-                </button>
-              </div>
-            )}{" "}
-          </div>
+          {/* Delete button if creator */}
+          {userInfo && event.createdBy._id === userInfo.user?._id && (
+            <div>
+              <hr className="mb-3" />
+              <button
+                onClick={deleteEvent}
+                className="bg-red-600 text-white px-3 py-1 rounded mt-2"
+              >
+                {deleting ? <Spinner /> : "Delete Event"}
+              </button>
+            </div>
+          )}
         </div>
       </main>
     </div>

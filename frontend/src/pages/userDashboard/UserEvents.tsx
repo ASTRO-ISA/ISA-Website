@@ -11,28 +11,43 @@ const UserEvents = () => {
   const [loading, setLoading] = useState(true);
   const { userInfo } = useAuth();
 
+  const userId = userInfo?.user?._id;
+
+  // useEffect(() => {
+  //   const res = api
+  //     .get(`/events/my-events/${userId}`)
+  //     .then((res) => {
+  //       const userRegisteredEvents = res.data.filter((event) => {
+  //         return event.registeredUsers.some((u) => {
+  //           return u._id == userInfo.user._id;
+  //         });
+  //       });
+  //       setEvents(userRegisteredEvents);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       console.error("Error fetching events", err);
+  //     });
+  // }, [userInfo]);
+
+  const fetchRegisteredEvents = async (userId) => {
+    try{
+      const res = await api.get(`/events/my-events/${userId}`);
+      setEvents(res.data);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching events");
+    }
+  }
+
   useEffect(() => {
-    const res = api
-      .get("/events")
-      .then((res) => {
-        const userRegisteredEvents = res.data.filter((event) => {
-          return event.registeredUsers.some((u) => {
-            return u._id == userInfo.user._id;
-          });
-        });
-        setEvents(userRegisteredEvents);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching events", err);
-      });
-  }, [userInfo]);
+    fetchRegisteredEvents(userId);
+  }, []);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-100 mb-4"></div>
-        <p className="text-gray-100">Loading events for you...</p>
+      <div className="flex-col items-center justify-center h-64">
+        <p className="text-gray-100">Loading...</p>
       </div>
     );
   }

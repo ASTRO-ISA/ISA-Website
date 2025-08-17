@@ -21,8 +21,10 @@ router
     eventController.createEvent
   )
 
+router.route('/my-events/:userid').get(authenticateToken, eventController.registeredEvents)
 router.route('/status/:id').patch(authenticateToken, restrictTo('admin'), eventController.changeStatus)
 router.route('/register/:eventid/:userid').patch(eventController.registerEvent)
+router.route('/unregister/:eventid/:userid').patch(eventController.unregisterEvent)
 
 router.use(authenticateToken)
 router.delete('/:id', eventController.deleteEvent)

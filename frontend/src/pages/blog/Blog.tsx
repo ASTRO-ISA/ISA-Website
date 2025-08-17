@@ -23,6 +23,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import api from "@/lib/api";
 
 const Blog = () => {
   const { toast } = useToast();
@@ -124,7 +125,7 @@ const Blog = () => {
     if (featuredId !== null) {
       toast({
         title: "Already exist a featured blog.",
-        description: "Remove previous featured to set it featured.",
+        description: "Remove previous featured to set this featured.",
       });
       return;
     }
@@ -224,7 +225,7 @@ const Blog = () => {
   const mutateSaveBlog = useMutation({
     mutationFn: async (blogId) => {
       await axios.patch(
-        `http://localhost:3000/api/v1/users/saveBlog/${blogId}`,
+        `http://localhost:3000/api/v1/users/save-blog/${blogId}`,
         {},
         {
           withCredentials: true,
@@ -395,7 +396,7 @@ const Blog = () => {
                       e.stopPropagation();
                     }}
                   >
-                    <MoreVertical className="w-5 h-5 text-white" />
+                    <MoreVertical className="w-5 h-5 text-gray-400" />
                   </Button>
                 </DropdownMenuTrigger>
 
@@ -515,7 +516,7 @@ const Blog = () => {
                               className="p-1 h-auto bg-transparent hover:bg-transparent"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <MoreVertical className="w-5 h-5 text-white" />
+                              <MoreVertical className="w-5 h-5 text-gray-400" />
                             </Button>
                           </DropdownMenuTrigger>
 

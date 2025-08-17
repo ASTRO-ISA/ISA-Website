@@ -27,22 +27,30 @@ const SuggestedBlogTopic = () => {
     }));
   };
 
-  // Fetch All Suggestions
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      try {
-        const res = await api.get("/suggestBlog");
-        setSuggestions(res.data.data || []);
-        const initialFormData = {};
-        res.data.data.forEach((s) => {
-          initialFormData[s._id] = { status: s.status || "pending", response: s.response || "" };
-        });
-        setFormData(initialFormData);
-      } catch (err) {
-        console.error("Failed to fetch suggestions", err);
-      }
-    };
+  const fetchSuggestions = async () => {
+    try {
+      const res = await api.get("/suggest-blog/pending");
 
+      const suggestions = res.data.data || res.data; // fallback if it's not nested
+      setSuggestions(suggestions);
+
+      const initialFormData = {};
+      if (Array.isArray(suggestions)) {
+        suggestions.forEach((s) => {
+          initialFormData[s._id] = {
+            status: s.status || "pending",
+            response: s.response || "",
+          };
+        });
+      }
+
+      setFormData(initialFormData);
+    } catch (err) {
+      console.error("Failed to fetch suggestions", err);
+    }
+  };
+
+  useEffect(() => {
     fetchSuggestions();
   }, []);
 
@@ -50,8 +58,9 @@ const SuggestedBlogTopic = () => {
   const handleUpdate = async (id) => {
     try {
       const { status, response } = formData[id];
-      await api.patch(`/status/${id}`, { status, response }, {withCredentials: true});
+      await api.patch(`/suggest-blog/${id}`, { status, response }, {withCredentials: true});
       toast({ title: "Status updated successfully!" });
+      fetchSuggestions();
     } catch (err) {
       console.error("Update failed", err);
       toast({ title: "Update failed", variant: "destructive" });
@@ -61,7 +70,7 @@ const SuggestedBlogTopic = () => {
   // Delete Suggestion
   const handleDelete = async (id) => {
     try {
-      await api.delete(`/suggestBlog/${id}`);
+      await api.delete(`/suggest-blog/${id}`);
       setSuggestions((prev) => prev.filter((s) => s._id !== id));
       toast({ title: "Deleted successfully!" });
     } catch (err) {
