@@ -7,77 +7,74 @@ import { useToast } from "@/hooks/use-toast";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const UserBlogs = () => {
   const queryClient = useQueryClient();
   const [showAllUserBlogs, setShowAllUserBlogs] = useState(false);
   const [showAllSavedBlogs, setShowAllSavedBlogs] = useState(false);
-  const [openMenuId, setOpenMenuId] = useState(null);
   const { userInfo } = useAuth();
   const { toast } = useToast();
 
-  const fetchBlogs = async () => {
-    const res = await api.get("http://localhost:3000/api/v1/blogs");
-    const userBlogs = res.data.filter(
-      (blog) => blog.author._id == userInfo.user._id
-    );
-    return userBlogs;
-  };
+const fetchBlogs = async ({ queryKey }) => {
+  const [_key, userId] = queryKey;
+  const res = await api.get(`/blogs/my-blogs/${userId}`);
+  return res.data;
+};
 
-  const fetchSavedBlogs = async () => {
-    const res = await api.get(
-      "http://localhost:3000/api/v1/users/savedBlogs"
-    );
-    return res.data.savedBlogs;
-  };
+const fetchSavedBlogs = async () => {
+  const res = await api.get("/users/saved-blogs");
+  return res.data.savedBlogs;
+};
 
-  const { data: userBlogs, isLoading: loadingUserBlogs } = useQuery({
-    queryKey: ["blogs"],
-    queryFn: fetchBlogs,
-  });
+const { data: userBlogs, isLoading: loadingUserBlogs } = useQuery({
+  queryKey: ["blogs", userInfo?.user?._id],
+  queryFn: fetchBlogs,
+  enabled: !!userInfo?.user?._id, // only run if userId exists
+});
 
-  const {
-    data: savedBlogs,
-    isLoading: loadingSavedBlogs,
-    error,
-  } = useQuery({
-    queryKey: ["saved-blogs"],
-    queryFn: fetchSavedBlogs,
-  });
+const {
+  data: savedBlogs,
+  isLoading: loadingSavedBlogs,
+  error,
+} = useQuery({
+  queryKey: ["saved-blogs"],
+  queryFn: fetchSavedBlogs,
+});
 
-  //mutate unsave Blogs
-  const mutateUnSaveBlog = useMutation({
-    mutationFn: async (blogId) => {
-      await api.delete(
-        `http://localhost:3000/api/v1/users/unSaveBlog/${blogId}`
-      );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["saved-blogs"] });
-      toast({
-        title: "blog UnSaved",
-      });
-    },
-    onError: (error) => {
-      console.log(error.message);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+const mutateUnSaveBlog = useMutation({
+  mutationFn: async (blogId) => {
+    await api.delete(`/users/unsave-blog/${blogId}`);
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["saved-blogs"] });
+    toast({
+      title: "Blog unsaved",
+    });
+  },
+  onError: (error) => {
+    console.error(error.message);
+    toast({
+      title: "Error",
+      description: error.message,
+      variant: "destructive",
+    });
+  },
+});
 
-  //unsave Blog handler
-  const handleUnsaveBlog = (blogId) => {
-    mutateUnSaveBlog.mutate(blogId);
-  };
+const handleUnsaveBlog = (blogId) => {
+  mutateUnSaveBlog.mutate(blogId);
+};
 
   if (loadingUserBlogs) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-100 mb-4"></div>
-        <p className="text-gray-100">Loading blogs for you...</p>
+      <div className="flex flex-col items-center justify-center h-64">
+        <p className="text-gray-100">Loading...</p>
       </div>
     );
   }
@@ -114,7 +111,7 @@ const UserBlogs = () => {
         {/* Recent Blogs */}
         <section className="mb-20">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold">My Blogs</h2>
+            <h2 className="text-2xl font-bold">Your Writings</h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -172,36 +169,30 @@ const UserBlogs = () => {
                           {(blog.author?.name || "Unknown").toUpperCase()}
                         </h4>
 
-                        <div className="relative z-10">
+                        <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
                           <Button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setOpenMenuId(
-                                openMenuId === blog._id ? null : blog._id
-                              );
-                            }}
-                            className="p-1 rounded-full hover:bg-gray-800"
+                          className="p-1 h-auto bg-transparent hover:bg-transparent"
+                          onClick={(e) => e.stopPropagation()}
                           >
-                            <MoreVertical className="w-5 h-5 text-black" />
+                            <MoreVertical className="w-5 h-5 text-gray-400" />
                           </Button>
+                        </DropdownMenuTrigger>
 
-                          {openMenuId === blog._id && (
-                            <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleShare(blog);
-                                  setOpenMenuId(null);
-                                }}
-                                className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
-                              >
-                                Share
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                        <DropdownMenuContent                     
+                        className="w-48"
+                      onClick={(e) => e.stopPropagation()}
+                      align="end"
+                      side="top"
+                        
+                        >
+                          <DropdownMenuItem
+                            onSelect={() => handleShare(blog)}
+                          >
+                            Share
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                       </div>
                     </div>
                   </Link>
@@ -285,47 +276,40 @@ const UserBlogs = () => {
                           {(blog.author?.name || "Unknown").toUpperCase()}
                         </h4>
 
-                        <div className="relative z-10">
-                          <Button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setOpenMenuId(
-                                openMenuId === blog._id ? null : blog._id
-                              );
-                            }}
-                            className="p-1 rounded-full hover:bg-gray-800"
-                          >
-                            <MoreVertical className="w-5 h-5 text-black" />
-                          </Button>
+                        <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                          className="p-1 h-auto bg-transparent hover:bg-transparent"
+                          onClick={(e) => e.stopPropagation()}
+                      >
+                        <MoreVertical className="w-5 h-5 text-gray-400" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent                             
+                    className="w-48"
+                    onClick={(e) => e.stopPropagation()}
+                    align="end"
+                    // className="bg-white text-black border border-gray-200 shadow-md z-[9999]"
+                    side="top">
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      // e.preventDefault()
+                      handleShare(blog)
+                    }}
+                  >
+                    Share
+                  </DropdownMenuItem>
 
-                          {openMenuId === blog._id && (
-                            <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleShare(blog);
-                                  setOpenMenuId(null);
-                                }}
-                                className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
-                              >
-                                Share
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-
-                                  handleUnsaveBlog(blog._id);
-                                  setOpenMenuId(null);
-                                }}
-                                className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
-                              >
-                                Unsave
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      // e.preventDefault()
+                      handleUnsaveBlog(blog._id)
+                    }}
+                  >
+                    Unsave
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+                    </DropdownMenu>
                       </div>
                     </div>
                   </Link>

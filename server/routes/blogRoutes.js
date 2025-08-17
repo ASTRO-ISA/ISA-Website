@@ -27,6 +27,7 @@ router
 router.route('/:id').get(blogController.readBlog)
 
 router.use(authenticateToken)
+router.route('/my-blogs/:userid').get(blogController.userBlogs)
 router
   .route('/create')
   .post(

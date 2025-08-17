@@ -2,6 +2,7 @@ const Event = require('../models/eventModel')
 const User = require('../models/userModel')
 const { sendEmail } = require('../utils/sendEmail')
 const cloudinary = require('cloudinary').v2
+require('dotenv').config()
 
 // const currentDate = new Date()
 
@@ -111,10 +112,13 @@ exports.approvedEvents = async (req, res) => {
 exports.getEvent = async (req, res) => {
   const { id } = req.params
   try {
-    const event = await Event.findById(id).populate(
-      'createdBy',
-      '_id name email'
-    )
+    const event = await Event.findById(id).populate([{
+      path: 'createdBy',
+      select: '_id name email',
+    },{
+      path: 'registeredUsers',
+      select: '_id name email'
+    }])
     if (!event) {
       return res.status(404).json({ message: 'Event not found' })
     }
@@ -167,6 +171,48 @@ exports.registerEvent = async (req, res) => {
   }
 }
 
+exports.unregisterEvent = async (req, res) => {
+  try {
+    const { eventid, userid } = req.params
+
+    const event = await Event.findById(eventid)
+    const user = await User.findById(userid)
+
+    if (!user) {
+      return res.status(400).json({ message: 'Please login first' })
+    }
+    if (!event) {
+      return res.status(400).json({ message: 'Event not found' })
+    }
+
+    const updatedEvent = await Event.findByIdAndUpdate(
+      eventid,
+      { $pull: { registeredUsers: userid } },
+      { new: true }
+    ).populate('registeredUsers', 'name email')
+
+    // optional: send cancellation email
+    const text = `Hi ${user.name},
+    You have successfully unregistered from "${event.title}" scheduled on ${new Date(event.eventDate).toDateString()} at ${event.location}.
+    Hope to see you at our future events!
+    – ISA`
+
+    await sendEmail(user.email, `Unregistered from ${event.title}`, text)
+
+    res.status(200).json({
+      success: true,
+      message: 'User successfully unregistered from the event',
+      data: updatedEvent,
+    })
+  } catch (error) {
+    console.error('Error in unregistering:', error)
+    res.status(500).json({
+      success: false,
+      message: 'User unregistration failed for the event',
+    })
+  }
+}
+
 exports.updateEvent = async (req, res) => {
   const { id } = req.params
   const updates = req.body
@@ -200,21 +246,44 @@ exports.changeStatus = async (req, res) => {
 
     const event = await Event.findByIdAndUpdate(id, { statusAR: status }, {new: true, runValidators: true}).populate('createdBy', 'name email')
     if(!event) {
-      res.status(404).json({message: 'Event not found.'})
+      return res.status(404).json({message: 'Event not found.'})
     }
 
     if(status === 'approved'){
     // sending confirmation email
-    const text = `Its live ${event.createdBy.name},
-    The event named "${event.title}" on ${new Date(event.eventDate).toDateString()} at ${event.location} is now listed. Share link with your friends to register.
-    Thank you for using our platform!
-    – ISA`
+    const text = `
+    <p>Hello ${event.createdBy.name},</p>
 
+    <p>Good news! 🎉 Your event <strong>"${event.title}"</strong> scheduled for 
+    <strong>${new Date(event.eventDate).toDateString()}</strong> at 
+    <strong>${event.location}</strong> has been approved and is now live on ISA.</p>
+
+    <p>👉 Share your event link with others to start registrations:  
+    <a href="${process.env.CLIENT_URL}/events/${event._id}" target="_blank">View Event</a></p>
+
+    <p>Thank you for choosing our platform to host your event—we’re excited to see it come to life!</p>
+
+    <p>Best regards,<br>
+    Team ISA</p>
+    `
     await sendEmail(event.createdBy.email, event.title, text)
     }
 
     res.status(200).json({message: 'Status changes successfully'})
   } catch (err) {
     res.status(500).json({message: 'Server error changing event status'})
+  }
+}
+
+exports.registeredEvents = async (req, res) => {
+  try{
+    const { userid } = req.params
+    const events = await Event.find({registeredUsers: userid}).sort({eventDate: -1})
+    if(!events){
+      return res.status(404).json({message: 'No registerd events.'})
+    }
+    res.status(200).json(events)
+  } catch (err) {
+    res.status(500).json({message: 'Server error finding the registerede events.'})
   }
 }

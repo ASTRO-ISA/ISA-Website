@@ -117,3 +117,16 @@ exports.changeStatus = async (req, res) => {
     res.status(500).json({message: 'Server error while updating blog status'})
   }
 }
+
+exports.userBlogs = async (req, res) => {
+  try{
+    const { userid } = req.params
+    const blogs = await Blog.find({author: userid}).sort({createdAt: -1}).populate('author', 'name')
+    if(!blogs){
+      res.status(404).json({message: 'No user blogs found.'})
+    }
+    res.status(200).json(blogs)
+  } catch (err) {
+    res.status(500).json({message: 'Server error finding user blogs.', error: err.message})
+  }
+}

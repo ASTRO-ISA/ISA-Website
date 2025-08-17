@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import Spinner from "@/components/ui/Spinner";
 // import StarBackground from "@/components/StarBackground";
 
 const Events = () => {
@@ -19,12 +20,24 @@ const Events = () => {
   const [launches, setLaunches] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadingEventId, setLoadingEventId] = useState(null);
   const { isLoggedIn, userInfo, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // 3 dot menu
-  const [openMenuId, setOpenMenuId] = useState(null);
+  const fetchEvents = async () => {
+    try{
+      const res = await api.get('/events');
+      setEvents(res.data);
+      setLoading(false);
+    } catch (err) {
+      console.error("Something went wrong fetching events.");
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   // to check if the user is logged in before writing the blog, if the user is not logged in, he cannot write blog
   const handleWriteClick = () => {
@@ -40,37 +53,63 @@ const Events = () => {
     }
   };
 
-  // //registering a user for event
-  const handleRegister = async (userId, eventId) => {
-    if (isLoggedIn) {
-      const res = api
-        .patch(`/events/register/${eventId}/${userId}`)
-        .then((res) => {
-          // setting a particular event as registered, since we are registering from the events page so to update the button to 'alredy registerd'
-          setEvents((prevEvents) =>
-            prevEvents.map((event) =>
-              event._id === eventId
-                ? {
-                    ...event,
-                    registeredUsers: [...event.registeredUsers, String(userId)],
-                  }
-                : event
-            )
-          );
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Error regstering user for event", err);
-          setLoading(false);
-        });
-    } else {
-      toast({
-        title: "Hold on!",
-        description: "Please login first to register for the event.",
-        variant: "destructive",
-      });
-    }
+// //registering a user for event
+const handleRegister = async (userId, eventId) => {
+  if (isLoggedIn) {
+    setLoadingEventId(eventId);
+    try {
+      const res = await api.patch(`/events/register/${eventId}/${userId}`);
+
+      // Update the event locally
+      // setEvents((prevEvents) =>
+      //   prevEvents.map((event) =>
+      //     event._id === eventId
+      //       ? {
+      //           ...event,
+      //           registeredUsers: [
+      //             ...event.registeredUsers,
+      //             // ensure we add in the same format
+      //             typeof userId === "object"
+      //               ? userId
+      //               : { _id: String(userId) },
+      //           ],
+      //         }
+      //       : event
+      //   )
+      // );
+      fetchEvents();
+      setLoading(false);
+      setLoadingEventId(null);
+    } catch (err) {
+      console.error("Error registering user for event.", err);
+      setLoading(false);
+      setLoadingEventId(null);
+    };
+  } else {
+    toast({
+      title: "Hold on!",
+      description: "Please login first to register for the event.",
+      variant: "destructive",
+    });
   };
+};
+
+const handleUnregister = async (userId, eventId) => {
+  setLoadingEventId(eventId);
+  try {
+    await api.patch(`/events/unregister/${eventId}/${userId}`);
+    fetchEvents();
+    setLoadingEventId(null);
+  } catch (err) {
+    toast({
+      title: "Can't unregister.",
+      description: "There seems to be a problem unregistering, please try again after some time.",
+      variant: "destructive"
+    });
+    setLoadingEventId(null);
+  }
+};
+
 
   const handleAddToNewsletter = async (event) => {
     try {
@@ -88,22 +127,8 @@ const Events = () => {
         title: "Failed to add to draft",
         variant: "destructive",
       });
-    } finally {
-      setOpenMenuId(null);
     }
   };
-
-  useEffect(() => {
-    const res = api
-      .get("/events")
-      .then((res) => {
-        setEvents(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching events", err);
-      });
-  }, []);
 
   // to get external launches (from api)
   useEffect(() => {
@@ -295,25 +320,26 @@ const Events = () => {
 
                   <button
                     onClick={() =>
-                      handleRegister(userInfo?.user._id, event._id)
+                      event.registeredUsers.some((e) => e._id === userInfo?.user?._id)
+                        ? handleUnregister(userInfo?.user._id, event._id)
+                        : handleRegister(userInfo?.user?._id, event._id)
                     }
-                    disabled={event.registeredUsers.some(
-                      (e) => e._id === userInfo?.user._id
-                    )}
                     className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold
-    ${
-      isLoggedIn &&
-      event.registeredUsers.some((e) => e._id === userInfo?.user._id)
-        ? "bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed"
-        : "bg-space-accent hover:bg-space-accent/80"
-    }`}
+                      ${
+                        isLoggedIn &&
+                        event.registeredUsers.some((e) => e._id === userInfo?.user._id)
+                          ? "bg-space-purple/30 hover:bg-space-purple/50"
+                          : "bg-space-accent hover:bg-space-accent/80"
+                      }`}
                   >
-                    {isLoggedIn &&
-                    event.registeredUsers.some(
-                      (e) => e._id === userInfo?.user._id
-                    )
-                      ? "Registered"
-                      : "Register for this Event"}
+                    {loadingEventId === event._id ? (
+                      <Spinner />
+                    ) : isLoggedIn &&
+                      event.registeredUsers.some((e) => e._id === userInfo?.user._id) ? (
+                      "Unregister"
+                    ) : (
+                      "Register for this Event"
+                    )}
                   </button>
                 </div>
               ))
