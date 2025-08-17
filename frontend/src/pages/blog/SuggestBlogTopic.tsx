@@ -32,7 +32,7 @@ const SuggestBlogTopic = () => {
 
     try {
       setSubmitting(true);
-      await api.post("/suggestBlog", blogSuggest);
+      await api.post("/suggest-blog", blogSuggest);
       setBlogSuggest({ title: "", description: "" });
       toast({ title: "Suggestion posted successfully." });
       setShowForm(false);

@@ -5,8 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
 
 const fetchPapers = async () => {
-  const res = await api.get("/researchPapers/");
-  console.log(res)
+  const res = await api.get("/research-papers/");
   return res.data || [];
 };
 
@@ -16,7 +15,6 @@ const ResearchPaper = () => {
     queryKey: ["research-paper"],
     queryFn: fetchPapers,
   });
-  console.log('paper', papers)
 
   return (
     <div>

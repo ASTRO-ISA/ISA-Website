@@ -12,9 +12,8 @@ const ApprovedBlogSuggestions = () => {
 
   const fetchApprovedSuggestions = async () => {
     try {
-      const res = await api.get("/suggestBlog");
-      const approved = res.data.data.filter((s) => s.status === "approved");
-      setApprovedSuggestions(approved);
+      const res = await api.get("/suggest-blog/approved");
+      setApprovedSuggestions(res.data);
     } catch (error) {
       console.error("Failed to fetch approved suggestions", error);
     }
@@ -22,7 +21,7 @@ const ApprovedBlogSuggestions = () => {
 
   const handleDelete = async (id) => {
     try {
-      await api.delete(`/suggestBlog/${id}`);
+      await api.delete(`/suggest-blog/${id}`);
       setApprovedSuggestions((prev) => prev.filter((s) => s._id !== id));
       toast({ title: "Deleted successfully." });
     } catch (error) {

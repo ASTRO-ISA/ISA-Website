@@ -10,7 +10,8 @@ const {
   updatePaper,
   uploadPaper,
   approvedPapers,
-  changeStatus
+  changeStatus,
+  userPapers
 } = require('../controllers/researchPaperController')
 
 const uploadDocument = multer({
@@ -20,6 +21,7 @@ const uploadDocument = multer({
 router.route('/').get(approvedPapers)
 
 router.use(authenticateToken)
+router.route('/my-papers/:userid').get(userPapers)
 router.use(restrictTo('admin'))
 router.route('/all').get(pendingPapers)
 router.route('/').post(uploadDocument.single('file'), uploadPaper)
