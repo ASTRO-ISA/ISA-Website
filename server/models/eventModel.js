@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const slugify = require('slugify')
 
 const eventSchema = new mongoose.Schema({
   thumbnail: {
@@ -7,6 +8,11 @@ const eventSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, 'Please provide a title']
+  },
+  slug: {
+    type: String,
+    unique: true,
+    required: true
   },
   description: {
     type: String,
@@ -31,7 +37,7 @@ const eventSchema = new mongoose.Schema({
   hostedBy: [
     // since multiple people can be host so using array to store multiple hosts
     {
-      name: String
+      name: String,
     }
   ],
   presentedBy: {
@@ -51,7 +57,7 @@ const eventSchema = new mongoose.Schema({
   registeredUsers: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
     }
   ],
   createdAt: {
@@ -76,6 +82,16 @@ const eventSchema = new mongoose.Schema({
     enum: ['approved', 'rejected', 'pending'],
     default: 'pending'
   }
+})
+
+eventSchema.pre('validate', function (next) {
+  if (this.title && !this.slug) {
+    this.slug = slugify(this.title, {
+      lower: true,
+      strict: true
+    })
+  }
+  next()
 })
 
 const Event = mongoose.model('Event', eventSchema)

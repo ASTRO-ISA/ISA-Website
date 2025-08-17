@@ -32,7 +32,7 @@ const UploadResearchPaper = () => {
       formData.append(key, val);
     });
 
-    const res = await api.post("/researchPapers/", formData, {
+    const res = await api.post("/research-papers/", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

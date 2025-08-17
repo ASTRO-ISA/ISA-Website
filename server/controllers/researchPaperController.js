@@ -1,3 +1,4 @@
+const { create } = require('../models/eventModel')
 const ResearchPaper = require('../models/researchPaperModel')
 const cloudinary = require('cloudinary').v2
 
@@ -20,7 +21,7 @@ exports.approvedPapers = async (req, res) => {
       'name email'
     )
     if(!papers){
-      res.status(404).json({message: 'Papers not found'})
+      return res.status(404).json({message: 'Papers not found'})
     }
     res.status(200).json(papers)
   } catch (err) {
@@ -66,55 +67,65 @@ exports.uploadPaper = async (req, res) => {
 
 exports.updatePaper = async (req, res) => {
   try {
-    const { id } = req.params
+    const { id } = req.params;
 
     if (!id) {
       return res
         .status(400)
-        .json({ status: 'fail', message: 'No ID provided in jobUpdater' })
+        .json({ status: 'fail', message: 'No ID provided in updatePaper' });
     }
 
-    const newPaper = await ResearchPaper.findById(id)
-    if (!newPaper) {
-      return res.status(404).json({ message: 'paper does not exist' })
+    const oldPaper = await ResearchPaper.findById(id);
+    if (!oldPaper) {
+      return res.status(404).json({ message: 'Paper does not exist' });
     }
 
     if ((!req.body || Object.keys(req.body).length === 0) && !req.file) {
       return res.status(400).json({
         status: 'fail',
         message: 'No data or document provided to update'
-      })
+      });
     }
+
+    const updateData = {
+      title: req.body.title ?? oldPaper.title,
+      authors: req.body.authors ?? oldPaper.authors,
+      abstract: req.body.abstract ?? oldPaper.abstract,
+      publishedOn: req.body.publishedOn ?? oldPaper.publishedOn,
+    };
 
     if (req.file) {
-      req.body.paperUrl = req.file.path
-      req.body.paperPublicId = req.file.filename
+      updateData.paperUrl = req.file.path;
+      updateData.paperPublicId = req.file.filename;
 
-      if (newPaper.paperPublicId) {
-        await cloudinary.uploader.destroy(newPaper.paperPublicId, {
+      if (oldPaper.paperPublicId) {
+        await cloudinary.uploader.destroy(oldPaper.paperPublicId, {
           resource_type: 'raw'
-        })
+        });
       }
+    } else {
+      updateData.paperUrl = oldPaper.paperUrl;
+      updateData.paperPublicId = oldPaper.paperPublicId;
     }
 
-    const updatedPaper = await ResearchPaper.findByIdAndUpdate(id, req.body, {
+    const updatedPaper = await ResearchPaper.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true
-    })
+    });
 
     res.status(200).json({
       status: 'success',
-      message: 'paper updated',
+      message: 'Paper updated',
       data: updatedPaper
-    })
+    });
   } catch (error) {
     res.status(500).json({
       status: 'fail',
-      message: 'Server error, cannot update job',
+      message: 'Server error, cannot update paper',
       error: error.message
-    })
+    });
   }
-}
+};
 
 exports.deletePaper = async (req, res) => {
   try {
@@ -163,10 +174,23 @@ exports.changeStatus = async (req, res) => {
     const status = req.body.status
     const paper = await ResearchPaper.findByIdAndUpdate(id, {status: status}, {new: true, runValidators: true})
     if(!paper){
-      res.status(404).json({message: 'Paper not found'})
+      return res.status(404).json({message: 'Paper not found'})
     }
     res.status(200).json({message: 'Status changes sunccessfully.'})
   } catch (err) {
     res.status(500).json({message: 'Server error', error: err.message})
+  }
+}
+
+exports.userPapers = async (req, res) => {
+  try{
+    const { userId } = req.params
+    const papers = await ResearchPaper.find({createdBy: userId}).sort({createdAt: -1})
+    if(!papers){
+      return res.status(404).json({message: 'No research papers written by the user.'})
+    }
+    res.status(200).json(papers)
+  } catch (err) {
+    res.status(500).json({message: 'Server error finding user papers.', error: err.message})
   }
 }

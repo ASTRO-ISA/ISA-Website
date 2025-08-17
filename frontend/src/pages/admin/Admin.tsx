@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AllBlogs from "./AllBlogs";
 import AllEvents from "./AllEvents";
 import AllResearchPapers from "./AllResearchPapers";
-import SuggestedBlogTopic from "../blog/SuggestedBlogTopic";
+import SuggestedBlogTopic from "../blog/SuggestedBlogTopicAdmin";
 import ApprovedBlogSuggestions from "../blog/ApprovedBlogSuggestions";
 import AdminGallerySection from "./AdminGallerySection";
 import AdminJobs from "./AdJob";
@@ -19,7 +19,7 @@ export default function AdminDashboard() {
 
   // Fetch research papers
   const fetchPapers = async () => {
-    const res = await api.get("/researchPapers/all");
+    const res = await api.get("/research-papers/all");
     return res.data.data;
   };
 

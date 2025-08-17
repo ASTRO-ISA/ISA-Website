@@ -11,6 +11,12 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const Webinars = () => {
   // all webinars
@@ -310,64 +316,54 @@ const Webinars = () => {
                         {(webinar.presenter || "Unknown").toUpperCase()}
                       </h4>
 
-                      <div className="relative z-10">
-                        <Button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setOpenMenuId(
-                              openMenuId === webinar._id ? null : webinar._id
-                            );
-                          }}
-                          className="p-1 rounded-full hover:bg-gray-800"
-                        >
-                          <MoreVertical className="w-5 h-5 text-gray-400" />
-                        </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="p-1 rounded-full hover:bg-gray-800"
+                          >
+                            <MoreVertical className="w-5 h-5 text-gray-400" />
+                          </Button>
+                        </DropdownMenuTrigger>
 
-                        {openMenuId === webinar._id && (
-                          <div className="absolute right-0 bottom-full mb-2 w-40 bg-white text-black shadow-lg rounded-md z-[9999]">
-                            <button
+                        <DropdownMenuContent side="left" align="end" className="w-40">
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              // e.preventDefault()
+                              e.stopPropagation()
+                              handleShare(webinar)
+                            }}
+                          >
+                            Share
+                          </DropdownMenuItem>
+
+                          {isAdmin && featuredId !== webinar._id && (
+                            <DropdownMenuItem
                               onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleShare(webinar);
-                                setOpenMenuId(null);
+                                // e.preventDefault()
+                                e.stopPropagation()
+                                handleSetFeatured(webinar)
                               }}
-                              className="w-full px-4 py-2 hover:bg-gray-100 rounded-t-md flex items-center gap-2"
                             >
-                              Share
-                            </button>
+                              Set as Featured
+                            </DropdownMenuItem>
+                          )}
 
-                            {isAdmin && featuredId !== webinar._id && (
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleSetFeatured(webinar);
-                                  setOpenMenuId(null);
-                                }}
-                                className="w-full px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-                              >
-                                Set as Featured
-                              </button>
-                            )}
-
-                            {isAdmin && featuredId === webinar._id && (
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleRemoveFeatured(webinar);
-                                  setOpenMenuId(null);
-                                }}
-                                className="w-full px-4 py-2 hover:bg-red-100 text-red-600 flex items-center gap-2 rounded-b-md"
-                              >
-                                Remove Featured
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                          {isAdmin && featuredId === webinar._id && (
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                // e.preventDefault()
+                                e.stopPropagation()
+                                handleRemoveFeatured(webinar)
+                              }}
+                              className="text-red-600"
+                            >
+                              Remove Featured
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
 

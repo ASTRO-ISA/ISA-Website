@@ -29,7 +29,7 @@ const AllResearchPapers = ({ papers }: DisplayPaperProps) => {
 
   const changeStatus = async (id, newStatus) => {
     try{
-        const res = await api.patch(`/researchPapers/status/${id}`, {status: newStatus}, {withCredentials: true})
+        const res = await api.patch(`/research-papers/status/${id}`, {status: newStatus}, {withCredentials: true})
         toast({
             description: `Research paper is ${newStatus}`
         })
