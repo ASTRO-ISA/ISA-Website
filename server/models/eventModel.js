@@ -81,8 +81,18 @@ const eventSchema = new mongoose.Schema({
     type: String,
     enum: ['approved', 'rejected', 'pending'],
     default: 'pending'
+  },
+  statusChangedAt: {
+    type: Date,
+    default: Date.now
+  },
+  adminComment: {
+    type: String,
+    default: 'No specific reason provided.'
   }
 })
+
+eventSchema.index({ registeredUsers: 1 });
 
 eventSchema.pre('validate', function (next) {
   if (this.title && !this.slug) {
@@ -90,6 +100,13 @@ eventSchema.pre('validate', function (next) {
       lower: true,
       strict: true
     })
+  }
+  next()
+})
+
+eventSchema.pre('save', function (next) {
+  if (this.isModified('statusAR')) {
+    this.statusChangedAt = Date.now
   }
   next()
 })

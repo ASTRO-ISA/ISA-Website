@@ -72,7 +72,7 @@ const WriteBlog = () => {
       setTitle("");
       setLoading(false);
       navigate("/blogs");
-      toast({ title: "Blog published successfully!" });
+      toast({ title: "Blog published successfully!", description: 'It will be reviewd once to prevent spam.' });
     } catch (err) {
       setLoading(false);
       toast({

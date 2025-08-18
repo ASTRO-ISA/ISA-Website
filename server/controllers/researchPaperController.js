@@ -1,6 +1,7 @@
-const { create } = require('../models/eventModel')
 const ResearchPaper = require('../models/researchPaperModel')
 const cloudinary = require('cloudinary').v2
+const { sendEmail } = require('../utils/sendEmail')
+const { default: slugify } = require('slugify')
 
 exports.pendingPapers = async (req, res) => {
   try {
@@ -46,8 +47,14 @@ exports.uploadPaper = async (req, res) => {
         .json({ status: 'fail', message: 'File path from cloudinary missing.' })
     }
 
+    const slug = slugify(title, {
+      lower: true,
+      strict: true
+    })
+
     const newPaper = await ResearchPaper.create({
       title,
+      slug,
       authors,
       abstract,
       paperUrl: req.file.path,
@@ -87,8 +94,14 @@ exports.updatePaper = async (req, res) => {
       });
     }
 
+    const slug = slugify(req.body.title, {
+      lower: true,
+      strict: true
+    })
+
     const updateData = {
       title: req.body.title ?? oldPaper.title,
+      title: slug ?? oldPaper.slug,
       authors: req.body.authors ?? oldPaper.authors,
       abstract: req.body.abstract ?? oldPaper.abstract,
       publishedOn: req.body.publishedOn ?? oldPaper.publishedOn,
@@ -172,9 +185,51 @@ exports.changeStatus = async (req, res) => {
   try{
     const { id } = req.params
     const status = req.body.status
-    const paper = await ResearchPaper.findByIdAndUpdate(id, {status: status}, {new: true, runValidators: true})
+    const paper = await ResearchPaper.findByIdAndUpdate(id, {status: status}, {new: true, runValidators: true}).populate('uploadedBy', 'name email')
     if(!paper){
       return res.status(404).json({message: 'Paper not found'})
+    }
+
+    if (status === 'approved') {
+      const text = `
+        <p>Hello ${paper.uploadedBy.name},</p>
+
+        <p>Congratulations! Your research paper 
+        <strong>'${paper.title}'</strong> has been 
+        <span style='color:green;font-weight:bold;'>approved</span> and is now published on ISA.</p>
+
+        <p>You can view your paper here:  
+        <a href='${process.env.CLIENT_URL}/research-papers/${paper.id}' target='_blank'>Read Paper</a></p>
+
+        <p>Thank you for your valuable academic contribution. We’re excited to share your research with the ISA community.</p>
+
+        <p>Best regards,<br>
+        Team ISA</p>
+      `;
+      await sendEmail(paper.uploadedBy.email, `Your research paper '${paper.title}' is now live!`, text)
+    }
+
+    if (status === 'rejected') {
+      const text = `
+        <p>Hello ${paper.createdBy.name},</p>
+
+        <p>We regret to inform you that your research paper 
+        <strong>'${paper.title}'</strong> has been 
+        <span style='color:red;font-weight:bold;'>rejected</span> after review.</p>
+
+        <p><strong>Reason from Admin:</strong></p>
+        <blockquote style='border-left: 3px solid #ccc; margin: 10px 0; padding-left: 10px; color:#555;'>
+          ${paper.adminComment || 'No specific reason provided.'}
+        </blockquote>
+
+        <p>You may revise and resubmit your research paper if you’d like to address the feedback provided.</p>
+
+        <p>We truly appreciate your effort and encourage you to continue contributing your research to the ISA platform.</p>
+
+        <p>Best regards,<br>
+        Team ISA</p>
+      `
+      await sendEmail(paper.createdBy.email, `Update on your research paper: ${paper.title}`, text)
     }
     res.status(200).json({message: 'Status changes sunccessfully.'})
   } catch (err) {

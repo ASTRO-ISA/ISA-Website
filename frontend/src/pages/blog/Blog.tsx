@@ -36,6 +36,7 @@ const Blog = () => {
   const [featured, setFeatured] = useState({
     _id: "",
     thumbnail: "",
+    slug: "",
     title: "",
     description: "",
     content: "",
@@ -96,6 +97,7 @@ const Blog = () => {
           _id: "",
           thumbnail: "",
           title: "",
+          slug: "",
           description: "",
           content: "",
           author: {
@@ -334,7 +336,7 @@ const Blog = () => {
             </p>
           ) : (
             <Link
-              to={`/blogs/${featured._id}`}
+              to={`/blogs/${featured.slug}`}
               className="cosmic-card group flex flex-col cursor-pointer relative max-w-md"
             >
               {/* Image */}
@@ -471,7 +473,7 @@ const Blog = () => {
               (showAllUserBlogs ? userBlogs : userBlogs.slice(0, 3)).map((blog) => (
                 <div key={blog._id} className="relative group">
                   <Link
-                    to={`/blogs/${blog._id}`}
+                    to={`/blogs/${blog.slug}`}
                     className="cosmic-card group flex flex-col cursor-pointer relative"
                   >
                     {/* Image */}
