@@ -9,17 +9,17 @@ import Spinner from "@/components/ui/Spinner";
 const BlogDetail = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { slug } = useParams();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const { userInfo } = useAuth();
   const [deleting, setDeleting] = useState(false);
 
-  // to get all the blog data form database
+  // to get the blog data form database
   useEffect(() => {
     setLoading(true);
     api
-      .get(`/blogs/${id}`)
+      .get(`/blogs/${slug}`)
       .then((res) => {
         setBlog(res.data);
         setLoading(false);
@@ -28,7 +28,7 @@ const BlogDetail = () => {
         console.error("Error fetching blog", err);
         setLoading(false);
       });
-  }, [id]);
+  }, [slug]);
 
   const deleteBlog = async (id) => {
     setDeleting(true);
@@ -90,7 +90,7 @@ const BlogDetail = () => {
               <div className="flex items-center gap-1">
                 {/* <Calendar className="w-4 h-4 text-space-accent" /> */}
                 <span className="text-xs text-gray-400">
-                  BY: {blog.author.name.toUpperCase()}&nbsp;&nbsp;&nbsp;{formattedDate} at{" "}
+                  BY: {blog?.author?.name?.toUpperCase()}&nbsp;&nbsp;&nbsp;{formattedDate} at{" "}
                   {formattedTime}
                 </span>
               </div>
@@ -125,7 +125,7 @@ const BlogDetail = () => {
             </div>
           </div>
           <hr className="mb-3 mt-6" />
-          {userInfo && blog.author._id === userInfo.user._id && (
+          {userInfo && blog?.author?._id === userInfo?.user?._id && (
             <button
               onClick={() => deleteBlog(blog._id)}
               className="bg-red-600 text-white px-3 py-1 rounded mt-2"

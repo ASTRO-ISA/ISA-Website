@@ -21,6 +21,7 @@ const UserProfile = () => {
       });
       refetchUser();
       navigate("/");
+      window.location.reload();
     } catch (err) {
       toast({
         title: "Logout failed",
