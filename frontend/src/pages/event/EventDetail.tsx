@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
 
 const EventDetails = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const { userInfo, isLoggedIn } = useAuth();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ const EventDetails = () => {
 
   const fetchEvent = async () => {
     try {
-      const res = await api.get(`/events/${id}`);
+      const res = await api.get(`/events/${slug}`);
       setEvent(res.data);
     } catch (err) {
       console.error("Error fetching event:");
@@ -29,7 +29,7 @@ const EventDetails = () => {
 
   useEffect(() => {
     fetchEvent();
-  }, [id]);
+  }, [slug]);
 
   const handleRegister = async (userId) => {
     if (!isLoggedIn) {
@@ -41,9 +41,9 @@ const EventDetails = () => {
       return;
     }
 
-    setLoadingEventId(id);
+    setLoadingEventId(event._id);
     try {
-      await api.patch(`/events/register/${id}/${userId}`);
+      await api.patch(`/events/register/${event._id}/${userId}`);
       fetchEvent();
       setLoadingEventId(null);
     } catch (err) {
@@ -62,9 +62,9 @@ const EventDetails = () => {
       return;
     }
 
-    setLoadingEventId(id);
+    setLoadingEventId(event._id);
     try {
-      await api.patch(`/events/unregister/${id}/${userId}`);
+      await api.patch(`/events/unregister/${event._id}/${userId}`);
       fetchEvent();
       setLoadingEventId(null);
     } catch (err) {

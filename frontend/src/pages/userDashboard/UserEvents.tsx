@@ -42,7 +42,7 @@ const UserEvents = () => {
 
   useEffect(() => {
     fetchRegisteredEvents(userId);
-  }, []);
+  }, [userId]);
 
   if (loading) {
     return (
@@ -91,7 +91,7 @@ const UserEvents = () => {
                   className="cosmic-card overflow-hidden group relative flex flex-col"
                 >
                   <Link
-                    to={`/events/${event._id}`}
+                    to={`/events/${event.slug}`}
                     className="flex-1 flex flex-col"
                   >
                     <div className="h-48 overflow-hidden">

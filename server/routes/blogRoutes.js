@@ -24,7 +24,7 @@ router
     restrictTo('admin'),
     blogController.pendingBlogs
   )
-router.route('/:id').get(blogController.readBlog)
+router.route('/:slug').get(blogController.readBlog)
 
 router.use(authenticateToken)
 router.route('/my-blogs/:userid').get(blogController.userBlogs)

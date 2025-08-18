@@ -12,7 +12,7 @@ router.route('/').get(eventController.approvedEvents)
 router.route('/pending').get(authenticateToken, restrictTo('admin'), eventController.pendingEvents)
 router.route('/all').get(authenticateToken, restrictTo('admin'), eventController.Events)
 
-router.route('/:id').get(eventController.getEvent)
+router.route('/:slug').get(eventController.getEvent)
 router
   .route('/create')
   .post(

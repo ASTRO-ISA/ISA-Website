@@ -78,12 +78,12 @@ const App = () => {
             <Route path="/webinars" element={<Webinars />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<CreateAccount />} />
-            <Route path="/blogs/:id" element={<BlogDetail />} />
+            <Route path="/blogs/:slug" element={<BlogDetail />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/host-event" element={<CreateEvent />} />
             <Route path="/about" element={<About />} />
             <Route path="/upload-pic" element={<PotdPicsUpload />} />
-            <Route path="/events/:id" element={<EventDetails />} />
+            <Route path="/events/:slug" element={<EventDetails />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="*" element={<NotFound />} />

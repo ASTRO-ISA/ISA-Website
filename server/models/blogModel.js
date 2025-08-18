@@ -3,11 +3,15 @@ const mongoose = require('mongoose');
 const blogSchema = new mongoose.Schema({
     thumbnail: {
         type: String,
-        // default: 'http://localhost:3000/uploads/blogThumbnail.webp'
     },
     title: {
         type: String,
         required: [true, 'Title is required.']
+    },
+    slug: {
+        type: String,
+        unique: true,
+        required: true
     },
     description: {
         type: String,
@@ -39,9 +43,26 @@ const blogSchema = new mongoose.Schema({
         type: String,
         enum: ['approved', 'rejected', 'pending'],
         default: 'pending'
+    },
+    statusChangedAt: { // to save the timestamp when it's status got changed
+        type: Date,
+        default: Date.now
+    },
+    adminComment: {
+        type: String,
+        default: 'No specific reason provide.'
     }
 })
 
+blogSchema.pre('validate', function(next){
+    if(this.title && !this.slug){
+        this.slug = slugify(this.title, {
+            lower: true,
+            strict: true
+        })
+    }
+    next()
+})
 const Blog = mongoose.model('Blog', blogSchema)
 
 module.exports = Blog
