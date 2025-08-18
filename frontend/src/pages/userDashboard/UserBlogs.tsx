@@ -127,7 +127,7 @@ const handleUnsaveBlog = (blogId) => {
                 (blog) => (
                   <Link
                     key={blog._id}
-                    to={`/blogs/${blog._id}`}
+                    to={`/blogs/${blog.slug}`}
                     className="cosmic-card group flex flex-col cursor-pointer relative"
                   >
                     {/* Image with overflow-hidden for zoom effect only */}

@@ -1,3 +1,4 @@
+const { default: slugify } = require('slugify')
 const Event = require('../models/eventModel')
 const User = require('../models/userModel')
 const { sendEmail } = require('../utils/sendEmail')
@@ -31,9 +32,14 @@ exports.createEvent = async (req, res) => {
     const thumbnail = req.file ? req.file.path : ''
     const publicId = req.file.filename
     const createdBy = req.user.id
+    const slug = slugify(title, {
+      lower: true,
+      strict: true
+    })
 
     const event = new Event({
       title,
+      slug,
       description,
       eventDate,
       eventEndTime,
@@ -110,9 +116,9 @@ exports.approvedEvents = async (req, res) => {
 }
 
 exports.getEvent = async (req, res) => {
-  const { id } = req.params
+  const { slug } = req.params
   try {
-    const event = await Event.findById(id).populate([{
+    const event = await Event.findOne({slug}).populate([{
       path: 'createdBy',
       select: '_id name email',
     },{
@@ -213,13 +219,27 @@ exports.unregisterEvent = async (req, res) => {
   }
 }
 
+
 exports.updateEvent = async (req, res) => {
   const { id } = req.params
-  const updates = req.body
+  const updates = { ...req.body }
 
   try {
-    const event = await Event.findByIdAndUpdate(id, updates, { new: true })
+    if (updates.title) {
+      const baseSlug = slugify(updates.title, { lower: true, strict: true })
+      let slug = baseSlug
+      let counter = 1
+
+      while (await Event.findOne({ slug, _id: { $ne: id } })) {
+        slug = `${baseSlug}-${counter++}`
+      }
+
+      updates.slug = slug
+    }
+
+    const event = await Event.findByIdAndUpdate(id, updates, { new: true, runValidators: true })
     if (!event) return res.status(404).json({ message: 'Event not found' })
+
     res.status(200).json(event)
   } catch (error) {
     res.status(500).json({ message: 'Error updating event', error })
@@ -259,14 +279,39 @@ exports.changeStatus = async (req, res) => {
     <strong>${event.location}</strong> has been approved and is now live on ISA.</p>
 
     <p>👉 Share your event link with others to start registrations:  
-    <a href="${process.env.CLIENT_URL}/events/${event._id}" target="_blank">View Event</a></p>
+    <a href="${process.env.CLIENT_URL}/events/${event.slug}" target="_blank">View Event</a></p>
 
     <p>Thank you for choosing our platform to host your event—we’re excited to see it come to life!</p>
 
     <p>Best regards,<br>
     Team ISA</p>
     `
-    await sendEmail(event.createdBy.email, event.title, text)
+    await sendEmail(event.createdBy.email, `Your event ${event.title} is now live.`, text)
+    }
+
+    if (status === 'rejected') {
+      // sending rejection email
+      const text = `
+      <p>Hello ${event.createdBy.name},</p>
+    
+      <p>We regret to inform you that your event <strong>"${event.title}"</strong>, 
+      scheduled for <strong>${new Date(event.eventDate).toDateString()}</strong> at 
+      <strong>${event.location}</strong>, has been <span style="color:red;font-weight:bold;">rejected</span> after review.</p>
+    
+      <p><strong>Reason from Admin:</strong></p>
+      <blockquote style="border-left: 3px solid #ccc; margin: 10px 0; padding-left: 10px; color:#555;">
+        ${event.adminComment || "No specific reason provided."}
+      </blockquote>
+    
+      <p>If you believe this was a mistake, you may revise and resubmit your event for consideration.</p>
+    
+      <p>We appreciate your interest in sharing events with the ISA community and encourage you to keep contributing!</p>
+    
+      <p>Best regards,<br>
+      Team ISA</p>
+      `;
+    
+      await sendEmail(event.createdBy.email, `Update on your event: ${event.title}`, text);
     }
 
     res.status(200).json({message: 'Status changes successfully'})
@@ -278,8 +323,8 @@ exports.changeStatus = async (req, res) => {
 exports.registeredEvents = async (req, res) => {
   try{
     const { userid } = req.params
-    const events = await Event.find({registeredUsers: userid}).sort({eventDate: -1})
-    if(!events){
+    const events = await Event.find({registeredUsers: userid})
+    if(events.length === 0){
       return res.status(404).json({message: 'No registerd events.'})
     }
     res.status(200).json(events)

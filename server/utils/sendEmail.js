@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer')
 require('dotenv').config()
 
-const sendEmail = async (to, subject, text) => {
+const sendEmail = async (to, subject, html) => {
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -15,7 +15,7 @@ const sendEmail = async (to, subject, text) => {
       from: `ISA-India <${process.env.SENDER_EMAIL}>`,
       to,
       subject,
-      text
+      html
     }
 
     const info = await transporter.sendMail(mailOptions)
