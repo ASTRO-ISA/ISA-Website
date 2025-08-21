@@ -38,11 +38,7 @@ const { data: userBlogs, isLoading: loadingUserBlogs } = useQuery({
   enabled: !!userInfo?.user?._id, // only run if userId exists
 });
 
-const {
-  data: savedBlogs,
-  isLoading: loadingSavedBlogs,
-  error,
-} = useQuery({
+const { data: savedBlogs, error, isLoading: loadingSavedBlogs } = useQuery({
   queryKey: ["saved-blogs"],
   queryFn: fetchSavedBlogs,
 });

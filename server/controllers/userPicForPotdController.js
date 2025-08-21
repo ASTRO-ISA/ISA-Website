@@ -81,8 +81,6 @@ exports.setFeaturedFromUserPic = async (req, res) => {
       author: userPic.author || 'user',
     })
 
-    console.log(featured)
-
     res.status(200).json({ message: 'Image set as featured', data: featured })
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message })
