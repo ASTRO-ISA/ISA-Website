@@ -54,7 +54,7 @@ const UserResearchPaper = () => {
       await fetchPapers(userInfo?.user?._id);
     } catch (error) {
       toast({
-        title: "Deletion unsuccessful",
+        title: "Deletion unsuccessful.",
         variant: "destructive",
         description: error.message,
       });
