@@ -11,12 +11,9 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import axios from "axios";
 import SuggestBlogTopic from "./SuggestBlogTopic";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-// import { error } from "console";
 import { Button } from "@/components/ui/button";
-// import { MoreHorizontal, Mail } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -72,7 +69,7 @@ const Blog = () => {
     const fetchBlogs = async () => {
       try {
         setLoadingUserBlogs(true);
-        const res = await axios.get("http://localhost:3000/api/v1/blogs");
+        const res = await api.get("/blogs");
         setUserBlogs(res.data);
       } catch (err) {
         console.error("Error fetching blogs", err);
@@ -88,9 +85,7 @@ const Blog = () => {
   const fetchFeatured = async () => {
     try {
       setLoadingFeaturedBlog(true);
-      const res = await axios.get(
-        "http://localhost:3000/api/v1/blogs/featured"
-      );
+      const res = await api.get("/blogs/featured");
       if (!res.data || Object.keys(res.data).length === 0) {
         setFeaturedId(null);
         const emptyFeatured = {
@@ -132,17 +127,13 @@ const Blog = () => {
       return;
     }
     try {
-      await axios.patch(
-        `http://localhost:3000/api/v1/blogs/featured/${blog._id}`,
-        {},
-        {withCredentials: true}
-      );
+      await api.patch(`/blogs/featured/${blog._id}`);
       toast({
         title: `Blog "${blog.title}" set as featured.`,
       });
       await fetchFeatured();
     } catch (err) {
-      console.error("Error setting featured!", err.message);
+      // console.error("Error setting featured!", err.message);
       toast({
         title: `Failed to set blog "${blog.title}" as featured!`,
       });
@@ -152,9 +143,7 @@ const Blog = () => {
   // remove featured
   const handleRemoveFeatured = async (blog) => {
     try {
-      await axios.patch(
-        `http://localhost:3000/api/v1/blogs/featured/remove/${blog._id}`
-      );
+      await api.patch(`/blogs/featured/remove/${blog._id}`);
       toast({
         title: `Blog removed "${blog.title}" from featured`,
       });
@@ -169,8 +158,8 @@ const Blog = () => {
 
   const handleAddToNewsletter = async (blog) => {
     try {
-      await axios.post(
-        "http://localhost:3000/api/v1/newsletter/draft/add",
+      await api.post(
+        "/newsletter/draft/add",
         {
           type: "blog",
           id: blog._id,
@@ -193,8 +182,8 @@ const Blog = () => {
     const fetchExternalBlogs = async () => {
       try {
         setLoadingExternalBlogs(true);
-        const res = await axios.get(
-          "http://localhost:3000/api/v1/external-blogs/external"
+        const res = await api.get(
+          "http://localhost:3000/api/v2/blogs/external"
         );
         setExternalBlogs(res.data);
       } catch (err) {
@@ -212,9 +201,7 @@ const Blog = () => {
     const fetchArticles = async () => {
       try {
         setLoadingArticles(true);
-        const res = await axios.get(
-          "http://localhost:3000/api/v1/news/articles"
-        );
+        const res = await api.get("/news/articles");
         setArticles(res.data);
       } catch (err) {
         console.error("Error fetching external blogs", err);
@@ -228,8 +215,8 @@ const Blog = () => {
 
   const mutateSaveBlog = useMutation({
     mutationFn: async (blogId) => {
-      await axios.patch(
-        `http://localhost:3000/api/v1/users/save-blog/${blogId}`,
+      await api.patch(
+        `/users/save-blog/${blogId}`,
         {},
         {
           withCredentials: true,
@@ -417,63 +404,63 @@ const Blog = () => {
                 </div>
 
                 {/* Author + Admin */}
-              <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
                   <h4 className="text-sm text-gray-400">
                     Author: {(featured.author?.name || "Unknown").toUpperCase()}
                   </h4>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="p-1 text-white bg-transparent hover:bg-transparent"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  >
-                    <MoreVertical className="w-5 h-5 text-gray-400" />
-                  </Button>
-                </DropdownMenuTrigger>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="p-1 text-white bg-transparent hover:bg-transparent"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        <MoreVertical className="w-5 h-5 text-gray-400" />
+                      </Button>
+                    </DropdownMenuTrigger>
 
-                <DropdownMenuContent 
-                // className=" text-white border border-gray-200 shadow-md z-[9999]"
-                side="top"
-                align="end" 
-                onClick={(e) => e.stopPropagation()}
-                >
-                  <DropdownMenuItem
-                    className="flex items-center gap-2 cursor-pointer"
-                    onClick={() =>
-                      navigator.share
-                        ? navigator.share({
-                            title: featured.title,
-                            text: "Check out this blog!",
-                            url: `${window.location.origin}/blogs/${featured._id}`,
-                          })
-                        : alert("Sharing not supported on this browser.")
-                    }
-                  >
-                    Share
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem
-                    onClick={() => handleSaveBlog(featured._id)}
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    Save
-                  </DropdownMenuItem>
-
-                  {isAdmin && (
-                    <DropdownMenuItem
-                      onClick={() => handleRemoveFeatured(featured)}
-                      className="text-red-600 hover:bg-red-100 flex items-center gap-2 cursor-pointer"
+                    <DropdownMenuContent
+                      // className=" text-white border border-gray-200 shadow-md z-[9999]"
+                      side="top"
+                      align="end"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      Remove Featured
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                      <DropdownMenuItem
+                        className="flex items-center gap-2 cursor-pointer"
+                        onClick={() =>
+                          navigator.share
+                            ? navigator.share({
+                                title: featured.title,
+                                text: "Check out this blog!",
+                                url: `${window.location.origin}/blogs/${featured._id}`,
+                              })
+                            : alert("Sharing not supported on this browser.")
+                        }
+                      >
+                        Share
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => handleSaveBlog(featured._id)}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        Save
+                      </DropdownMenuItem>
+
+                      {isAdmin && (
+                        <DropdownMenuItem
+                          onClick={() => handleRemoveFeatured(featured)}
+                          className="text-red-600 hover:bg-red-100 flex items-center gap-2 cursor-pointer"
+                        >
+                          Remove Featured
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             </Link>
@@ -502,125 +489,134 @@ const Blog = () => {
             {loadingUserBlogs ? (
               <p>Loading...</p>
             ) : userBlogs.length === 0 ? (
-              <p className="text-gray-500 italic">Nothing to see here right now!</p>
+              <p className="text-gray-500 italic">
+                Nothing to see here right now!
+              </p>
             ) : (
-              (showAllUserBlogs ? userBlogs : userBlogs.slice(0, 3)).map((blog) => (
-                <div key={blog._id} className="relative group">
-                  <Link
-                    to={`/blogs/${blog.slug}`}
-                    className="cosmic-card group flex flex-col cursor-pointer relative"
-                  >
-                    {/* Image */}
-                    <div className="h-48 w-full relative overflow-hidden">
-                      <img
-                        loading="lazy"
-                        src={blog.thumbnail}
-                        alt={blog.title}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    </div>
+              (showAllUserBlogs ? userBlogs : userBlogs.slice(0, 3)).map(
+                (blog) => (
+                  <div key={blog._id} className="relative group">
+                    <Link
+                      to={`/blogs/${blog.slug}`}
+                      className="cosmic-card group flex flex-col cursor-pointer relative"
+                    >
+                      {/* Image */}
+                      <div className="h-48 w-full relative overflow-hidden">
+                        <img
+                          loading="lazy"
+                          src={blog.thumbnail}
+                          alt={blog.title}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                      </div>
 
-                    {/* Card Content */}
-                    <div className="p-5 flex-1 flex flex-col justify-between">
-                      <div>
-                        <h3 className="text-xl font-semibold mb-3">{blog.title}</h3>
-                        <p className="text-gray-400 text-sm mb-4">{blog.description}</p>
+                      {/* Card Content */}
+                      <div className="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                          <h3 className="text-xl font-semibold mb-3">
+                            {blog.title}
+                          </h3>
+                          <p className="text-gray-400 text-sm mb-4">
+                            {blog.description}
+                          </p>
 
-                        <div className="space-y-2 mb-4">
-                          <div className="flex items-center text-sm text-gray-400">
-                            <Calendar className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{formatDate(blog.createdAt)}</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-400">
-                            <Clock className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{formatTime(blog.createdAt)}</span>
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-center text-sm text-gray-400">
+                              <Calendar className="h-4 w-4 mr-2 text-space-accent" />
+                              <span>{formatDate(blog.createdAt)}</span>
+                            </div>
+                            <div className="flex items-center text-sm text-gray-400">
+                              <Clock className="h-4 w-4 mr-2 text-space-accent" />
+                              <span>{formatTime(blog.createdAt)}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Footer with author and dropdown */}
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-sm text-gray-400">
-                          Author: {(blog.author?.name || "Unknown").toUpperCase()}
-                        </h4>
+                        {/* Footer with author and dropdown */}
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-sm text-gray-400">
+                            Author:{" "}
+                            {(blog.author?.name || "Unknown").toUpperCase()}
+                          </h4>
 
-                        {/* Dropdown Menu */}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              className="p-1 h-auto bg-transparent hover:bg-transparent"
+                          {/* Dropdown Menu */}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                className="p-1 h-auto bg-transparent hover:bg-transparent"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <MoreVertical className="w-5 h-5 text-gray-400" />
+                              </Button>
+                            </DropdownMenuTrigger>
+
+                            <DropdownMenuContent
+                              className="w-48"
                               onClick={(e) => e.stopPropagation()}
+                              align="end"
+                              // className="bg-white text-black border border-gray-200 shadow-md z-[9999]"
+                              side="top"
                             >
-                              <MoreVertical className="w-5 h-5 text-gray-400" />
-                            </Button>
-                          </DropdownMenuTrigger>
-
-                          <DropdownMenuContent
-                            className="w-48"
-                            onClick={(e) => e.stopPropagation()}
-                            align="end"
-                            // className="bg-white text-black border border-gray-200 shadow-md z-[9999]"
-                            side="top"
-                          >
-                            <DropdownMenuItem
-                              onSelect={(e) => {
-                                e.preventDefault()
-                                handleShare(blog)
-                              }}
-                            >
-                              Share
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem
-                              onSelect={(e) => {
-                                e.preventDefault()
-                                handleSaveBlog(blog._id)
-                              }}
-                            >
-                              Save
-                            </DropdownMenuItem>
-
-                            {isAdmin && (
                               <DropdownMenuItem
                                 onSelect={(e) => {
-                                  e.preventDefault()
-                                  handleAddToNewsletter(blog)
+                                  e.preventDefault();
+                                  handleShare(blog);
                                 }}
                               >
-                                Add to Newsletter
+                                Share
                               </DropdownMenuItem>
-                            )}
 
-                            {isAdmin && featuredId !== blog._id && (
                               <DropdownMenuItem
                                 onSelect={(e) => {
-                                  e.preventDefault()
-                                  handleSetFeatured(blog)
+                                  e.preventDefault();
+                                  handleSaveBlog(blog._id);
                                 }}
                               >
-                                Set as Featured
+                                Save
                               </DropdownMenuItem>
-                            )}
 
-                            {isAdmin && featuredId === blog._id && (
-                              <DropdownMenuItem
-                                className="text-red-600"
-                                onSelect={(e) => {
-                                  e.preventDefault()
-                                  handleRemoveFeatured(blog)
-                                }}
-                              >
-                                Remove Featured
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                              {isAdmin && (
+                                <DropdownMenuItem
+                                  onSelect={(e) => {
+                                    e.preventDefault();
+                                    handleAddToNewsletter(blog);
+                                  }}
+                                >
+                                  Add to Newsletter
+                                </DropdownMenuItem>
+                              )}
+
+                              {isAdmin && featuredId !== blog._id && (
+                                <DropdownMenuItem
+                                  onSelect={(e) => {
+                                    e.preventDefault();
+                                    handleSetFeatured(blog);
+                                  }}
+                                >
+                                  Set as Featured
+                                </DropdownMenuItem>
+                              )}
+
+                              {isAdmin && featuredId === blog._id && (
+                                <DropdownMenuItem
+                                  className="text-red-600"
+                                  onSelect={(e) => {
+                                    e.preventDefault();
+                                    handleRemoveFeatured(blog);
+                                  }}
+                                >
+                                  Remove Featured
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                </div>
-              ))
+                    </Link>
+                  </div>
+                )
+              )
             )}
           </div>
 
