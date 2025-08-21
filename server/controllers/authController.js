@@ -249,9 +249,9 @@ exports.getSavedBlogs = async (req, res) => {
 
 exports.saveBlog = async (req, res) => {
   try {
-    const { blogId } = req.params
+    const { blogid } = req.params
 
-    if (!blogId) {
+    if (!blogid) {
       return res.status(400).json({
         status: 'fail',
         message: 'No blogId provided'
@@ -260,7 +260,7 @@ exports.saveBlog = async (req, res) => {
 
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { $addToSet: { savedBlogs: blogId } },
+      { $addToSet: { savedBlogs: blogid } },
       { new: true }
     )
 
@@ -288,9 +288,9 @@ exports.saveBlog = async (req, res) => {
 
 exports.unSaveBlog = async (req, res) => {
   try {
-    const { blogId } = req.params
+    const { blogid } = req.params
 
-    if (!blogId) {
+    if (!blogid) {
       return res.status(400).json({
         status: 'fail',
         message: 'No blogId provided'
@@ -299,7 +299,7 @@ exports.unSaveBlog = async (req, res) => {
 
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { $pull: { savedBlogs: blogId } },
+      { $pull: { savedBlogs: blogid } },
       { new: true }
     )
 

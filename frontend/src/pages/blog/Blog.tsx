@@ -252,6 +252,38 @@ const Blog = () => {
     mutateSaveBlog.mutate(blogId);
   };
 
+  const mutateUnSaveBlog = useMutation({
+    mutationFn: async (blogId) => {
+      await api.delete(`/users/unsave-blog/${blogId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["saved-blogs"] });
+      toast({
+        title: "Blog unsaved",
+      });
+    },
+    onError: (error) => {
+      console.error(error.message);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const handleUnsaveBlog = (blogId) => {
+    if (!isLoggedIn) {
+      toast({
+        title: "Hold on!",
+        description: "You need to login to save blogs.",
+        variant: "destructive",
+      });
+      return;
+    }
+    mutateUnSaveBlog.mutate(blogId);
+  };
+
   // if (loading) {
   //   return (
   //     <div className="min-h-screen flex flex-col items-center justify-center h-64">
