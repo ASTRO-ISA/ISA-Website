@@ -5,6 +5,7 @@ const cors = require('cors')
 require('dotenv').config()
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const helmet = require('helmet')
 
 // routes
 const blogRouter = require('./routes/blogRoutes.js')
@@ -23,6 +24,7 @@ const userPicsPotdRouter = require('./routes/userPicsPotdRoutes.js')
 
 
 // middlewares
+app.use(helmet())
 app.use(
   cors({
     origin: 'http://localhost:8080',
@@ -43,7 +45,7 @@ app.use('/api/v1/blogs', blogRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/events', eventRouter)
 app.use('/api/v1/launches', extApiRouter)
-app.use('/api/v2/blogs', extApiRouter)
+app.use('/api/v1/external-blogs', extApiRouter)
 app.use('/api/v1/news', extApiRouter)
 app.use('/api/v1/picture', extApiRouter)
 app.use('/api/v1/gallery', galleryRouter)

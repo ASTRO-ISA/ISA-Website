@@ -45,7 +45,7 @@ const updatePasswordLimiter = rateLimit({
 })
 
 const updateUserLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
+  windowMs: 24 * 60 * 60 * 1000,
   limit: 3,
   message: 'To many update requests. Try again later.'
 })

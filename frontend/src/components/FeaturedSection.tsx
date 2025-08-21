@@ -50,7 +50,7 @@ const FeaturedSection = () => {
         {/* Featured Blog */}
         {featuredBlog && (
           <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer">
-            <Link to={`/blogs/${featuredBlog._id}`}>
+            <Link to={`/blogs/${featuredBlog.slug}`}>
               <div className="relative aspect-[16/9] sm:aspect-video">
                 <img
                   src={featuredBlog.thumbnail}
@@ -118,7 +118,7 @@ const FeaturedSection = () => {
         {/* Upcoming Event */}
         {upcomingEvent && (
           <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer">
-            <Link to={`/events/${upcomingEvent._id}`}>
+            <Link to={`/events/${upcomingEvent.slug}`}>
               <div className="relative aspect-[16/9] sm:aspect-video">
                 <img
                   src={upcomingEvent.thumbnail}

@@ -133,7 +133,9 @@ const Blog = () => {
     }
     try {
       await axios.patch(
-        `http://localhost:3000/api/v1/blogs/featured/${blog._id}`
+        `http://localhost:3000/api/v1/blogs/featured/${blog._id}`,
+        {},
+        {withCredentials: true}
       );
       toast({
         title: `Blog "${blog.title}" set as featured.`,
@@ -192,7 +194,7 @@ const Blog = () => {
       try {
         setLoadingExternalBlogs(true);
         const res = await axios.get(
-          "http://localhost:3000/api/v2/blogs/external"
+          "http://localhost:3000/api/v1/external-blogs/external"
         );
         setExternalBlogs(res.data);
       } catch (err) {
@@ -261,6 +263,38 @@ const Blog = () => {
       return;
     }
     mutateSaveBlog.mutate(blogId);
+  };
+
+  const mutateUnSaveBlog = useMutation({
+    mutationFn: async (blogId) => {
+      await api.delete(`/users/unsave-blog/${blogId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["saved-blogs"] });
+      toast({
+        title: "Blog unsaved",
+      });
+    },
+    onError: (error) => {
+      console.error(error.message);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const handleUnsaveBlog = (blogId) => {
+    if (!isLoggedIn) {
+      toast({
+        title: "Hold on!",
+        description: "You need to login to save blogs.",
+        variant: "destructive",
+      });
+      return;
+    }
+    mutateUnSaveBlog.mutate(blogId);
   };
 
   // if (loading) {
