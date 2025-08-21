@@ -31,16 +31,18 @@ const UserEvents = () => {
   // }, [userInfo]);
 
   const fetchRegisteredEvents = async (userId) => {
-    try{
+    try {
       const res = await api.get(`/events/my-events/${userId}`);
       setEvents(res.data);
       setLoading(false);
     } catch (err) {
+      setLoading(false);
       console.error("Error fetching events");
     }
-  }
+  };
 
   useEffect(() => {
+    setLoading(true);
     fetchRegisteredEvents(userId);
   }, [userId]);
 
