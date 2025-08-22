@@ -32,6 +32,7 @@ import About from "./pages/About";
 import ResetPassword from "./pages/authentication/ResetPassword";
 import ForgotPassword from "./pages/authentication/ForgotPassword";
 import PotdPicsUpload from "./pages/PotdPicsUpload";
+import UploadResearchPaper from "./pages/e-Learning/researchParper/UploadResearchPaper";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ const App = () => {
             <Route path="/community" element={<Community />} />
             <Route path="/blogs" element={<Blog />} />
             <Route path="/write" element={<WriteBlog />} />
+            <Route path="/upload-paper" element={<UploadResearchPaper />} />
             <Route path="/events" element={<Events />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/training" element={<Training />} />

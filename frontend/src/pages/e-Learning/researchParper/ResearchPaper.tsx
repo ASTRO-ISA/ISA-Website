@@ -22,7 +22,7 @@ const ResearchPaper = () => {
         <DisplayResearchPaper papers={papers} />
       </SpinnerOverlay>
 
-      <UploadResearchPaper />
+      {/* <UploadResearchPaper /> */}
     </div>
   );
 };

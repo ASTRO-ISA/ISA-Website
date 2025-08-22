@@ -16,6 +16,7 @@ const AdminCourses = () => {
   const [newCourse, setNewCourse] = useState({
     title: "",
     description: "",
+    source: "",
     applyLink: "",
     image: null,
   });
@@ -47,6 +48,7 @@ const AdminCourses = () => {
       const formData = new FormData();
       formData.append("title", newCourse.title);
       formData.append("description", newCourse.description);
+      formData.append("source", newCourse.source);
       formData.append("applyLink", newCourse.applyLink);
       formData.append("image", newCourse.image);
 
@@ -60,6 +62,7 @@ const AdminCourses = () => {
       setNewCourse({
         title: "",
         description: "",
+        source: "",
         applyLink: "",
         image: null,
       });
@@ -120,6 +123,14 @@ const AdminCourses = () => {
               placeholder="Course Description*"
               required
               rows={3}
+              className="w-full p-2 rounded bg-gray-800 text-white"
+            />
+            <input
+              name="source"
+              value={newCourse.source}
+              onChange={handleInputChange}
+              placeholder="Course Source*"
+              required
               className="w-full p-2 rounded bg-gray-800 text-white"
             />
             <input
