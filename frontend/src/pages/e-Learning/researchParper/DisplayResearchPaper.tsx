@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 type Paper = {
   _id: string;
@@ -16,12 +19,28 @@ type DisplayPaperProps = {
 
 const DisplayResearchPaper = ({ papers }: DisplayPaperProps) => {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { isLoggedIn } = useAuth();
 
   const toggleAbstract = (paperId: string) => {
     setExpanded((prev) => ({
       ...prev,
       [paperId]: !prev[paperId],
     }));
+  };
+
+  const handleWriteClick = () => {
+    if (isLoggedIn) {
+      // checking using auth context isLoggedIn state
+      navigate("/upload-paper");
+    } else {
+      toast({
+        title: "Hold on!",
+        description: "Log in first to share your awesome thoughts!",
+        variant: "destructive",
+      });
+    }
   };
 
   if (!papers || papers.length === 0)
@@ -33,6 +52,21 @@ const DisplayResearchPaper = ({ papers }: DisplayPaperProps) => {
 
   return (
     <ul className="space-y-4 mt-4">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold">Published Research Papers</h2>
+
+            {/* Create Blog Button */}
+            <button
+              onClick={handleWriteClick}
+              className="bg-space-accent text-white px-4 py-2 rounded hover:bg-space-accent/80 transition"
+            >
+              Publish&nbsp;
+              <i
+                className="fa-solid fa-plus fa-lg"
+                style={{ color: "white" }}
+              ></i>
+            </button>
+          </div>
       {papers.map((paper) => (
         <li
           key={paper._id}

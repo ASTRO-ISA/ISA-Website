@@ -91,7 +91,7 @@ const AllResearchPapers = ({ papers }: DisplayPaperProps) => {
               </a>
             )}
           </div>
-          <Button className="max-w-[10rem] bg-green-500 mt-5" onClick={() => changeStatus(paper._id, "approved")}>Accept</Button>
+          <Button className="max-w-[10rem] bg-green-500 mt-5" onClick={() => changeStatus(paper._id, "approved")}>Approve</Button>
           <Button className="max-w-[10rem] bg-red-500" onClick={() => changeStatus(paper._id, "rejected")}>Reject</Button>
         </li>
       ))}
