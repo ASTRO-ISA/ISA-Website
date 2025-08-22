@@ -28,7 +28,7 @@ export default function AdminDashboard() {
             <TabsList className="grid h-full w-full grid-cols-2 grid-rows-2 sm:grid-cols-3 sm:grid-rows-1">
               <TabsTrigger value="jobs">Jobs & Internships</TabsTrigger>
               <TabsTrigger value="courses">Courses</TabsTrigger>
-              <TabsTrigger value="researchPaper">Reserach papers</TabsTrigger>
+              <TabsTrigger value="researchPaper">Research papers</TabsTrigger>
             </TabsList>
           </div>
 

@@ -3,9 +3,9 @@ const cloudinary = require('cloudinary').v2
 
 const createCourse = async (req, res) => {
   try {
-    const { title, description, applyLink } = req.body
+    const { title, description, source, applyLink } = req.body
 
-    if (!req.file || !title || !description || !applyLink) {
+    if (!req.file || !title || !description || !source || !applyLink) {
       return res.status(400).json({ message: 'Required fields are missing.' })
     }
 
@@ -15,6 +15,7 @@ const createCourse = async (req, res) => {
     const newCourse = new Course({
       title,
       description,
+      source,
       applyLink,
       imageUrl,
       publicId
