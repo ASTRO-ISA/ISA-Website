@@ -2,10 +2,10 @@ const express = require('express')
 const path = require('path')
 const app = express()
 const cors = require('cors')
-require('dotenv').config()
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const helmet = require('helmet')
+require('dotenv').config({ path: __dirname + '/.env' })
 
 // routes
 const blogRouter = require('./routes/blogRoutes.js')
@@ -21,7 +21,6 @@ const featuredRouter = require('./routes/featuredRoutes.js')
 const webinarRouter = require('./routes/webinarRoutes.js')
 const newsletterRouter = require('./routes/newsletterRoutes.js')
 const userPicsPotdRouter = require('./routes/userPicsPotdRoutes.js')
-
 
 // middlewares
 app.use(helmet())

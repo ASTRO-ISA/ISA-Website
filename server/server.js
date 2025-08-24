@@ -1,15 +1,12 @@
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
-dotenv.config() // we need this to load our environment variables present in dotenv file
+dotenv.config({ path: __dirname + '/.env' })
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION, SHUTTING DOWN...')
   console.log(err.name, err.message)
   process.exit(1)
 })
-
-// Load environment variables
-dotenv.config({ path: './config.env' })
 
 const app = require('./app')
 
