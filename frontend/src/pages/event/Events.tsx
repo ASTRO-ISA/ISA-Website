@@ -1,4 +1,12 @@
-import { Calendar, MapPin, Clock, Users, MoreHorizontal, Share, Mail } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  Clock,
+  Users,
+  MoreHorizontal,
+  Share,
+  Mail,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api from "@/lib/api";
@@ -13,6 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/Spinner";
+import AstronomyCalendar from "./AstronomyCalendar";
+
 // import StarBackground from "@/components/StarBackground";
 
 const Events = () => {
@@ -26,8 +36,8 @@ const Events = () => {
   const { toast } = useToast();
 
   const fetchEvents = async () => {
-    try{
-      const res = await api.get('/events');
+    try {
+      const res = await api.get("/events");
       setEvents(res.data);
       setLoading(false);
     } catch (err) {
@@ -53,63 +63,63 @@ const Events = () => {
     }
   };
 
-// //registering a user for event
-const handleRegister = async (userId, eventId) => {
-  if (isLoggedIn) {
+  // //registering a user for event
+  const handleRegister = async (userId, eventId) => {
+    if (isLoggedIn) {
+      setLoadingEventId(eventId);
+      try {
+        const res = await api.patch(`/events/register/${eventId}/${userId}`);
+
+        // Update the event locally
+        // setEvents((prevEvents) =>
+        //   prevEvents.map((event) =>
+        //     event._id === eventId
+        //       ? {
+        //           ...event,
+        //           registeredUsers: [
+        //             ...event.registeredUsers,
+        //             // ensure we add in the same format
+        //             typeof userId === "object"
+        //               ? userId
+        //               : { _id: String(userId) },
+        //           ],
+        //         }
+        //       : event
+        //   )
+        // );
+        fetchEvents();
+        setLoading(false);
+        setLoadingEventId(null);
+      } catch (err) {
+        console.error("Error registering user for event.", err);
+        setLoading(false);
+        setLoadingEventId(null);
+      }
+    } else {
+      toast({
+        title: "Hold on!",
+        description: "Please login first to register for the event.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUnregister = async (userId, eventId) => {
     setLoadingEventId(eventId);
     try {
-      const res = await api.patch(`/events/register/${eventId}/${userId}`);
-
-      // Update the event locally
-      // setEvents((prevEvents) =>
-      //   prevEvents.map((event) =>
-      //     event._id === eventId
-      //       ? {
-      //           ...event,
-      //           registeredUsers: [
-      //             ...event.registeredUsers,
-      //             // ensure we add in the same format
-      //             typeof userId === "object"
-      //               ? userId
-      //               : { _id: String(userId) },
-      //           ],
-      //         }
-      //       : event
-      //   )
-      // );
+      await api.patch(`/events/unregister/${eventId}/${userId}`);
       fetchEvents();
-      setLoading(false);
       setLoadingEventId(null);
     } catch (err) {
-      console.error("Error registering user for event.", err);
-      setLoading(false);
+      toast({
+        title: "Can't unregister.",
+        description:
+          "There seems to be a problem unregistering, please try again after some time.",
+        variant: "destructive",
+      });
       setLoadingEventId(null);
-    };
-  } else {
-    toast({
-      title: "Hold on!",
-      description: "Please login first to register for the event.",
-      variant: "destructive",
-    });
+    }
   };
-};
-
-const handleUnregister = async (userId, eventId) => {
-  setLoadingEventId(eventId);
-  try {
-    await api.patch(`/events/unregister/${eventId}/${userId}`);
-    fetchEvents();
-    setLoadingEventId(null);
-  } catch (err) {
-    toast({
-      title: "Can't unregister.",
-      description: "There seems to be a problem unregistering, please try again after some time.",
-      variant: "destructive"
-    });
-    setLoadingEventId(null);
-  }
-};
-
 
   const handleAddToNewsletter = async (event) => {
     try {
@@ -320,14 +330,18 @@ const handleUnregister = async (userId, eventId) => {
 
                   <button
                     onClick={() =>
-                      event.registeredUsers.some((e) => e._id === userInfo?.user?._id)
+                      event.registeredUsers.some(
+                        (e) => e._id === userInfo?.user?._id
+                      )
                         ? handleUnregister(userInfo?.user._id, event._id)
                         : handleRegister(userInfo?.user?._id, event._id)
                     }
                     className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold
                       ${
                         isLoggedIn &&
-                        event.registeredUsers.some((e) => e._id === userInfo?.user._id)
+                        event.registeredUsers.some(
+                          (e) => e._id === userInfo?.user._id
+                        )
                           ? "bg-space-purple/30 hover:bg-space-purple/50"
                           : "bg-space-accent hover:bg-space-accent/80"
                       }`}
@@ -335,7 +349,9 @@ const handleUnregister = async (userId, eventId) => {
                     {loadingEventId === event._id ? (
                       <Spinner />
                     ) : isLoggedIn &&
-                      event.registeredUsers.some((e) => e._id === userInfo?.user._id) ? (
+                      event.registeredUsers.some(
+                        (e) => e._id === userInfo?.user._id
+                      ) ? (
                       "Unregister"
                     ) : (
                       "Register for this Event"
@@ -376,51 +392,52 @@ const handleUnregister = async (userId, eventId) => {
                   launch // for time being using just events
                 ) => (
                   // <Link to={launch.url} key={launch.url}>
-                    <div className="cosmic-card overflow-hidden group flex flex-col min-h-[28rem]" key={launch.name}>
-                      {/* Image */}
-                      <div className="h-48 overflow-hidden">
-                        <img
-                          loading="lazy"
-                          src={launch.image?.image_url}
-                          alt={launch.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                      </div>
+                  <div
+                    className="cosmic-card overflow-hidden group flex flex-col min-h-[28rem]"
+                    key={launch.name}
+                  >
+                    {/* Image */}
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        loading="lazy"
+                        src={launch.image?.image_url}
+                        alt={launch.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
 
-                      {/* Card Content */}
-                      <div className="p-5 flex flex-col flex-1 justify-between">
-                        <div>
-                          <h3 className="text-xl font-semibold mb-3 min-h-[3rem]">
-                            {launch.name}
-                          </h3>
+                    {/* Card Content */}
+                    <div className="p-5 flex flex-col flex-1 justify-between">
+                      <div>
+                        <h3 className="text-xl font-semibold mb-3 min-h-[3rem]">
+                          {launch.name}
+                        </h3>
 
-                          <div className="space-y-2 mb-4 text-sm text-gray-400">
-                            <div className="flex items-center">
-                              <Calendar className="h-4 w-4 mr-2 text-space-accent" />
-                              <span>{formatDate(launch.window_start)}</span>
-                            </div>
-                            <div className="flex items-center">
-                              <Clock className="h-4 w-4 mr-2 text-space-accent" />
-                              <span>{formatTime(launch.window_start)}</span>
-                            </div>
-                            <div className="flex items-center">
-                              <MapPin className="h-4 w-4 mr-2 text-space-accent" />
-                              <span>
-                                {launch.launch_service_provider?.name}
-                              </span>
-                            </div>
+                        <div className="space-y-2 mb-4 text-sm text-gray-400">
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-2 text-space-accent" />
+                            <span>{formatDate(launch.window_start)}</span>
                           </div>
-
-                          <p className="text-gray-400 text-sm line-clamp-3">
-                            {launch.mission?.description
-                              ?.split(" ")
-                              .slice(0, 30)
-                              .join(" ")}
-                            ...
-                          </p>
+                          <div className="flex items-center">
+                            <Clock className="h-4 w-4 mr-2 text-space-accent" />
+                            <span>{formatTime(launch.window_start)}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <MapPin className="h-4 w-4 mr-2 text-space-accent" />
+                            <span>{launch.launch_service_provider?.name}</span>
+                          </div>
                         </div>
+
+                        <p className="text-gray-400 text-sm line-clamp-3">
+                          {launch.mission?.description
+                            ?.split(" ")
+                            .slice(0, 30)
+                            .join(" ")}
+                          ...
+                        </p>
                       </div>
                     </div>
+                  </div>
                   // </Link>
                 )
               )
@@ -442,31 +459,10 @@ const handleUnregister = async (userId, eventId) => {
         </section>
 
         {/* Astronomical Calendar */}
-        {/* <section className="mb-20">
-          <h2 className="text-2xl font-bold mb-8">Launch Calendar</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {showAll? launches : launches.slice(0, 6).map((launch) => (
-              <Link
-              to={`/events/${launch.id}`}
-              key={launch.id}
-              >
-              <div className="cosmic-card p-5 hover:transform hover:scale-105 transition-transform">
-                <div className="flex items-center mb-3">
-                  <div className="w-12 h-12 rounded-full bg-space-accent/20 text-space-accent flex items-center justify-center font-bold">
-                    {formatDate(launch.window_start).split(' ')[0]}
-                  </div>
-                  <div className="ml-4">
-                    <div className="text-sm text-gray-400">{formatTime(launch.window_start)}</div>
-                    <h3 className="font-semibold">{launch.name}</h3>
-                  </div>
-                </div>
-                <p className="text-gray-400 text-sm">{launch.mission?.description?.split(" ").slice(0, 20).join(" ")}</p>
-              </div>
-              </Link>
-            ))}
-          </div>
-        </section> */}
+        <section className="mb-20">
+          <h2 className="text-2xl font-bold mb-8">Astronomical Calendar</h2>
+          <AstronomyCalendar />
+        </section>
 
         {/* Host Your Own Event */}
         <section className="cosmic-card p-8">

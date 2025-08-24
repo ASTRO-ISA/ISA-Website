@@ -32,6 +32,10 @@ exports.newsArticles = (req, res) => {
   res.json(data)
 }
 
-exports.astroEvents = (req, res) => {
-  
+exports.astronomyCalender = (req, res) => {
+  const data = cacheService.getAstronomyCalender()
+  if (!data) {
+    return res.status(503).json({ message: 'Data not ready, please try later' })
+  }
+  res.json(data)
 }
