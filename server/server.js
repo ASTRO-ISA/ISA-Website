@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
-const dotenv = require('dotenv')
-dotenv.config({ path: __dirname + '/.env' })
+require('dotenv').config()
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION, SHUTTING DOWN...')
@@ -8,6 +7,7 @@ process.on('uncaughtException', (err) => {
   process.exit(1)
 })
 
+// main app
 const app = require('./app')
 
 // connect to mongoDB
@@ -21,17 +21,18 @@ mongoose
     process.exit(1)
   })
 
-// to auto delete events
+// node-cron jobs (to auto delete)
 require('./utils/cron/eventCleanup')
 require('./utils/cron/userPotdCleanup')
+require('./utils/cron/rejectedCleanup')
 
-// Start the server
-const port = process.env.port || 3000
+// start the server
+const port = process.env.PORT || 3000
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`)
 })
 
-// Handle asynchronous errors
+// handle asynchronous errors
 process.on('unhandledRejection', (err) => {
   console.log('UNHANDLED REJECTION, SHUTTING DOWN')
   console.log(err.name, err.message)

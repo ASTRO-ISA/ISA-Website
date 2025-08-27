@@ -51,7 +51,7 @@ app.use('/api/v1/gallery', galleryRouter)
 app.use('/api/v1/blogs/featured', featuredRouter)
 app.use('/api/v1/webinars', webinarRouter)
 app.use('/api/v1/newsletter', newsletterRouter)
-app.use('/api/v1/userPotdPics', userPicsPotdRouter)
+app.use('/api/v1/user-potd-pics', userPicsPotdRouter)
 
 app.get('/', (req, res) => {
   res.status(200).json({

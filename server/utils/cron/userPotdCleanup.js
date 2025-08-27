@@ -1,5 +1,5 @@
-const UserPicForPotdModel = require('../../models/userPicForPotdModel')
 const cron = require('node-cron')
+const UserPicForPotdModel = require('../../models/userPicForPotdModel')
 const cloudinary = require('cloudinary').v2
 
 cron.schedule("10 0 */2 * *", async () => {

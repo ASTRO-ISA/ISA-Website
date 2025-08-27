@@ -34,38 +34,91 @@ const UserPicUpload = () => {
 
   const handleUserPicUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (!userPicFile || !userPicCaption) {
       toast({
+        title: "Field required!",
         description: "Please fill all required fields and select an image.",
         variant: "destructive"
       });
       return;
     }
-
+  
+    // inline validator
+    const validateSocialLink = (url: string) => {
+      if (!url.trim()) return { valid: true }; // optional, empty is fine
+  
+      try {
+        const parsed = new URL(url);
+  
+        if (!["http:", "https:"].includes(parsed.protocol)) {
+          return { valid: false, reason: "Only http/https links are allowed." };
+        }
+  
+        const allowedDomains = [
+          "facebook.com",
+          "instagram.com",
+          "x.com",
+          "linkedin.com",
+          "github.com"
+        ];
+        const hostname = parsed.hostname.replace(/^www\./, "").toLowerCase();
+  
+        if (!allowedDomains.some(d => hostname.endsWith(d))) {
+          return { valid: false, reason: "Only social media links are allowed. Please check the allowed domains." };
+        }
+  
+        if (url.length > 200) {
+          return { valid: false, reason: "Link too long." };
+        }
+  
+        return { valid: true, sanitized: parsed.toString() };
+      } catch {
+        return { valid: false, reason: "Invalid URL format provided. Only http/https links are allowed." };
+      }
+    };
+  
+    // run validation only if link is provided
+    let result: { valid: boolean; reason?: string; sanitized?: string } = { valid: true }
+    if (userPicSocial.trim()) {
+      result = validateSocialLink(userPicSocial)
+      if (!result.valid) {
+        toast({
+          description: result.reason,
+          variant: "destructive"
+        })
+        return
+      }
+    }
+  
     setUserPicLoading(true);
-
+  
     const formData = new FormData();
     formData.append("image", userPicFile);
     formData.append("caption", userPicCaption);
-    formData.append("social", userPicSocial);
-
+    if (userPicSocial.trim()) formData.append("social", result.sanitized || userPicSocial);
+  
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/v1/userPotdPics/upload",
+        "http://localhost:3000/api/v1/user-potd-pics/upload",
         formData,
         { withCredentials: true }
       );
-
+  
       if (response.status === 500) {
+        toast({ 
+          title: "Error!",
+          description: "Something went wrong submitting the image. Please try again later."
+        });
         throw new Error("Upload failed");
       }
-
+  
       toast({ 
         title: "We got it!",
         description: "Your image has been submitted and is now pending admin review."
-    });
-      // Reset state
+      });
+  
+      // reset state
       setUserPicFile(null);
       setUserPicCaption("");
       setUserPicSocial("");
@@ -73,12 +126,12 @@ const UserPicUpload = () => {
       if (userPicFileInputRef.current) {
         userPicFileInputRef.current.value = "";
       }
-    } catch (err) {
+    } catch (err: any) {
       toast({ 
         title: "Can't upload image.",
-        description: err.response?.data,
+        description: err.response?.data || "Unexpected error occurred",
         variant: "destructive"
-       });
+      });
     } finally {
       setUserPicLoading(false);
     }
@@ -93,7 +146,7 @@ const UserPicUpload = () => {
             <li>Upload only your own original photos.</li>
             <li>Ensure images are <span className="font-medium text-white">clear</span> and of good resolution.</li>
             <li>Add a <span className="font-medium text-white">relevant and concise caption</span>.</li>
-            <li>Provide a valid social media link (e.g., Instagram, LinkedIn, Facebook, or X (formerly Twitter) for attribution. Avoid fake or broken links. *This is not mendatory.</li>
+            <li>Provide a valid social media link (e.g., Instagram, LinkedIn, Facebook, or X (formerly Twitter), GitHub for attribution. Avoid fake or broken links (it should be only http/https).</li>
             <li>Avoid any sensitive, offensive, inappropriate, restricted or copyrighted content. Doing so will lead to a<span className="text-red-500 font-semibold"> permanent ban</span> from the website.</li>
             <li>Prefer <span className="font-medium text-white">landscape orientation</span> (16:9) if possible.</li>
             <li>Max file size: <span className="font-medium text-white">8MB</span>; Formats allowed are: <code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>.</li>
