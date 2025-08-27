@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
+const { default: slugify } = require('slugify')
 
 const blogSchema = new mongoose.Schema({
     thumbnail: {
@@ -54,6 +55,7 @@ const blogSchema = new mongoose.Schema({
     }
 })
 
+// if somehow we missed setting slug
 blogSchema.pre('validate', function(next){
     if(this.title && !this.slug){
         this.slug = slugify(this.title, {
@@ -63,6 +65,15 @@ blogSchema.pre('validate', function(next){
     }
     next()
 })
+
+// to timestamp the status changed
+blogSchema.pre('save', function (next) {
+    if (this.isModified('status')) {
+      this.statusChangedAt = Date.now
+    }
+    next()
+})
+
 const Blog = mongoose.model('Blog', blogSchema)
 
 module.exports = Blog
