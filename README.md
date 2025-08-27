@@ -1,4 +1,4 @@
-To see the website locally in your system,  
+To see the website locally in your system (frontend only)
 - Make sure you have Node.js installed (Just Visit Node.js page and Install it)  
 - Once installed, create a empty folder in your local system and open it in the VS Code  
 - Open a new terminal in your VS Code
