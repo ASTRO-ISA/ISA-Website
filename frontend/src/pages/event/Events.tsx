@@ -456,6 +456,16 @@ const Events = () => {
               </button>
             </div>
           )}
+          {launches.length > 6 && showAll && (
+            <div className="text-center mt-10">
+              <button
+                onClick={() => setShowAll(false)}
+                className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
+              >
+                View Less
+              </button>
+            </div>
+          )}
         </section>
 
         {/* Astronomical Calendar */}

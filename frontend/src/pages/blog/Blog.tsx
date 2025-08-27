@@ -49,6 +49,7 @@ const Blog = () => {
   const [loadingUserBlogs, setLoadingUserBlogs] = useState(false);
   const [userBlogs, setUserBlogs] = useState([]);
   const [showAllUserBlogs, setShowAllUserBlogs] = useState(false);
+  const [savedBlogs, setSavedBlogs] = useState<string[]>([]);
 
   // external blogs
   const [loadingExternalBlogs, setLoadingExternalBlogs] = useState(false);
@@ -72,7 +73,7 @@ const Blog = () => {
         const res = await api.get("/blogs");
         setUserBlogs(res.data);
       } catch (err) {
-        console.error("Error fetching blogs", err);
+        console.error("Error fetching blogs:");
       } finally {
         setLoadingUserBlogs(false);
       }
@@ -108,7 +109,7 @@ const Blog = () => {
         setLoadingFeaturedBlog(false);
       }
     } catch (err) {
-      console.error("Error fetching blogs", err);
+      console.error("Error fetching blogs:");
       setFeaturedId(null);
     }
   };
@@ -183,11 +184,11 @@ const Blog = () => {
       try {
         setLoadingExternalBlogs(true);
         const res = await api.get(
-          "http://localhost:3000/api/v2/blogs/external"
+          "/external-blogs/external"
         );
         setExternalBlogs(res.data);
       } catch (err) {
-        console.error("Error fetching external blogs", err);
+        console.error("Error fetching external blogs:");
       } finally {
         setLoadingExternalBlogs(false);
       }
@@ -204,7 +205,7 @@ const Blog = () => {
         const res = await api.get("/news/articles");
         setArticles(res.data);
       } catch (err) {
-        console.error("Error fetching external blogs", err);
+        console.error("Error fetching external blogs:");
       } finally {
         setLoadingArticles(false);
       }
@@ -250,16 +251,18 @@ const Blog = () => {
       return;
     }
     mutateSaveBlog.mutate(blogId);
+    setSavedBlogs((prev) => [...prev, blogId]);
   };
 
-  const mutateUnSaveBlog = useMutation({
+  const mutateUnsaveBlog = useMutation({
     mutationFn: async (blogId) => {
       await api.delete(`/users/unsave-blog/${blogId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["saved-blogs"] });
       toast({
-        title: "Blog unsaved",
+        title: "Blog unsaved!",
+        description: "Blog is removed from saved."
       });
     },
     onError: (error) => {
@@ -276,23 +279,14 @@ const Blog = () => {
     if (!isLoggedIn) {
       toast({
         title: "Hold on!",
-        description: "You need to login to save blogs.",
+        description: "You need to login to unsave blogs.",
         variant: "destructive",
       });
       return;
     }
-    mutateUnSaveBlog.mutate(blogId);
+    mutateUnsaveBlog.mutate(blogId);
+    setSavedBlogs((prev) => prev.filter((id) => id !== blogId)); // remove blogId
   };
-
-  // if (loading) {
-  //   return (
-  //     <div className="min-h-screen flex flex-col items-center justify-center h-64">
-  //       <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-100 mb-4"></div>
-  //       <p className="text-gray-100">Loading blogs for you...</p>
-  //     </div>
-  //   );
-  // }
-  // if (!userBlogs) return <p>Nothing to see here right now.</p>;
 
   // to show the date in readable format
   const formatDate = (dateStr) =>
@@ -436,7 +430,7 @@ const Blog = () => {
                             ? navigator.share({
                                 title: featured.title,
                                 text: "Check out this blog!",
-                                url: `${window.location.origin}/blogs/${featured._id}`,
+                                url: `${window.location.origin}/blogs/${featured.slug}`,
                               })
                             : alert("Sharing not supported on this browser.")
                         }
@@ -444,12 +438,21 @@ const Blog = () => {
                         Share
                       </DropdownMenuItem>
 
+                      {savedBlogs.includes(featured._id) ? (
+                      <DropdownMenuItem
+                        onClick={() => handleUnsaveBlog(featured._id)}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        Unsave
+                      </DropdownMenuItem>
+                    ) : (
                       <DropdownMenuItem
                         onClick={() => handleSaveBlog(featured._id)}
                         className="flex items-center gap-2 cursor-pointer"
                       >
                         Save
                       </DropdownMenuItem>
+                      )}
 
                       {isAdmin && (
                         <DropdownMenuItem
@@ -543,9 +546,12 @@ const Blog = () => {
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
-                                variant="ghost"
-                                className="p-1 h-auto bg-transparent hover:bg-transparent"
-                                onClick={(e) => e.stopPropagation()}
+                              variant="ghost"
+                              className="p-1 text-white bg-transparent hover:bg-transparent"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }}
                               >
                                 <MoreVertical className="w-5 h-5 text-gray-400" />
                               </Button>
@@ -558,28 +564,38 @@ const Blog = () => {
                               // className="bg-white text-black border border-gray-200 shadow-md z-[9999]"
                               side="top"
                             >
-                              <DropdownMenuItem
-                                onSelect={(e) => {
-                                  e.preventDefault();
-                                  handleShare(blog);
-                                }}
-                              >
-                                Share
-                              </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="flex items-center gap-2 cursor-pointer"
+                              onClick={() =>
+                                navigator.share
+                                  ? navigator.share({
+                                      title: blog.title,
+                                      text: "Check out this blog!",
+                                      url: `${window.location.origin}/blogs/${blog.slug}`,
+                                    })
+                                  : alert("Sharing not supported on this browser.")
+                              }
+                            >
+                              Share
+                            </DropdownMenuItem>
 
-                              <DropdownMenuItem
-                                onSelect={(e) => {
-                                  e.preventDefault();
-                                  handleSaveBlog(blog._id);
-                                }}
-                              >
-                                Save
-                              </DropdownMenuItem>
+                            {savedBlogs.includes(blog._id) ? (
+                            <DropdownMenuItem
+                              onClick={() => handleUnsaveBlog(blog._id)}
+                            >
+                              Unsave
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem
+                              onClick={() => handleSaveBlog(blog._id)}
+                            >
+                              Save
+                            </DropdownMenuItem>
+                            )}
 
                               {isAdmin && (
                                 <DropdownMenuItem
                                   onSelect={(e) => {
-                                    e.preventDefault();
                                     handleAddToNewsletter(blog);
                                   }}
                                 >
@@ -590,7 +606,6 @@ const Blog = () => {
                               {isAdmin && featuredId !== blog._id && (
                                 <DropdownMenuItem
                                   onSelect={(e) => {
-                                    e.preventDefault();
                                     handleSetFeatured(blog);
                                   }}
                                 >
@@ -602,7 +617,6 @@ const Blog = () => {
                                 <DropdownMenuItem
                                   className="text-red-600"
                                   onSelect={(e) => {
-                                    e.preventDefault();
                                     handleRemoveFeatured(blog);
                                   }}
                                 >
@@ -629,6 +643,16 @@ const Blog = () => {
                 className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
               >
                 View All Blogs
+              </button>
+            </div>
+          )}
+          {userBlogs.length > 3 && showAllUserBlogs && (
+            <div className="text-center mt-10">
+              <button
+                onClick={() => setShowAllUserBlogs(false)}
+                className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
+              >
+                View Less
               </button>
             </div>
           )}
@@ -710,6 +734,16 @@ const Blog = () => {
               </button>
             </div>
           )}
+          {externalBlogs.length > 3 && showAllExternalBlogs && (
+            <div className="text-center mt-10">
+              <button
+                onClick={() => setShowAllExternalBlogs(false)}
+                className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
+              >
+                View Less
+              </button>
+            </div>
+          )}
         </section>
 
         {/* News */}
@@ -775,13 +809,23 @@ const Blog = () => {
             )}
           </div>
 
-          {externalBlogs.length > 3 && !showAllExternalBlogs && (
+          {articles.length > 3 && !showAllArticles && (
             <div className="text-center mt-10">
               <button
                 onClick={() => setShowAllArticles(true)}
                 className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
               >
                 View All Articles
+              </button>
+            </div>
+          )}
+          {articles.length > 3 && showAllArticles && (
+            <div className="text-center mt-10">
+              <button
+                onClick={() => setShowAllArticles(false)}
+                className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
+              >
+                View Less
               </button>
             </div>
           )}
