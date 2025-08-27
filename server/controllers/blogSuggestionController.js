@@ -1,4 +1,37 @@
-const BlogSuggestion = require('../models/BlogSuggestion');
+const BlogSuggestion = require('../models/blogSuggestion')
+
+// to validate the social link provided
+function validateSocialMediaUrl(url) {
+  try {
+    const parsed = new URL(url);
+
+    // only allow http/https
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      return { valid: false, reason: "Only http/https links are allowed." };
+    }
+
+    // extract hostname
+    const hostname = parsed.hostname.toLowerCase();
+
+    // allow only specific domains
+    const allowedDomains = [
+      "facebook.com",
+      "instagram.com",
+      "twitter.com",
+      "x.com",
+      "linkedin.com",
+      'github.com'
+    ];
+
+    if (!allowedDomains.some(d => hostname.endsWith(d))) {
+      return { valid: false, reason: "Only social media links are allowed." };
+    }
+
+    return { valid: true };
+  } catch (err) {
+    return { valid: false, reason: "Invalid URL format." };
+  }
+}
 
 exports.getAllBlogSuggestions = async (req, res) => {
   try {
@@ -38,18 +71,26 @@ exports.approvedBlogSuggestions = async (req, res) => {
 
 exports.postSuggestedBlog = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, link } = req.body
     if (!title || !description) {
-      return res.status(400).json({ status: 'fail', message: 'Title or description not provided' });
+      return res.status(400).json({ status: 'fail', message: 'Title or description not provided' })
     }
-    req.body.submittedBy = req.user.id;
 
-    const response = await BlogSuggestion.create(req.body);
-    res.status(201).json({ status: 'success', data: response });
+    if (link) {
+      const validation = validateSocialMediaUrl(link)
+      if (!validation.valid) {
+        return res.status(400).json({ status: 'fail', message: validation.reason })
+      }
+    }
+
+    req.body.submittedBy = req.user.id
+    const response = await BlogSuggestion.create(req.body)
+
+    res.status(201).json({ status: 'success', data: response })
   } catch (error) {
-    res.status(500).json({ status: 'fail', message: error.message });
+    res.status(500).json({ status: 'fail', message: error.message })
   }
-};
+}
 
 exports.deleteSuggestedBlog = async (req, res) => {
   try {
