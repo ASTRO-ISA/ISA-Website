@@ -70,7 +70,7 @@ exports.createBlog = async (req, res) => {
     await sendEmail(req.user.email, `Your blog "${newBlog.title}" has been submitted`, html);
     
     res.status(201).json({ message: 'Blog saved successfully.', blog: newBlog })
-    // console.log(newBlog)
+
   } catch (err) {
     res
       .status(500)
