@@ -1,12 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import AstronomyCalendarCard from "./AstronomyCalendarCard";
 import api from "@/lib/api";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 const fetchAstronomyEvents = async () => {
   const { data } = await api.get("external-blogs/astro-calender");
-  return data; // backend should return an array of events
+  return data;
 };
+
+function parseEventDate(dateStr: string) {
+  const year = new Date().getFullYear();
+  const parts = dateStr.split(",").map((p) => p.trim());
+  const parsedDates = parts.map((part) => new Date(`${part} ${year}`));
+  return parsedDates.sort((a, b) => a.getTime() - b.getTime())[0];
+}
+
+function getNearestEventIndex(events: { date: string }[]) {
+  const today = new Date();
+  const dates = events.map((e) => parseEventDate(e.date));
+
+  let nearestIndex = 0;
+  let minDiff = Infinity;
+
+  dates.forEach((d, i) => {
+    const diff = d.getTime() - today.getTime();
+    if (diff >= 0 && diff < minDiff) {
+      minDiff = diff;
+      nearestIndex = i;
+    }
+  });
+
+  return nearestIndex;
+}
 
 const AstronomyCalendar = () => {
   const { data, isLoading, isError } = useQuery({
@@ -14,7 +47,16 @@ const AstronomyCalendar = () => {
     queryFn: fetchAstronomyEvents,
   });
 
-  const [visibleCount, setVisibleCount] = useState(3);
+  const [api, setApi] = useState<CarouselApi>();
+
+  const events = data || [];
+  const nearestIndex = getNearestEventIndex(events);
+
+  useEffect(() => {
+    if (api && events.length > 0) {
+      api.scrollTo(nearestIndex);
+    }
+  }, [api, nearestIndex, events.length]);
 
   if (isLoading) {
     return <p className="text-white p-6">Loading events...</p>;
@@ -24,45 +66,27 @@ const AstronomyCalendar = () => {
     return <p className="text-red-500 p-6">Failed to load events.</p>;
   }
 
-  const events = data || [];
-
-  const handleViewMore = () => {
-    setVisibleCount((prev) => Math.min(prev + 6, events.length));
-  };
-
-  const handleReset = () => {
-    setVisibleCount(3);
-  };
-
-  const visibleEvents = events.slice(0, visibleCount);
-
   return (
-    <section className="px-6 py-10 bg-gray-950 min-h-screen">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {visibleEvents.map((event, idx) => (
-          <AstronomyCalendarCard key={idx} {...event} />
-        ))}
-      </div>
+    <section className="px-6 py-10 bg-gray-950 ">
+      <div className="max-w-5xl mx-auto">
+        <Carousel setApi={setApi} opts={{ align: "center" }}>
+          <CarouselContent>
+            {events.map((event, idx) => (
+              <CarouselItem
+                key={idx}
+                className="basis-4/5 md:basis-1/2 lg:basis-1/3"
+              >
+                <AstronomyCalendarCard
+                  {...event}
+                  isNearest={idx === nearestIndex}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
 
-      {/* Buttons */}
-      <div className="flex justify-center mt-8">
-        {visibleCount < events.length ? (
-          <div className="flex gap-6 text-center mt-10">
-            <button
-              onClick={handleViewMore}
-              className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
-            >
-              View All Events
-            </button>
-
-            <button
-              onClick={handleReset}
-              className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
-            >
-              Close All
-            </button>
-          </div>
-        ) : null}
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </section>
   );

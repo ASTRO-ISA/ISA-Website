@@ -459,8 +459,8 @@ const Events = () => {
         </section>
 
         {/* Astronomical Calendar */}
-        <section className="mb-20">
-          <h2 className="text-2xl font-bold mb-8">Astronomical Calendar</h2>
+        <section className=" mb-20">
+          <h2 className="  text-2xl font-bold mb-8">Astronomical Calendar</h2>
           <AstronomyCalendar />
         </section>
 
