@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Spinner from "@/components/ui/Spinner";
 
 const Webinars = () => {
   // all webinars
@@ -45,7 +46,7 @@ const Webinars = () => {
   const [featuredId, setFeaturedId] = useState(null);
 
   // registering
-  const [registering, setRegistering] = useState(false);
+  const [loadingRegWebId, setLoadingRegWebId] = useState(null);
 
   const { isLoggedIn, isAdmin, userInfo } = useAuth();
   const { toast } = useToast();
@@ -77,7 +78,7 @@ const Webinars = () => {
       try {
         const res = await api.get("/webinars/featured");
         if (res.status === 404) {
-          console.log("No featured blog at the moment.");
+          console.log("No featured webinar at the moment.");
         } else {
           setFeatured({
             _id: res.data._id,
@@ -91,7 +92,7 @@ const Webinars = () => {
           setFeaturedId(res.data._id);
         }
       } catch (err) {
-        console.error("Error fetching webinar", err);
+        console.error("Error fetching featured webinar.");
         setFeaturedId(null);
       }
     };
@@ -158,59 +159,100 @@ const Webinars = () => {
     }
   };
 
-  // registering a user for event
+  // registering a user for webinar
   const handleRegister = async (userId, webinarId) => {
-    if (!userId) {
+    if(isLoggedIn){
+      setLoadingRegWebId(webinarId);
+      try{
+        const res = await api.patch(`/webinars/register/${webinarId}/${userId}`);
+        fetchWebinars();
+        setLoadingRegWebId(null);
+      } catch (err) {
+        console.error("Error registering user for webinar.");
+        setLoadingRegWebId(null);
+      }
+    } else {
       toast({
         title: "Hold on!",
-        description: "Please log in to register for the webinar.",
+        description: "Please login first to register for the webinar.",
         variant: "destructive",
       });
-      return;
     }
+  };
 
-    setRegistering(true);
+  // unregistering a user for webinar
+  // const handleUnregister = async (userId, webinarId) => {
+  //   if (!userId) {
+  //     toast({
+  //       title: "Hold on!",
+  //       description: "Please log in to unregister from the webinar.",
+  //       variant: "destructive"
+  //     });
+  //     return;
+  //   }
 
+  //   setLoadingRegWebId(webinarId);
+
+  //   try {
+  //     await api.patch(`/webinars/unregister/${webinarId}/${userId}`);
+
+  //     setWebinars((prevWebinars) =>
+  //       prevWebinars.map((webinar) =>
+  //         webinar._id === webinarId
+  //           ? {
+  //               ...webinar,
+  //               attendees: webinar.attendees.filter(
+  //                 (att) => att._id !== String(userId)
+  //               ),
+  //             }
+  //           : webinar
+  //       )
+  //     );
+      
+  //     setUpcomingWebinars((prev) =>
+  //       prev.map((webinar) =>
+  //         webinar._id === webinarId
+  //           ? {
+  //               ...webinar,
+  //               attendees: webinar.attendees.filter(
+  //                 (att) => att._id !== String(userId)
+  //               ),
+  //             }
+  //           : webinar
+  //       )
+  //     );
+
+  //     toast({
+  //       title: "Successfully unregistered!",
+  //       description: "You have been removed from the attendees list."
+  //     });
+  //   } catch (err) {
+  //     console.error("Error unregistering for webinar:", err);
+  //     toast({
+  //       title: "Unregistration failed",
+  //       description: err?.response?.data?.message || "Something went wrong.",
+  //       variant: "destructive"
+  //     });
+  //   } finally {
+  //     setLoadingRegWebId(null);
+  //   }
+  // };
+
+
+  const handleUnregister = async (userId, webinarId) => {
+    setLoadingRegWebId(webinarId);
     try {
-      await api.patch(`/webinars/register/${webinarId}/${userId}`, {});
-
-      // update local webinar list
-      setWebinars((prevWebinars) =>
-        prevWebinars.map((webinar) =>
-          webinar._id === webinarId
-            ? {
-                ...webinar,
-                attendees: [...webinar.attendees, String(userId)],
-              }
-            : webinar
-        )
-      );
-
-      // update upcoming list
-      setUpcomingWebinars((prev) =>
-        prev.map((webinar) =>
-          webinar._id === webinarId
-            ? {
-                ...webinar,
-                attendees: [...webinar.attendees, String(userId)],
-              }
-            : webinar
-        )
-      );
-
-      toast({
-        title: "Successfully registered!",
-        description: "You've been added to the attendees list.",
-      });
+      await api.patch(`/webinars/unregister/${webinarId}/${userId}`);
+      fetchWebinars();
+      setLoadingRegWebId(null);
     } catch (err) {
-      console.error("Error registering for webinar:", err);
       toast({
-        title: "Registration failed",
-        description: err?.response?.data?.message || "Something went wrong.",
+        title: "Can't unregister.",
+        description:
+          "There seems to be a problem unregistering, please try again after some time.",
         variant: "destructive",
       });
-    } finally {
-      setRegistering(false);
+      setLoadingRegWebId(null);
     }
   };
 
@@ -328,15 +370,20 @@ const Webinars = () => {
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent side="left" align="end" className="w-40">
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              // e.preventDefault()
-                              e.stopPropagation()
-                              handleShare(webinar)
-                            }}
-                          >
-                            Share
-                          </DropdownMenuItem>
+                        <DropdownMenuItem
+                        className="flex items-center gap-2 cursor-pointer"
+                        onClick={() =>
+                          navigator.share
+                            ? navigator.share({
+                                title: webinar.title,
+                                text: "Check out this webinar!",
+                                url: `${window.location.origin}/webinar/${webinar._id}`,
+                              })
+                            : alert("Sharing not supported on this browser.")
+                        }
+                      >
+                        Share
+                      </DropdownMenuItem>
 
                           {isAdmin && featuredId !== webinar._id && (
                             <DropdownMenuItem
@@ -369,22 +416,27 @@ const Webinars = () => {
 
                   {/* Register Button */}
                   <button
-                    onClick={() =>
-                      handleRegister(userInfo?.user._id, webinar._id)
-                    }
-                    disabled={webinar.attendees?.includes(
-                      String(userInfo?.user._id)
-                    )}
-                    className={`w-full py-2 transition-colors ${
-                      webinar.attendees?.includes(String(userInfo?.user._id))
-                        ? "bg-space-purple/30 hover:bg-space-purple/50 cursor-not-allowed"
-                        : "bg-space-accent hover:bg-space-accent/90"
+                  onClick={() =>
+                    webinar.attendees.some((a) => a._id === userInfo?.user?._id)
+                      ? handleUnregister(userInfo?.user._id, webinar._id)
+                      : handleRegister(userInfo?.user._id, webinar._id)
+                  }
+                  className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold flex justify-center
+                    ${
+                      isLoggedIn && webinar.attendees.some((a) => a._id === userInfo?.user._id)
+                        ? "bg-space-purple/30 hover:bg-space-purple/50"
+                        : "bg-space-accent hover:bg-space-accent/80"
                     }`}
-                  >
-                    {webinar.attendees?.includes(String(userInfo?.user._id))
-                      ? "Registered"
-                      : "Register for this Webinar"}
-                  </button>
+                >
+                  {loadingRegWebId === webinar._id ? (
+                    <Spinner />
+                  ) : isLoggedIn &&
+                    webinar.attendees.some((a) => a._id === userInfo?.user._id) ? (
+                    "Unregister"
+                  ) : (
+                    "Register for this Webinar"
+                  )}
+                </button>
                 </div>
               ))
             )}
