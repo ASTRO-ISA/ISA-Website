@@ -1,17 +1,18 @@
 // routes/blogSuggestionRoutes.js
-const express = require('express');
-const router = express.Router();
-const authenticateToken = require('../middlewares/authenticateToken');
-const restrictTo = require('../middlewares/restrictTo');
+const express = require('express')
+const router = express.Router()
+const authenticateToken = require('../middlewares/authenticateToken')
+const restrictTo = require('../middlewares/restrictTo')
 const {
   getAllBlogSuggestions,
   postSuggestedBlog,
   deleteSuggestedBlog,
   updateSuggestedBlog,
   approvedBlogSuggestions,
-  pendingBlogSuggestions
-} = require('../controllers/blogSuggestionController');
-const rateLimit = require('express-rate-limit');
+  pendingBlogSuggestions,
+  BlogSuggestedByUser
+} = require('../controllers/blogSuggestionController')
+const rateLimit = require('express-rate-limit')
 
 const suggestionLimit = rateLimit({
   windowMs: 7 * 24 * 60 * 60 * 1000,
@@ -21,8 +22,10 @@ const suggestionLimit = rateLimit({
 
 router.use(authenticateToken)
 router.route('/').post(suggestionLimit, postSuggestedBlog)
+router.route('/blogs-suggested-by').get(BlogSuggestedByUser)
 
 router.use(restrictTo('admin'))
+router.route('/').get(getAllBlogSuggestions)
 router.route('/pending').get(pendingBlogSuggestions)
 router.route('/approved').get(approvedBlogSuggestions)
 router.route('/:id').delete(deleteSuggestedBlog).patch(updateSuggestedBlog)
