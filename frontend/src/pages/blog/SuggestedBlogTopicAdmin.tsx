@@ -56,9 +56,24 @@ const SuggestedBlogTopic = () => {
 
   // Update Suggestion Status + Response
   const handleUpdate = async (id) => {
+    const response = formData[id]?.response?.trim() || "";
+
+    if (!response) {
+      toast({
+        title: "Response required",
+        description: "Please add a response before approving or rejecting.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { status, response } = formData[id];
-      await api.patch(`/suggest-blog/${id}`, { status, response }, {withCredentials: true});
+      await api.patch(
+        `/suggest-blog/${id}`,
+        { status, response },
+        { withCredentials: true }
+      );
       toast({ title: "Status updated successfully!" });
       fetchSuggestions();
     } catch (err) {
@@ -91,13 +106,18 @@ const SuggestedBlogTopic = () => {
             ) : (
               <ul className="space-y-4">
                 {suggestions.map((s) => (
-                  <li key={s._id} className="p-4 border border-space-purple/30 rounded bg-space-purple/20 space-y-2">
+                  <li
+                    key={s._id}
+                    className="p-4 border border-space-purple/30 rounded bg-space-purple/20 space-y-2"
+                  >
                     <p className="font-medium">{s.title}</p>
                     <p className="text-sm text-gray-400">
-                      <span className="text-white">Description: </span> {s.description}
+                      <span className="text-white">Description: </span>{" "}
+                      {s.description}
                     </p>
                     <p className="text-sm text-gray-400">
-                      <span className="text-white">Suggested By: </span> {s.submittedBy.email}
+                      <span className="text-white">Suggested By: </span>{" "}
+                      {s.submittedBy.email}
                     </p>
 
                     {/* Approve / Reject Radio */}
@@ -128,7 +148,9 @@ const SuggestedBlogTopic = () => {
 
                     {/* Admin Response Textarea */}
                     <textarea
-                      onChange={(e) => handleResponseChange(s._id, e.target.value)}
+                      onChange={(e) =>
+                        handleResponseChange(s._id, e.target.value)
+                      }
                       value={formData[s._id]?.response || ""}
                       placeholder="Write admin response here..."
                       className="w-full p-2 mt-4 text-sm text-black border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-space-purple"

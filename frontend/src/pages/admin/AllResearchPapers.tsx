@@ -18,6 +18,8 @@ type DisplayPaperProps = {
 
 const AllResearchPapers = ({ papers }: DisplayPaperProps) => {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [formData, setFormData] = useState({});
+
   const { toast } = useToast();
 
   const toggleAbstract = (paperId: string) => {
@@ -27,25 +29,51 @@ const AllResearchPapers = ({ papers }: DisplayPaperProps) => {
     }));
   };
 
-  const changeStatus = async (id, newStatus) => {
-    try{
-        const res = await api.patch(`/research-papers/status/${id}`, {status: newStatus}, {withCredentials: true})
-        toast({
-            description: `Research paper is ${newStatus}`
-        })
-    } catch (err) {
-        toast({
-            description: `Somthing went wrong changing the status to ${newStatus}`
-        })
+  // Handle Response Change (Admin's feedback)
+  const handleResponseChange = (id, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], response: value },
+    }));
+  };
+
+  const changeStatus = async (id: string, newStatus: string) => {
+    const response = formData[id]?.response?.trim() || "";
+
+    // Check if response is empty
+    if (!response) {
+      toast({
+        title: "Response required",
+        description: "Please add a response before approving or rejecting.",
+        variant: "destructive",
+      });
+      return;
     }
-  }
+
+    try {
+      await api.patch(
+        `/research-papers/status/${id}`,
+        { status: newStatus, response },
+        { withCredentials: true }
+      );
+
+      toast({
+        description: `Research paper marked as ${newStatus} with response: "${response}"`,
+      });
+    } catch (err) {
+      toast({
+        description: `Something went wrong changing the status to ${newStatus}`,
+        variant: "destructive",
+      });
+    }
+  };
 
   if (!papers || papers.length === 0)
     return (
       <p className="min-h-screen text-gray-400 italic flex justify-center items-center">
         Nothing to see here right now.
       </p>
-  );
+    );
 
   return (
     <ul className="space-y-4 mt-4">
@@ -90,9 +118,26 @@ const AllResearchPapers = ({ papers }: DisplayPaperProps) => {
                 <Button>View Paper</Button>
               </a>
             )}
+            {/* Admin Response Textarea */}
+            <textarea
+              onChange={(e) => handleResponseChange(paper._id, e.target.value)}
+              value={formData[paper._id]?.response || ""}
+              placeholder="Write admin response here..."
+              className="w-full p-2 mt-4 text-sm text-black border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-space-purple"
+            />
           </div>
-          <Button className="max-w-[10rem] bg-green-500 mt-5" onClick={() => changeStatus(paper._id, "approved")}>Approve</Button>
-          <Button className="max-w-[10rem] bg-red-500" onClick={() => changeStatus(paper._id, "rejected")}>Reject</Button>
+          <Button
+            className="max-w-[10rem] bg-green-500 mt-5"
+            onClick={() => changeStatus(paper._id, "approved")}
+          >
+            Approve
+          </Button>
+          <Button
+            className="max-w-[10rem] bg-red-500"
+            onClick={() => changeStatus(paper._id, "rejected")}
+          >
+            Reject
+          </Button>
         </li>
       ))}
     </ul>
