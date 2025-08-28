@@ -33,6 +33,7 @@ import ResetPassword from "./pages/authentication/ResetPassword";
 import ForgotPassword from "./pages/authentication/ForgotPassword";
 import PotdPicsUpload from "./pages/PotdPicsUpload";
 import UploadResearchPaper from "./pages/e-Learning/researchParper/UploadResearchPaper";
+import PrivateRoute from "./components/PrivateRoute";
 
 const queryClient = new QueryClient();
 
@@ -68,8 +69,11 @@ const App = () => {
           <ScrollToTop />
           <Navbar />
           <Routes>
+            <Route element={<PrivateRoute />}>
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+            </Route>
             <Route path="/" element={<Index />} />
-            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/community" element={<Community />} />
             <Route path="/blogs" element={<Blog />} />
             <Route path="/write" element={<WriteBlog />} />
@@ -81,7 +85,6 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<CreateAccount />} />
             <Route path="/blogs/:slug" element={<BlogDetail />} />
-            <Route path="/profile" element={<Profile />} />
             <Route path="/host-event" element={<CreateEvent />} />
             <Route path="/about" element={<About />} />
             <Route path="/upload-pic" element={<PotdPicsUpload />} />
