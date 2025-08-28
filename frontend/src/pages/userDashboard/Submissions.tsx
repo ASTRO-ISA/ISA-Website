@@ -85,7 +85,9 @@ export default function Submissions() {
         {type === "paper" && (
           <p className="text-xs text-gray-400 mb-2">Journal: {item.journal}</p>
         )}
-        {type === "suggested-blogs" && (
+        {(type === "suggested-blogs" ||
+          type === "paper" ||
+          type === "blog") && (
           <p className="text-xs text-gray-400 mb-2">
             <span className="text-white"> Response: </span> {item.response}
           </p>
@@ -207,8 +209,10 @@ export default function Submissions() {
         <div className="space-y-4">
           {loadingUserBlogs ? (
             <p>Loading...</p>
-          ) : userSuggestedBlogs.data ? (
-            userSuggestedBlogs.data.map((e) => renderCard(e, "suggested-blogs"))
+          ) : userSuggestedBlogs?.data ? (
+            userSuggestedBlogs?.data.map((e) =>
+              renderCard(e, "suggested-blogs")
+            )
           ) : (
             <p>No blogs found.</p>
           )}

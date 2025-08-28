@@ -183,10 +183,10 @@ exports.deletePaper = async (req, res) => {
 exports.changeStatus = async (req, res) => {
   try {
     const { id } = req.params
-    const status = req.body.status
+    const { status, response } = req.body
     const paper = await ResearchPaper.findByIdAndUpdate(
       id,
-      { status: status },
+      { status: status, response: response },
       { new: true, runValidators: true }
     ).populate('uploadedBy', 'name email')
     if (!paper) {
@@ -261,11 +261,9 @@ exports.userPapers = async (req, res) => {
     }
     res.status(200).json(papers)
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        message: 'Server error finding user papers.',
-        error: err.message
-      })
+    res.status(500).json({
+      message: 'Server error finding user papers.',
+      error: err.message
+    })
   }
 }
