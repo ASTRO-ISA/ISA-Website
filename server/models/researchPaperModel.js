@@ -35,9 +35,12 @@ const researchPaperSchema = new mongoose.Schema(
       type: String,
       enum: ['approved', 'rejected', 'pending'],
       default: 'pending'
+    },
+    response: {
+      type: String
     }
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 const ResearchPaper = mongoose.model('ResearchPaper', researchPaperSchema)

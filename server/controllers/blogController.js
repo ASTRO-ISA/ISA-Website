@@ -5,7 +5,10 @@ const { sendEmail } = require('../utils/sendEmail')
 
 exports.pendingBlogs = async (req, res) => {
   try {
-    const allBlogs = await Blog.find({status: 'pending'}).populate('author', 'name country avatar')
+    const allBlogs = await Blog.find({ status: 'pending' }).populate(
+      'author',
+      'name country avatar'
+    )
 
     if (!allBlogs) {
       res.status(404).json({ message: 'Nothing to see here right now!' })
@@ -14,12 +17,14 @@ exports.pendingBlogs = async (req, res) => {
     res.status(200).json(allBlogs)
   } catch (err) {
     res.status(500).json({ message: 'Server Error', error: err.message })
-  } 
+  }
 }
 
 exports.approvedBlogs = async (req, res) => {
   try {
-    const approvedBlogs = await Blog.find({status: 'approved'}).sort({createdAt: -1}).populate('author', 'name country avatar')
+    const approvedBlogs = await Blog.find({ status: 'approved' })
+      .sort({ createdAt: -1 })
+      .populate('author', 'name country avatar')
 
     if (!approvedBlogs) {
       res.status(404).json({ message: 'Nothing to see here right now!' })
@@ -50,7 +55,7 @@ exports.createBlog = async (req, res) => {
     })
     await newBlog.save()
 
-      const html = `
+    const html = `
       <p>Hello ${req.user.name},</p>
 
       <p>Thank you for submitting your blog <strong>"${newBlog.title}"</strong> to ISA.</p>
@@ -65,16 +70,17 @@ exports.createBlog = async (req, res) => {
 
       <p>Best regards,<br>
       Team ISA</p>
-    `;
+    `
 
-    await sendEmail(req.user.email, `Your blog "${newBlog.title}" has been submitted`, html);
-    
+    await sendEmail(
+      req.user.email,
+      `Your blog "${newBlog.title}" has been submitted`,
+      html
+    )
+
     res.status(201).json({ message: 'Blog saved successfully.', blog: newBlog })
-
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: 'Failed to save blog.', error: err })
+    res.status(500).json({ message: 'Failed to save blog.', error: err })
   }
 }
 
@@ -98,7 +104,10 @@ exports.featuredBlog = async (req, res) => {
 exports.readBlog = async (req, res) => {
   try {
     const { slug } = req.params
-    const blog = await Blog.findOne({slug: slug}).populate('author', 'name country avatar')
+    const blog = await Blog.findOne({ slug: slug }).populate(
+      'author',
+      'name country avatar'
+    )
 
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' })
@@ -119,7 +128,7 @@ exports.deleteBlog = async (req, res) => {
       return res.status(404).json({ message: 'Blog not found' })
     }
     if (blog.author.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'Unauthorized' });
+      return res.status(403).json({ message: 'Unauthorized' })
     }
     await cloudinary.uploader.destroy(blog.publicId)
     await blog.deleteOne()
@@ -134,11 +143,11 @@ exports.deleteBlog = async (req, res) => {
 exports.changeStatus = async (req, res) => {
   try {
     const { id } = req.params
-    const status = req.body.status
+    const { status, response } = req.body
 
     const blog = await Blog.findByIdAndUpdate(
       id,
-      { status: status },
+      { status: status, response: response },
       { new: true, runValidators: true }
     ).populate('author', 'name email')
 
@@ -162,7 +171,11 @@ exports.changeStatus = async (req, res) => {
         <p>Best regards,<br>
         Team ISA</p>
       `
-      await sendEmail(blog.author.email, `Your blog '${blog.title}' is now live!`, text)
+      await sendEmail(
+        blog.author.email,
+        `Your blog '${blog.title}' is now live!`,
+        text
+      )
     }
 
     if (status === 'rejected') {
@@ -184,24 +197,35 @@ exports.changeStatus = async (req, res) => {
         <p>Best regards,<br>
         Team ISA</p>
       `
-      await sendEmail(blog.author.email, `Update on your blog: ${blog.title}`, text)
+      await sendEmail(
+        blog.author.email,
+        `Update on your blog: ${blog.title}`,
+        text
+      )
     }
 
     res.status(200).json({ message: `Blog status updated to ${status}` })
-  } catch (error) {
-    res.status(500).json({ message: 'Server error while updating blog status' })
+  } catch (err) {
+    res.status(500).json({
+      message: 'Server error while updating blog status',
+      error: err.message
+    })
   }
 }
 
 exports.userBlogs = async (req, res) => {
-  try{
+  try {
     const { userid } = req.params
-    const blogs = await Blog.find({author: userid}).sort({createdAt: -1}).populate('author', 'name')
-    if(!blogs){
-      res.status(404).json({message: 'No user blogs found.'})
+    const blogs = await Blog.find({ author: userid })
+      .sort({ createdAt: -1 })
+      .populate('author', 'name')
+    if (!blogs) {
+      res.status(404).json({ message: 'No user blogs found.' })
     }
     res.status(200).json(blogs)
   } catch (err) {
-    res.status(500).json({message: 'Server error finding user blogs.', error: err.message})
+    res
+      .status(500)
+      .json({ message: 'Server error finding user blogs.', error: err.message })
   }
 }
