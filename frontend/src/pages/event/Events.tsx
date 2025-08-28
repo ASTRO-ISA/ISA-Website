@@ -63,7 +63,7 @@ const Events = () => {
     }
   };
 
-  // //registering a user for event
+  // registering a user for event
   const handleRegister = async (userId, eventId) => {
     if (isLoggedIn) {
       setLoadingEventId(eventId);
