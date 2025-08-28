@@ -12,12 +12,26 @@ export default function Submissions() {
     const res = await api.get(`/blogs/my-blogs/${userId}`);
     return res.data;
   };
-  
+
+  const fetchSuggestedBlogs = async ({ queryKey }) => {
+    const [_key, userId] = queryKey;
+    const res = await api.get(`/suggest-blog/blogs-suggested-by`);
+    return res.data;
+  };
+
   const { data: userBlogs, isLoading: loadingUserBlogs } = useQuery({
     queryKey: ["blogs", userInfo?.user?._id],
     queryFn: fetchBlogs,
     enabled: !!userInfo?.user?._id, // only run if userId exists
   });
+
+  const { data: userSuggestedBlogs, isLoading: loadingUserSuggestedBlogs } =
+    useQuery({
+      queryKey: ["SuggestedBlogs", userInfo?.user?._id],
+      queryFn: fetchSuggestedBlogs,
+      enabled: !!userInfo?.user?._id, // only run if userId exists
+    });
+  console.log("userr", userSuggestedBlogs);
 
   const fetchEvents = async ({ queryKey }) => {
     const [_key, userId] = queryKey;
@@ -53,17 +67,15 @@ export default function Submissions() {
         <h3 className="text-lg font-bold mb-2 text-white group-hover:underline">
           {item.title || item.name}
         </h3>
-  
+
         {/* Description */}
-        <p className="text-gray-400 text-sm mb-3">
-          {item.description}
-        </p>
-  
+        <p className="text-gray-400 text-sm mb-3">{item.description}</p>
+
         {/* Submission Date */}
         <p className="text-xs text-gray-500 mb-2">
           Submitted on {new Date(item.createdAt).toLocaleDateString()}
         </p>
-  
+
         {/* Extra field for events & papers */}
         {type === "event" && (
           <p className="text-xs text-gray-400 mb-2">
@@ -71,13 +83,18 @@ export default function Submissions() {
           </p>
         )}
         {type === "paper" && (
+          <p className="text-xs text-gray-400 mb-2">Journal: {item.journal}</p>
+        )}
+        {type === "suggested-blogs" && (
           <p className="text-xs text-gray-400 mb-2">
-            Journal: {item.journal}
+            <span className="text-white"> Response: </span> {item.response}
           </p>
         )}
-  
+
         {/* Status */}
-        {(type === "blog" || type === "paper") && (
+        {(type === "blog" ||
+          type === "paper" ||
+          type === "suggested-blogs") && (
           <p
             className={`text-sm font-semibold ${
               item.status === "approved"
@@ -90,7 +107,7 @@ export default function Submissions() {
             {item.status}
           </p>
         )}
-  
+
         {type === "event" && (
           <p
             className={`text-sm font-semibold ${
@@ -104,7 +121,7 @@ export default function Submissions() {
             {item.statusAR}
           </p>
         )}
-  
+
         {/* Admin Comment if Rejected */}
         {item.status === "rejected" && item.adminComment && (
           <p className="text-xs text-red-300 mt-2">
@@ -116,39 +133,87 @@ export default function Submissions() {
   );
 
   return (
-<div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
-  {/* Info message */}
-  <div className="col-span-1 md:col-span-3 mb-4">
-    <p className="text-sm text-yellow-300 bg-yellow-900/40 border border-yellow-700 rounded-md p-3">
-      ! If your submission gets <span className="font-semibold">rejected</span>, 
-      you will only see its rejected status for <span className="font-semibold">two days</span>. 
-      However, you will also receive an email notification.
-    </p>
-  </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+      {/* Info message */}
+      <div className="col-span-1 md:col-span-3 mb-4">
+        <p className="text-sm text-yellow-300 bg-yellow-900/40 border border-yellow-700 rounded-md p-3">
+          ! If your submission gets{" "}
+          <span className="font-semibold">rejected</span>, you will only see its
+          rejected status for <span className="font-semibold">two days</span>.
+          However, you will also receive an email notification.
+        </p>
+      </div>
 
-  {/* Blogs */}
-  <motion.div whileHover={{ scale: 1.02 }} className="bg-space-purple/20 rounded-2xl p-4 shadow-lg">
-    <h2 className="text-xl font-semibold mb-4 text-white">Blogs</h2>
-    <div className="space-y-4">
-      {loadingUserBlogs ? (<p>Loading...</p>) : (userBlogs ? userBlogs.map((e) => renderCard(e, "blog")) : (<p>No blogs found.</p>))}
-    </div>
-  </motion.div>
+      {/* Blogs */}
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        className="bg-space-purple/20 rounded-2xl p-4 shadow-lg"
+      >
+        <h2 className="text-xl font-semibold mb-4 text-white">Blogs</h2>
+        <div className="space-y-4">
+          {loadingUserBlogs ? (
+            <p>Loading...</p>
+          ) : userBlogs ? (
+            userBlogs.map((e) => renderCard(e, "blog"))
+          ) : (
+            <p>No blogs found.</p>
+          )}
+        </div>
+      </motion.div>
 
-  {/* Events */}
-  <motion.div whileHover={{ scale: 1.02 }} className="bg-space-purple/20 rounded-2xl p-4 shadow-lg">
-    <h2 className="text-xl font-semibold mb-4 text-white">Events</h2>
-    <div className="space-y-4">
-      {loadingUserEvents ? (<p>Loading...</p>) : (userEvents ? userEvents.map((e) => renderCard(e, "event")) : (<p>No events found.</p>))}
-    </div>
-  </motion.div>
+      {/* Events */}
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        className="bg-space-purple/20 rounded-2xl p-4 shadow-lg"
+      >
+        <h2 className="text-xl font-semibold mb-4 text-white">Events</h2>
+        <div className="space-y-4">
+          {loadingUserEvents ? (
+            <p>Loading...</p>
+          ) : userEvents ? (
+            userEvents.map((e) => renderCard(e, "event"))
+          ) : (
+            <p>No events found.</p>
+          )}
+        </div>
+      </motion.div>
 
-  {/* Research Papers */}
-  <motion.div whileHover={{ scale: 1.02 }} className="bg-space-purple/20 rounded-2xl p-4 shadow-lg">
-    <h2 className="text-xl font-semibold mb-4 text-white">Research Papers</h2>
-    <div className="space-y-4">
-      {loadingUserPapers ? (<p>Loading...</p>) : (userResearchPapers ? userResearchPapers.map((e) => renderCard(e, "paper")) : <p>No research papers found.</p>)}
+      {/* Research Papers */}
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        className="bg-space-purple/20 rounded-2xl p-4 shadow-lg"
+      >
+        <h2 className="text-xl font-semibold mb-4 text-white">
+          Research Papers
+        </h2>
+        <div className="space-y-4">
+          {loadingUserPapers ? (
+            <p>Loading...</p>
+          ) : userResearchPapers ? (
+            userResearchPapers.map((e) => renderCard(e, "paper"))
+          ) : (
+            <p>No research papers found.</p>
+          )}
+        </div>
+      </motion.div>
+
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        className="bg-space-purple/20 rounded-2xl p-4 shadow-lg"
+      >
+        <h2 className="text-xl font-semibold mb-4 text-white">
+          Suggested Blogs
+        </h2>
+        <div className="space-y-4">
+          {loadingUserBlogs ? (
+            <p>Loading...</p>
+          ) : userSuggestedBlogs.data ? (
+            userSuggestedBlogs.data.map((e) => renderCard(e, "suggested-blogs"))
+          ) : (
+            <p>No blogs found.</p>
+          )}
+        </div>
+      </motion.div>
     </div>
-  </motion.div>
-  </div>
   );
 }
