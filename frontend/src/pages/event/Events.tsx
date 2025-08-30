@@ -37,7 +37,7 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
-      const res = await api.get("/events");
+      const res = await api.get("/events/upcoming");
       setEvents(res.data);
       setLoading(false);
     } catch (err) {
@@ -69,24 +69,6 @@ const Events = () => {
       setLoadingEventId(eventId);
       try {
         const res = await api.patch(`/events/register/${eventId}/${userId}`);
-
-        // Update the event locally
-        // setEvents((prevEvents) =>
-        //   prevEvents.map((event) =>
-        //     event._id === eventId
-        //       ? {
-        //           ...event,
-        //           registeredUsers: [
-        //             ...event.registeredUsers,
-        //             // ensure we add in the same format
-        //             typeof userId === "object"
-        //               ? userId
-        //               : { _id: String(userId) },
-        //           ],
-        //         }
-        //       : event
-        //   )
-        // );
         fetchEvents();
         setLoading(false);
         setLoadingEventId(null);
@@ -104,6 +86,7 @@ const Events = () => {
     }
   };
 
+  // unregister for an event
   const handleUnregister = async (userId, eventId) => {
     setLoadingEventId(eventId);
     try {
@@ -121,6 +104,7 @@ const Events = () => {
     }
   };
 
+  // add an event to newsletter draft
   const handleAddToNewsletter = async (event) => {
     try {
       await api.post(
@@ -157,17 +141,7 @@ const Events = () => {
     fetchLaunches();
   }, []);
 
-  // we got all events from which we are making types here
-  const communityEvents = events.filter((event) => event.type === "community");
-  const astronomicalEvents = events.filter(
-    (event) => event.type === "astronomical"
-  );
-
-  const upcomingEvents = events.filter((event) => event.status === "upcoming");
-  const completedEvents = events.filter(
-    (event) => event.status === "completed"
-  );
-
+  // loading state
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center h-64">
@@ -176,7 +150,6 @@ const Events = () => {
       </div>
     );
   }
-  // if(events.length === 0) return <p className="min-h-screen flex flex-col items-center justify-center h-64">Nothing to see here right now!</p>
 
   // to show the date in readable format
   const formatDate = (dateStr) =>
@@ -193,12 +166,6 @@ const Events = () => {
       minute: "2-digit",
       hour12: true,
     });
-
-  const userId = userInfo?.user._id;
-
-  const getStatus = (eventDate) => {
-    return new Date(eventDate) > new Date() ? "Upcoming" : "Completed";
-  };
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
@@ -336,7 +303,7 @@ const Events = () => {
                         ? handleUnregister(userInfo?.user._id, event._id)
                         : handleRegister(userInfo?.user?._id, event._id)
                     }
-                    className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold
+                    className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold flex justify-center
                       ${
                         isLoggedIn &&
                         event.registeredUsers.some(
