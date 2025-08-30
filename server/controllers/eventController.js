@@ -115,6 +115,23 @@ exports.approvedEvents = async (req, res) => {
   }
 }
 
+exports.upcomingEvents = async (req, res) => {
+  try {
+    const events = await Event.find({statusAR: 'approved', status: 'upcoming'}).sort({createdAt: -1}).populate(
+      'registeredUsers',
+      'avatar name email'
+    )
+    if (!events) {
+      return res.status(404).json({ message: 'Event not found' })
+    }
+    res.status(200).json(events)
+  } catch (err) {
+    console.log(err)
+
+    res.status(500).json({ message: 'Server error in get events' })
+  }
+}
+
 exports.getEvent = async (req, res) => {
   const { slug } = req.params
   try {
@@ -149,17 +166,21 @@ exports.registerEvent = async (req, res) => {
       return res.status(400).json({ message: 'Event not found' })
     }
 
+    if (event.registeredUsers.includes(userid)) {
+      return res.status(400).json({ message: 'User already registered for this event' })
+    }
+
     const updatedEvent = await Event.findByIdAndUpdate(
       eventid,
-      { $addToSet: { registeredUsers: userid } },
+      { $addToSet: { registeredUsers: userid } }, // ensures no duplicates
       { new: true }
     ).populate('registeredUsers', 'name email')
 
     // sending confirmation email
     const text = `Hi ${user.name},
-    You have successfully registered for "${event.title}" on ${new Date(event.eventDate).toDateString()} at ${event.location}.
-    See you there!
-    – ISA`
+You have successfully registered for "${event.title}" on ${new Date(event.eventDate).toDateString()} at ${event.location}.
+See you there!
+– ISA`
 
     await sendEmail(user.email, `Registered for ${event.title}`, text)
 

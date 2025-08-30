@@ -5,9 +5,18 @@ const webinarSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Thumbnail is required.']
     },
+    publicId: {
+        type: String,
+        required: [true, 'Provide a publicId']
+    },
     title: {
         type: String,
         required: [true, 'Title is required']
+    },
+    slug: {
+        type: String,
+        unique: true,
+        required: true
     },
     description: {
         type: String,
@@ -17,17 +26,18 @@ const webinarSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide the presenter name.']
     },
+    guests: [
+        {
+            type: String
+        }
+    ],
     webinarDate: {
         type: Date,
         required: [true, 'Please provide a valid date.']
     },
-    type: {
-        type: String,
-        required: true,
-    },
     videoId: {
         type: String,
-        required: [true, 'Provide a video ID']
+        required: [true, 'Provide a videoId']
     },
     attendees: [
         {
@@ -39,14 +49,26 @@ const webinarSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    status: {
+        type: String,
+        enum: ['upcoming', 'past'],
+        default: 'upcoming'
+    },
     createdAt: {
         type: Date,
         default: Date.now
     },
-    publicId: {
-        type: String,
-        required: [true, 'could not find the pulic id to save the image o cloudinary']
+})
+
+// if somehow we missed setting slug
+webinarSchema.pre('validate', function(next){
+    if(this.title && !this.slug){
+        this.slug = slugify(this.title, {
+            lower: true,
+            strict: true
+        })
     }
+    next()
 })
 
 const Webinar = mongoose.model('Webinar', webinarSchema)
