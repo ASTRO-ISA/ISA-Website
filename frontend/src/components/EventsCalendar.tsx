@@ -124,7 +124,7 @@ const EventsCalendar = () => {
               onClick={() => setShowAll(true)}
               className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
             >
-              View Full Calendar
+              View More Launches
             </button>
           </div>
         )}

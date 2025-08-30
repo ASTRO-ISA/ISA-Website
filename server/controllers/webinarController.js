@@ -1,30 +1,33 @@
 const Webinar = require('../models/webinarModel')
 const User = require('../models/userModel')
-const {sendEmail} = require('../utils/sendEmail')
+const { sendEmail } = require('../utils/sendEmail')
 const getVideoId = require('../utils/getVideoId')
 const cloudinary = require('cloudinary').v2
+const { default: slugify } = require('slugify')
 
 exports.createWebinar = async (req, res) => {
   try {
-    const { title, description, webinarDate, type, presenter, videoLink } =
-      req.body
+    const { title, description, webinarDate, presenter, guests, videoLink } = req.body
 
-    // to extract video id from the link
     const videoId = getVideoId(videoLink)
     if (!videoId) {
       return res.status(400).json({ error: 'Invalid YouTube video link.' })
     }
-    const thumbnail = req.file ? req.file.path : '' // from cludinary
-    const publicId = req.file.filename
+
+    const thumbnail = req.file ? req.file.path : ''
+    const publicId = req.file ? req.file.filename : ''
+    const slug = slugify(title, { lower: true, strict: true })
+
     const webinar = new Webinar({
       thumbnail,
+      publicId,
       title,
+      slug,
       description,
       webinarDate,
-      type,
       presenter,
-      videoId,
-      publicId
+      guests: Array.isArray(guests) ? guests : (guests ? [guests] : []),
+      videoId
     })
 
     await webinar.save()
@@ -39,29 +42,41 @@ exports.createWebinar = async (req, res) => {
 exports.Webinars = async (req, res) => {
   try {
     const webinars = await Webinar.find({})
-    if (!webinars) {
-      return res.status(404).json({ message: 'Webinar not found' })
+    if (!webinars || webinars.length === 0) {
+      return res.status(404).json({ message: 'No webinars found' })
     }
     res.status(200).json(webinars)
   } catch (err) {
-    console.log('failed to featch webinars:', err)
+    console.log('Failed to fetch webinars:', err)
     res.status(500).json({ message: 'Server error in get webinars' })
   }
 }
 
-// exports.getWebinar = async (req, res) => {
-//   const { id } = req.params
-//   try {
-//     const webinar = await Webinar.findById(id)
-//     if (!webinar) {
-//       return res.status(404).json({ message: 'Webinar not found' })
-//     }
-//     res.status(200).json(webinar)
-//   } catch (err) {
-//     console.log('Failed to fetch webinar:', err)
-//     res.status(500).json({ message: 'Server error in get webinar' })
-//   }
-// }
+exports.upcomingWebinars = async (req, res) => {
+  try {
+    const webinars = await Webinar.find({status: 'upcoming'}).sort({createdAt: -1}).populate('attendees', 'name email avatar')
+    if (!webinars || webinars.length === 0) {
+      return res.status(404).json({ message: 'No upcoming webinars found' })
+    }
+    res.status(200).json(webinars)
+  } catch (err) {
+    console.log('Failed to fetch webinars:', err)
+    res.status(500).json({ message: 'Server error in get upcoming webinars' })
+  }
+}
+
+exports.pastWebinars = async (req, res) => {
+  try {
+    const webinars = await Webinar.find({status: 'past'})
+    if (!webinars || webinars.length === 0) {
+      return res.status(404).json({ message: 'No past webinars found' })
+    }
+    res.status(200).json(webinars)
+  } catch (err) {
+    console.log('Failed to fetch webinars:', err)
+    res.status(500).json({ message: 'Server error in get past webinars' })
+  }
+}
 
 exports.registerWebinar = async (req, res) => {
   try {
@@ -71,10 +86,14 @@ exports.registerWebinar = async (req, res) => {
     const user = await User.findById(userid)
 
     if (!user) {
-      return res.status(400).json({ message: 'Please make login' })
+      return res.status(400).json({ message: 'Please login first' })
     }
     if (!webinar) {
       return res.status(400).json({ message: 'Webinar not found' })
+    }
+
+    if(webinar.attendees.includes(userid)){
+      return res.status(400).json({ message: 'User already registered for this webinar.'})
     }
 
     const updatedWebinar = await Webinar.findByIdAndUpdate(
@@ -83,11 +102,10 @@ exports.registerWebinar = async (req, res) => {
       { new: true }
     ).populate('attendees', 'name email')
 
-    // sending confirmation email
     const text = `Hi ${user.name},
-    You have successfully registered for "${webinar.title}" on ${new Date(webinar.webinarDate).toDateString()}.
-    See you there!
-    – ISA`
+You have successfully registered for "${webinar.title}" on ${new Date(webinar.webinarDate).toDateString()}.
+See you there!
+– ISA`
 
     await sendEmail(user.email, `Registered for ${webinar.title}`, text)
 
@@ -105,6 +123,51 @@ exports.registerWebinar = async (req, res) => {
   }
 }
 
+exports.unregisterWebinar = async (req, res) => {
+  try {
+    const { webinarid, userid } = req.params
+
+    const webinar = await Webinar.findById(webinarid)
+    const user = await User.findById(userid)
+
+    if (!user) {
+      return res.status(400).json({ message: 'Please login first' })
+    }
+    if (!webinar) {
+      return res.status(400).json({ message: 'Webinar not found' })
+    }
+
+    if (!webinar.attendees.includes(userid)) {
+      return res.status(400).json({ message: 'User is not registered for this webinar.' })
+    }
+
+    const updatedWebinar = await Webinar.findByIdAndUpdate(
+      webinarid,
+      { $pull: { attendees: userid } },
+      { new: true }
+    ).populate('attendees', 'name email')
+
+    const text = `Hi ${user.name},
+You have successfully unregistered from "${webinar.title}" scheduled on ${new Date(webinar.webinarDate).toDateString()}.
+We are sorry to miss you, hope to see you in our future webinars!
+– ISA`
+
+    await sendEmail(user.email, `Unregistered from ${webinar.title}`, text)
+
+    res.status(200).json({
+      success: true,
+      message: 'User successfully unregistered from the webinar',
+      data: updatedWebinar
+    })
+  } catch (error) {
+    console.error('Error in unregistration:', error)
+    res.status(500).json({
+      success: false,
+      message: 'User unregistration failed for the event'
+    })
+  }
+}
+
 exports.updatedWebinar = async (req, res) => {
   const { id } = req.params
   const updates = req.body
@@ -114,9 +177,7 @@ exports.updatedWebinar = async (req, res) => {
     if (!webinar) return res.status(404).json({ message: 'Webinar not found' })
     res.status(200).json(webinar)
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Error updating webinar', error: error.message })
+    res.status(500).json({ message: 'Error updating webinar', error: error.message })
   }
 }
 
@@ -126,16 +187,14 @@ exports.deleteWebinar = async (req, res) => {
     const webinar = await Webinar.findById(id)
     if (webinar.publicId) {
       await cloudinary.uploader.destroy(webinar.publicId, {
-        resource_type: 'raw'
+        resource_type: 'image'
       })
     }
     await Webinar.findByIdAndDelete(id)
     if (!webinar) return res.status(404).json({ message: 'webinar not found' })
     res.status(200).json({ message: 'webinar deleted successfully' })
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: 'Error deleting webinar', error: err.message })
+    res.status(500).json({ message: 'Error deleting webinar', error: err.message })
   }
 }
 
@@ -160,9 +219,7 @@ exports.getFeatured = async (req, res) => {
     }
     res.status(200).json(getFeatured)
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Server error in getFeatured', error: error.message })
+    res.status(500).json({ message: 'Server error in getFeatured', error: error.message })
   }
 }
 
@@ -172,11 +229,9 @@ exports.removeFeatured = async (req, res) => {
     await Webinar.findByIdAndUpdate(id, { featured: false })
     res.status(200).json({ message: 'Webinar removed from featured.' })
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: 'Error removing webinar as featured!',
-        error: error.message
-      })
+    res.status(500).json({
+      message: 'Error removing webinar as featured!',
+      error: error.message
+    })
   }
 }
