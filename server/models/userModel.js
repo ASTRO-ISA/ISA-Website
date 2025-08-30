@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
   avatarPublicId: String,
   role: {
     type: String,
-    enum: ['user', 'admin'],
+    enum: ['user', 'admin', 'super-admin'],
     default: 'user'
   },
   savedBlogs: [

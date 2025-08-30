@@ -6,7 +6,7 @@ const router = express.Router()
 const { imageStorage } = require('../utils/cloudinaryStorage')
 const restrictTo = require('../middlewares/restrictTo')
 
-const uploadImage = multer({ storage: imageStorage('webinar-thumbnails')})
+const uploadImage = multer({ storage: imageStorage('webinar-thumbnails') })
 
 // for all users
 router.route('/').get(webinarController.Webinars)
@@ -17,11 +17,15 @@ router.route('/featured/remove/:id').patch(webinarController.removeFeatured)
 
 // for logged in users
 router.use(authenticateToken)
-router.route('/register/:webinarid/:userid').patch(webinarController.registerWebinar)
+router
+  .route('/register/:webinarid/:userid')
+  .patch(webinarController.registerWebinar)
 
 // for admin
-router.use(restrictTo('admin'))
-router.route('/create').post(uploadImage.single('thumbnail'), webinarController.createWebinar)
+router.use(restrictTo(['admin', 'super-admin']))
+router
+  .route('/create')
+  .post(uploadImage.single('thumbnail'), webinarController.createWebinar)
 router.route('/:id').patch(webinarController.updatedWebinar)
 router.route('/:id').delete(webinarController.deleteWebinar)
 
