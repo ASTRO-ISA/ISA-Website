@@ -54,7 +54,7 @@ exports.Webinars = async (req, res) => {
 
 exports.upcomingWebinars = async (req, res) => {
   try {
-    const webinars = await Webinar.find({status: 'upcoming'})
+    const webinars = await Webinar.find({status: 'upcoming'}).sort({createdAt: -1}).populate('attendees', 'name email avatar')
     if (!webinars || webinars.length === 0) {
       return res.status(404).json({ message: 'No upcoming webinars found' })
     }
@@ -90,6 +90,10 @@ exports.registerWebinar = async (req, res) => {
     }
     if (!webinar) {
       return res.status(400).json({ message: 'Webinar not found' })
+    }
+
+    if(webinar.attendees.includes(userid)){
+      return res.status(400).json({ message: 'User already registered for this webinar.'})
     }
 
     const updatedWebinar = await Webinar.findByIdAndUpdate(
@@ -131,6 +135,10 @@ exports.unregisterWebinar = async (req, res) => {
     }
     if (!webinar) {
       return res.status(400).json({ message: 'Webinar not found' })
+    }
+
+    if (!webinar.attendees.includes(userid)) {
+      return res.status(400).json({ message: 'User is not registered for this webinar.' })
     }
 
     const updatedWebinar = await Webinar.findByIdAndUpdate(
