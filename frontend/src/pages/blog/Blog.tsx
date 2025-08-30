@@ -318,15 +318,6 @@ const Blog = () => {
     }
   };
 
-  // share block
-  const handleShare = (blog) => {
-    const shareUrl = `${window.location.origin}/blogs/${blog._id}`;
-    navigator.clipboard.writeText(shareUrl);
-    toast({
-      title: "Link copied.",
-    });
-  };
-
   return (
     <div className="min-h-screen bg-space-dark text-white">
       {/* <Navbar /> */}
