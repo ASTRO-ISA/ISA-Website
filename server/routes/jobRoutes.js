@@ -16,7 +16,7 @@ const uploadDocument = multer({ storage: documentStorage('job-attachments') })
 router.route('/').get(getAllJobs)
 
 router.use(authenticateToken)
-router.use(restrictTo('admin'))
+router.use(restrictTo(['admin', 'super-admin']))
 
 router
   .route('/')

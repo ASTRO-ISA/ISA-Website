@@ -7,12 +7,16 @@ const restrictTo = require('../middlewares/restrictTo')
 router.use(authenticateToken)
 router.route('/subscribe').post(newsletterController.subscribeToNewsletter)
 router.route('/subscribe/check').get(newsletterController.checkSubscribe)
-router.route('/unsubscribe').patch(newsletterController.unsubscribeFromNewsletter)
+router
+  .route('/unsubscribe')
+  .patch(newsletterController.unsubscribeFromNewsletter)
 
-router.use(restrictTo('admin'))
+router.use(restrictTo(['admin', 'super-admin']))
 router.route('/draft').get(newsletterController.getNewsletterDraft)
 router.route('/draft/add').post(newsletterController.addToNewsletterDraft)
-router.route('/draft/remove').post(newsletterController.removeFromNewsletterDraft)
+router
+  .route('/draft/remove')
+  .post(newsletterController.removeFromNewsletterDraft)
 router.route('/draft/send').post(newsletterController.sendNewsletter)
 
 module.exports = router

@@ -5,25 +5,27 @@ const { imageStorage } = require('../utils/cloudinaryStorage')
 const restrictTo = require('../middlewares/restrictTo')
 const authenticateToken = require('../middlewares/authenticateToken')
 const {
-    getAllPics,
-    uploadPic,
-    deletePic,
-    setFeaturedFromUserPic
+  getAllPics,
+  uploadPic,
+  deletePic,
+  setFeaturedFromUserPic
 } = require('../controllers/userPicForPotdController')
 const rateLimit = require('express-rate-limit')
 
-const uploadImage = multer({ storage: imageStorage('user-pics-for-potd')})
+const uploadImage = multer({ storage: imageStorage('user-pics-for-potd') })
 
 const uploadLimit = rateLimit({
-    windowMs: 24 * 60 * 60 * 1000,
-    limit: 2,
-    message: 'You can only send max 2 pics a day.'
+  windowMs: 24 * 60 * 60 * 1000,
+  limit: 2,
+  message: 'You can only send max 2 pics a day.'
 })
 
 router.use(authenticateToken)
-router.route('/upload').post(uploadLimit, uploadImage.single('image'), uploadPic)
+router
+  .route('/upload')
+  .post(uploadLimit, uploadImage.single('image'), uploadPic)
 
-router.use(restrictTo('admin'))
+router.use(restrictTo(['admin', 'super-admin']))
 router.route('/').get(getAllPics)
 router.route('/setFeatured').post(setFeaturedFromUserPic)
 router.route('/delete/:id').delete(deletePic)

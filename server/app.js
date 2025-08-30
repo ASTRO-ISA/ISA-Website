@@ -21,6 +21,7 @@ const featuredRouter = require('./routes/featuredRoutes.js')
 const webinarRouter = require('./routes/webinarRoutes.js')
 const newsletterRouter = require('./routes/newsletterRoutes.js')
 const userPicsPotdRouter = require('./routes/userPicsPotdRoutes.js')
+const superAdminRouter = require('./routes/superAdminRoutes.js')
 
 // middlewares
 app.use(helmet())
@@ -36,6 +37,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/uploads', express.static('uploads'))
 app.use(cookieParser())
 
+app.use('/api/v1/super-admin', superAdminRouter)
 app.use('/api/v1/research-papers', researchPaperRouter)
 app.use('/api/v1/jobs', jobRouter)
 app.use('/api/v1/courses', courseRouter)
