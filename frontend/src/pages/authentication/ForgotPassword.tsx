@@ -14,7 +14,7 @@ const ForgotPassword = () => {
     setSending(true);
     try {
       await api.post(
-        "/forgotPassword",
+        "/users/forgot-password",
         { email },
         {
           headers: {
@@ -68,7 +68,7 @@ const ForgotPassword = () => {
 
               <button
                 type="submit"
-                className="w-full bg-space-accent hover:bg-space-accent/80 text-white font-semibold py-2 rounded-md transition-colors"
+                className="w-full bg-space-accent hover:bg-space-accent/80 text-white font-semibold py-2 rounded-md transition-colors flex justify-center"
               >
                 {sending ? <Spinner/> : "Send Reset Link"}
               </button>
