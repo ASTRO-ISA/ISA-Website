@@ -1,30 +1,73 @@
 const UserPicForPotd = require('../models/userPicForPotdModel')
 const Featured = require('../models/featuredPicModel')
 const cloudinary = require('../utils/cloudinary')
-const User = require('../models/userModel')
+
+// to validate the social link provided
+function validateSocialMediaUrl(url) {
+  try {
+    const parsed = new URL(url)
+
+    // only allow http/https
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return { valid: false, reason: 'Only http/https links are allowed.' }
+    }
+
+    // extract hostname
+    const hostname = parsed.hostname.toLowerCase()
+
+    // allow only specific domains
+    const allowedDomains = [
+      'facebook.com',
+      'instagram.com',
+      'twitter.com',
+      'x.com',
+      'linkedin.com',
+      'github.com'
+    ]
+
+    if (!allowedDomains.some((d) => hostname.endsWith(d))) {
+      return { valid: false, reason: 'Only social media links are allowed.' }
+    }
+
+    return { valid: true }
+  } catch (err) {
+    return { valid: false, reason: err.message }
+  }
+}
 
 exports.uploadPic = async (req, res) => {
-    try {
-      const imageUrl = req.file.path
-      const image = new UserPicForPotd({
-        caption: req.body.caption,
-        imageUrl: imageUrl,
-        socialLink: req.body.social,
-        publicId: req.file.filename,
-        author: req.user.id
-      })
-      await image.save()
-      res
-        .status(201)
-        .json({ message: 'Image uploaded successfully', pic: image })
-    } catch (err) {
-      res
-        .status(500)
-        .json({
-          message: 'Server error in uploadPic',
-          error: err.message
+  try {
+    const { caption, social } = req.body
+
+    // validate social link if provided
+    if (social) {
+      const validation = validateSocialMediaUrl(social)
+      if (!validation.valid) {
+        return res.status(400).json({
+          message: 'Invalid social link',
+          reason: validation.reason
         })
+      }
     }
+
+    const imageUrl = req.file.path
+
+    const image = new UserPicForPotd({
+      caption,
+      imageUrl: imageUrl,
+      socialLink: social || null, // store null if not provided
+      publicId: req.file.filename,
+      author: req.user.id
+    })
+
+    await image.save()
+    res.status(201).json({ message: 'Image uploaded successfully', pic: image })
+  } catch (err) {
+    res.status(500).json({
+      message: 'Server error in uploadPic',
+      error: err.message
+    })
+  }
 }
 
 exports.deletePic = async (req, res) => {

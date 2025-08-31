@@ -67,7 +67,7 @@ const AstronomyCalendar = () => {
   }
 
   return (
-    <section className="px-6 py-10 bg-gray-950 ">
+    <section className="px-6 py-10 ">
       <div className="max-w-5xl mx-auto">
         <Carousel setApi={setApi} opts={{ align: "center" }}>
           <CarouselContent>

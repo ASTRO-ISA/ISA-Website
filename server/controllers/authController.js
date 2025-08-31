@@ -189,7 +189,24 @@ exports.forgotPassword = async (req, res) => {
 
   const resetLink = `http://localhost:8080/reset-password/${token}`
 
-  await sendEmail(user.email, 'Reset your password', `Reset link: ${resetLink}`)
+  const html = `
+  <p>Hello ${user.name || "User"},</p>
+
+  <p>We received a request to reset your password for your ISA account.</p>
+
+  <p>You can reset your password by clicking the link below:</p>
+  <p>
+    <a href="${resetLink}" target="_blank">Reset your password</a>
+  </p>
+
+  <p>If you did not request a password reset, please ignore this email.  
+  Your account will remain secure and no changes will be made.</p>
+
+  <p>Best regards,<br>
+  Team ISA</p>
+`;
+
+  await sendEmail(user.email, 'Reset your password', html)
 
   res.status(200).json({ message: 'Reset link sent to email' })
 }

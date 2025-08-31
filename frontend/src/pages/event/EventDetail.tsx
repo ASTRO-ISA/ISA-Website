@@ -126,7 +126,7 @@ const EventDetails = () => {
           <img
             src={event.thumbnail}
             alt={event.title}
-            className="w-full max-h-[500px] object-cover rounded-xl mb-6"
+            className="w-full max-h-[500px] object-cover rounded-xl mb-6 aspect-[16/9]"
           />
 
           {/* Title & Description */}

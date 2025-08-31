@@ -273,7 +273,7 @@ const Events = () => {
                               ? navigator.share({
                                   title: event.title,
                                   text: "Check out this event!",
-                                  url: `${window.location.origin}/events/${event._id}`,
+                                  url: `${window.location.origin}/events/${event.slug}`,
                                 })
                               : alert("Sharing not supported on this browser.")
                           }
@@ -343,7 +343,11 @@ const Events = () => {
           )}
         </section>
 
-        {/* We need astronomical events section here */}
+        {/* Astronomical Calendar */}
+        <section className=" mb-20">
+          <h2 className="  text-2xl font-bold mb-8">Astronomical Calendar</h2>
+          <AstronomyCalendar />
+        </section>
 
         {/* launches */}
         <section className="mb-16">
@@ -433,12 +437,6 @@ const Events = () => {
               </button>
             </div>
           )}
-        </section>
-
-        {/* Astronomical Calendar */}
-        <section className=" mb-20">
-          <h2 className="  text-2xl font-bold mb-8">Astronomical Calendar</h2>
-          <AstronomyCalendar />
         </section>
 
         {/* Host Your Own Event */}

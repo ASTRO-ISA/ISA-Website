@@ -94,7 +94,7 @@ const handleUnsaveBlog = (blogId) => {
 
   // share block
   const handleShare = (blog) => {
-    const shareUrl = `${window.location.origin}/blogs/${blog._id}`;
+    const shareUrl = `${window.location.origin}/blogs/${blog.slug}`;
     navigator.clipboard.writeText(shareUrl);
     toast({
       title: "Link copied.",
@@ -222,8 +222,7 @@ const handleUnsaveBlog = (blogId) => {
               <p>Loading...</p>
             ) : savedBlogs.length === 0 ? (
               <p className="text-gray-500 italic">
-                Nothing to see here right now! Your Saved blogs will appear
-                here.
+              Nothing to see here right now! You can save a blog to read later, and it will appear here.
               </p>
             ) : (
               (showAllUserBlogs ? savedBlogs : savedBlogs.slice(0, 3)).map(
