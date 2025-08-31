@@ -25,16 +25,16 @@ const UserSettings = () => {
     const isNameChanged = name !== userInfo.user.name;
     const isLocationChanged = location !== userInfo.user.country;
     const isAvatarChanged = Boolean(avatarFile);
-  
+
     if (!isNameChanged && !isLocationChanged && !isAvatarChanged) {
       toast({
         title: "No changes detected",
         description: "Make some changes before saving.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
-  
+
     try {
       setIsUpdating(true);
       const formData = new FormData();
@@ -43,22 +43,18 @@ const UserSettings = () => {
       if (avatarFile) {
         formData.append("avatar", avatarFile);
       }
-  
-      await api.patch(
-        `/users/updateUser/${userInfo.user._id}`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-  
+
+      await api.patch(`/users/updateUser/${userInfo.user._id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       await refetchUser();
-  
+
       toast({
         title: "Profile updated",
         description: "Your profile has been saved successfully.",
       });
-  
+
       setIsUpdating(false);
       setIsEditing(false);
     } catch (error) {
@@ -185,14 +181,16 @@ const UserSettings = () => {
       </Card>
 
       {/* Account Settings */}
-      <Card className="bg-space-purple/10 border-space-purple/30">
-        <CardHeader>
-          <CardTitle>Account Settings</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <PasswordChange />
-        </CardContent>
-      </Card>
+      {userInfo.user.role !== "admin" && (
+        <Card className="bg-space-purple/10 border-space-purple/30">
+          <CardHeader>
+            <CardTitle>Account Settings</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <PasswordChange />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

@@ -218,7 +218,7 @@ exports.changeStatus = async (req, res) => {
 
     if (status === 'rejected') {
       const text = `
-        <p>Hello ${paper.createdBy.name},</p>
+        <p>Hello ${paper.uploadedBy.name},</p>
 
         <p>We regret to inform you that your research paper 
         <strong>'${paper.title}'</strong> has been 
@@ -251,7 +251,7 @@ exports.changeStatus = async (req, res) => {
 exports.userPapers = async (req, res) => {
   try {
     const { userId } = req.params
-    const papers = await ResearchPaper.find({ createdBy: userId }).sort({
+    const papers = await ResearchPaper.find({ uploadedBy: userId }).sort({
       createdAt: -1
     })
     if (!papers) {
