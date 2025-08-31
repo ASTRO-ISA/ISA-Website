@@ -13,6 +13,7 @@ import AdminWebinars from "./AdminWebinar";
 import AdminNewsletterDraft from "./AdminNewsletterDraft";
 import AdminEvents from "./AdminEvents";
 import { useQuery } from "@tanstack/react-query";
+import ManageAdmins from "./ManageAdmins";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("events");
@@ -53,6 +54,7 @@ export default function AdminDashboard() {
               <TabsTrigger value="gallery">Manage Gallery</TabsTrigger>
               <TabsTrigger value="webinar">Manage Webinars</TabsTrigger>
               <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
+              <TabsTrigger value="manageAdmins">Manage Admins</TabsTrigger>
             </TabsList>
           </div>
 
@@ -98,6 +100,11 @@ export default function AdminDashboard() {
           {/* Newsletter */}
           <TabsContent value="newsletter" className="space-y-6">
             <AdminNewsletterDraft />
+          </TabsContent>
+
+          {/* ManageAdmins */}
+          <TabsContent value="manageAdmins" className="space-y-6">
+            <ManageAdmins />
           </TabsContent>
         </Tabs>
       </main>
