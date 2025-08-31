@@ -31,7 +31,6 @@ export default function Submissions() {
       queryFn: fetchSuggestedBlogs,
       enabled: !!userInfo?.user?._id, // only run if userId exists
     });
-  console.log("userr", userSuggestedBlogs);
 
   const fetchEvents = async ({ queryKey }) => {
     const [_key, userId] = queryKey;
