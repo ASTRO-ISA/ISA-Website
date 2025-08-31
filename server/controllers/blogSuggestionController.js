@@ -1,38 +1,5 @@
 const BlogSuggestion = require('../models/blogSuggestion')
 
-// to validate the social link provided
-function validateSocialMediaUrl(url) {
-  try {
-    const parsed = new URL(url)
-
-    // only allow http/https
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      return { valid: false, reason: 'Only http/https links are allowed.' }
-    }
-
-    // extract hostname
-    const hostname = parsed.hostname.toLowerCase()
-
-    // allow only specific domains
-    const allowedDomains = [
-      'facebook.com',
-      'instagram.com',
-      'twitter.com',
-      'x.com',
-      'linkedin.com',
-      'github.com'
-    ]
-
-    if (!allowedDomains.some((d) => hostname.endsWith(d))) {
-      return { valid: false, reason: 'Only social media links are allowed.' }
-    }
-
-    return { valid: true }
-  } catch (err) {
-    return { valid: false, reason: err.message }
-  }
-}
-
 exports.getAllBlogSuggestions = async (req, res) => {
   try {
     const filter = {}
@@ -89,20 +56,11 @@ exports.approvedBlogSuggestions = async (req, res) => {
 
 exports.postSuggestedBlog = async (req, res) => {
   try {
-    const { title, description, link } = req.body
+    const { title, description } = req.body
     if (!title || !description) {
       return res
         .status(400)
         .json({ status: 'fail', message: 'Title or description not provided' })
-    }
-
-    if (link) {
-      const validation = validateSocialMediaUrl(link)
-      if (!validation.valid) {
-        return res
-          .status(400)
-          .json({ status: 'fail', message: validation.reason })
-      }
     }
 
     req.body.submittedBy = req.user.id

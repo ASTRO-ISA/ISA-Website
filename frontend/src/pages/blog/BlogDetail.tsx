@@ -71,11 +71,11 @@ const BlogDetail = () => {
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Blog Image */}
-          <div className="rounded-lg mb-5 overflow-hidden pt-4 ">
+          <div className="rounded-lg mb-5 overflow-hidden pt-4 aspect-[16/9}">
             <img
               src={blog.thumbnail}
               alt={blog.title}
-              className="w-full rounded-lg h-auto object-cover"
+              className="w-full rounded-lg h-auto object-cover aspect-[16/9]"
             />
           </div>
 

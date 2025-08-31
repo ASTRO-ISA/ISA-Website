@@ -5,7 +5,7 @@ const AstronomyCalendarCard = ({ content, date, image, title }) => {
   return (
     <div
       className={cn(
-        "bg-gray-900 rounded-2xl shadow-md overflow-hidden flex flex-col transition-all hover:shadow-lg"
+        "cosmic-card rounded-2xl shadow-md overflow-hidden flex flex-col transition-all hover:shadow-lg"
       )}
     >
       <div className="w-full h-40 overflow-hidden">

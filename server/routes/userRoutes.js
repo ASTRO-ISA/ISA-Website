@@ -53,7 +53,7 @@ const updateUserLimiter = rateLimit({
 router.route('/signup').post(registerLimiter, authController.signup)
 router.route('/login').post(loginLimiter, authController.login)
 router.route('/logout').get(logoutLimiter, authController.logout)
-router.route('/forgotPassword').post(forgotPasswordLimiter, authController.forgotPassword)
+router.route('/forgot-password').post(forgotPasswordLimiter, authController.forgotPassword)
 router.route('/resetPassword').post(resetPasswordLimiter, authController.resetPassword)
 
 router.use(authenticateToken)
