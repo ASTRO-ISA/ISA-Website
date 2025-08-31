@@ -20,8 +20,8 @@ export default function AdminDashboard() {
 
   // Fetch research papers
   const fetchPapers = async () => {
-    const res = await api.get("/research-papers");
-    return res.data;
+    const res = await api.get("/research-papers/all");
+    return res.data.data;
   };
 
   const { data: papers = [], isLoading } = useQuery({
