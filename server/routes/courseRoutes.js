@@ -7,15 +7,15 @@ const { imageStorage } = require('../utils/cloudinaryStorage')
 const {
   getAllCourses,
   createCourse,
-  deleteCourse,
+  deleteCourse
 } = require('../controllers/courseController')
- 
+
 const uploadCourseImage = multer({ storage: imageStorage('courses') })
 
 router.get('/', getAllCourses)
 
 router.use(authenticateToken)
-router.use(restrictTo('admin'))
+router.use(restrictTo(['admin', 'super-admin']))
 router.post('/create', uploadCourseImage.single('image'), createCourse)
 router.delete('/:id', deleteCourse)
 

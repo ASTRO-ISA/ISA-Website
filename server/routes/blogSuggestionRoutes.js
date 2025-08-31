@@ -24,7 +24,7 @@ router.use(authenticateToken)
 router.route('/').post(suggestionLimit, postSuggestedBlog)
 router.route('/blogs-suggested-by').get(BlogSuggestedByUser)
 
-router.use(restrictTo('admin'))
+router.use(restrictTo(['admin', 'super-admin']))
 router.route('/').get(getAllBlogSuggestions)
 router.route('/pending').get(pendingBlogSuggestions)
 router.route('/approved').get(approvedBlogSuggestions)

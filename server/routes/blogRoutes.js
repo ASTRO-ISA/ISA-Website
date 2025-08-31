@@ -21,7 +21,7 @@ router
   .route('/all')
   .get(
     authenticateToken,
-    restrictTo('admin'),
+    restrictTo(['admin', 'super-admin']),
     blogController.pendingBlogs
   )
 router.route('/:slug').get(blogController.readBlog)
@@ -37,7 +37,7 @@ router
   )
 router.route('/delete/:id').delete(blogController.deleteBlog)
 
-router.use(restrictTo('admin'))
+router.use(restrictTo(['admin', 'super-admin']))
 router.route('/status/:id').patch(blogController.changeStatus)
 
 module.exports = router

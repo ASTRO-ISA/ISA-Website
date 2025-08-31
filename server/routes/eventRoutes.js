@@ -9,9 +9,20 @@ const restrictTo = require('../middlewares/restrictTo')
 const uploadImage = multer({ storage: imageStorage('event-banners') })
 
 router.route('/').get(eventController.approvedEvents)
-router.route('/upcoming').get(eventController.upcomingEvents)
-router.route('/pending').get(authenticateToken, restrictTo('admin'), eventController.pendingEvents)
-router.route('/all').get(authenticateToken, restrictTo('admin'), eventController.Events)
+router
+  .route('/pending')
+  .get(
+    authenticateToken,
+    restrictTo(['admin', 'super-admin']),
+    eventController.pendingEvents
+  )
+router
+  .route('/all')
+  .get(
+    authenticateToken,
+    restrictTo(['admin', 'super-admin']),
+    eventController.Events
+  )
 
 router.route('/:slug').get(eventController.getEvent)
 router
@@ -22,13 +33,21 @@ router
     eventController.createEvent
   )
 
-router.route('/my-events/:userid').get(authenticateToken, eventController.registeredEvents)
-router.route('/status/:id').patch(authenticateToken, restrictTo('admin'), eventController.changeStatus)
+router
+  .route('/my-events/:userid')
+  .get(authenticateToken, eventController.registeredEvents)
+router
+  .route('/status/:id')
+  .patch(authenticateToken, restrictTo('admin'), eventController.changeStatus)
 router.route('/register/:eventid/:userid').patch(eventController.registerEvent)
-router.route('/unregister/:eventid/:userid').patch(eventController.unregisterEvent)
+router
+  .route('/unregister/:eventid/:userid')
+  .patch(eventController.unregisterEvent)
 
 router.use(authenticateToken)
 router.delete('/:id', eventController.deleteEvent)
-router.route('/:id').put(restrictTo('admin'), eventController.updateEvent)
+router
+  .route('/:id')
+  .put(restrictTo(['admin', 'super-admin']), eventController.updateEvent)
 
 module.exports = router

@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  Menu,
-  X
-} from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -28,11 +25,13 @@ const Navbar = () => {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+      transition={{ type: "spring", stiffness: 120, damping: 20 }}
       className="fixed top-0 left-0 right-0 z-50 bg-black border-b border-white/10"
       // className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-br from-space-purple/20 via-space-dark to-space-accent/20"
     >
-      <div className="container mx-auto px-4 py-5"> {/* py-4 before */}
+      <div className="container mx-auto px-4 py-5">
+        {" "}
+        {/* py-4 before */}
         <div className="flex justify-between items-center">
           {/* mobile menu button */}
           <div className="w-full flex justify-between md:hidden">
@@ -94,7 +93,8 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-2 space-x-5">
-            {userInfo?.user.role === "admin" ? (
+            {userInfo?.user.role === "admin" ||
+            userInfo?.user.role === "super-admin" ? (
               <Link
                 to="/admin"
                 className={`transition-colors ${
@@ -240,7 +240,6 @@ const Navbar = () => {
             </button>
           </div> */}
         </div>
-
         {/* Mobile Menu Panel */}
         {mobileMenuOpen && (
           <motion.div
