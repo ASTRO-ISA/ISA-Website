@@ -250,7 +250,8 @@ const Navbar = () => {
             className="md:hidden"
           >
             <div className="flex flex-col space-y-4 pt-4 pb-6 px-2">
-              {userInfo?.user.role === "admin" ? (
+              {userInfo?.user.role === "admin" ||
+              userInfo?.user.role === "super-admin" ? (
                 <Link
                   to="/admin"
                   className={`transition-colors ${
