@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
-const Signup = () => {
+const Signup = ({ url = "/users/signup" }) => {
   const { refetchUser } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -31,27 +31,23 @@ const Signup = () => {
       alert("Passwords do not match");
       return;
     }
-    else if(
-      form.country !== 'India' &&
-      form.country !== 'Canada' &&
-      form.country !== 'USA' &&
-      form.country !== 'Nepal'){
-        toast({
-          description: "Enter a valid country name",
-        })
-      }
+    // else if(
+    //   form.country !== 'India' &&
+    //   form.country !== 'Canada' &&
+    //   form.country !== 'USA' &&
+    //   form.country !== 'Nepal'){
+    //     toast({
+    //       description: "Enter a valid country name",
+    //     })
+    //   }
 
     try {
-      const response = await api.post(
-        "/users/signup",
-        form,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true, // this is to ensure cookie is accepted by the browser
-        }
-      );
+      const response = await api.post(url, form, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, // this is to ensure cookie is accepted by the browser
+      });
 
       // console.log("Account created!:", response.data);
       toast({
@@ -166,7 +162,7 @@ const Signup = () => {
             </div>
 
             {/* Country */}
-            <div>
+            {/* <div>
               <label className="block text-sm text-gray-300 mb-1">
                 Country
               </label>
@@ -179,7 +175,7 @@ const Signup = () => {
                 required
                 className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
               />
-            </div>
+            </div> */}
 
             {/* Submit */}
             <div className="text-center">
@@ -192,12 +188,14 @@ const Signup = () => {
             </div>
 
             {/* Switch to Sign In */}
-            <div className="text-center text-sm text-gray-400 mt-4">
-              Already have an account?{" "}
-              <a href="/login" className="text-space-accent hover:underline">
-                Sign In
-              </a>
-            </div>
+            {url === "/users/signup" && (
+              <div className="text-center text-sm text-gray-400 mt-4">
+                Already have an account?{" "}
+                <a href="/login" className="text-space-accent hover:underline">
+                  Sign In
+                </a>
+              </div>
+            )}
           </form>
         </div>
       </main>
