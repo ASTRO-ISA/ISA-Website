@@ -138,7 +138,7 @@ const UploadResearchPaper = () => {
             <button
               type="submit"
               disabled={isPending}
-              className="w-full bg-space-accent p-2 rounded text-white font-bold"
+              className="w-full bg-space-accent p-2 rounded text-white font-bold flex justify-center"
             >
               {isPending ? <Spinner /> : "Upload Paper"}
             </button>
