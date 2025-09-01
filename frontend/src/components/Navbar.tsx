@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -69,17 +70,23 @@ const Navbar = () => {
 
             {/* if the user is logged in show avatar */}
             {isLoggedIn && (
-              <img
+            <Avatar
+              onClick={handleAvatarClick}
+              className="h-8 w-8 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform md:hidden"
+            >
+              <AvatarImage
                 src={
                   userInfo.user.avatar === "profile-dark.webp"
                     ? `images/${userInfo.user.avatar}`
                     : userInfo.user.avatar
                 }
-                alt="User Avatar"
-                onClick={handleAvatarClick}
-                className="h-8 w-8 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform md-hidden"
+                className="object-cover"
               />
-            )}
+              <AvatarFallback>
+                {userInfo.user.name?.[0] ?? "U"}
+              </AvatarFallback>
+            </Avatar>
+          )}
           </div>
 
           <Link to="/" className="items-center gap-2 hidden md:flex">
@@ -217,17 +224,26 @@ const Navbar = () => {
 
             {/* if the user is logged in show avatar */}
             {isLoggedIn && (
-              <img
+            <Avatar
+              onClick={handleAvatarClick}
+              className="h-10 w-10 cursor-pointer border border-white hover:scale-105 transition-transform"
+            >
+              <AvatarImage
                 src={
                   userInfo.user.avatar === "profile-dark.webp"
                     ? `images/${userInfo.user.avatar}`
                     : userInfo.user.avatar
                 }
                 alt="User Avatar"
-                onClick={handleAvatarClick}
-                className="h-10 w-10 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform"
+                className="object-cover"
               />
-            )}
+              <AvatarFallback>
+                {userInfo.user.name
+                  ? userInfo.user.name.charAt(0).toUpperCase()
+                  : "U"}
+              </AvatarFallback>
+            </Avatar>
+          )}
           </div>
 
           {/* Mobile Menu Button */}
