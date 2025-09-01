@@ -3,9 +3,9 @@ const cloudinary = require('cloudinary').v2
 const { sendEmail } = require('../utils/sendEmail')
 const { default: slugify } = require('slugify')
 
-exports.pendingPapers = async (req, res) => {
+exports.allPapers = async (req, res) => {
   try {
-    const response = await ResearchPaper.find({ status: 'pending' }).populate(
+    const response = await ResearchPaper.find({}).populate(
       'uploadedBy',
       'name email'
     )
@@ -15,9 +15,35 @@ exports.pendingPapers = async (req, res) => {
   }
 }
 
+exports.pendingPapers = async (req, res) => {
+  try {
+    const response = await ResearchPaper.find({ status: 'pending' }).populate(
+      'uploadedBy',
+      'name email'
+    )
+    res.status(200).json(response)
+  } catch (error) {
+    res.status(500).json({ status: 'fail', error: error.message })
+  }
+}
+
 exports.approvedPapers = async (req, res) => {
   try {
     const papers = await ResearchPaper.find({ status: 'approved' })
+      .sort({ createdAt: -1 })
+      .populate('uploadedBy', 'name email')
+    if (!papers) {
+      return res.status(404).json({ message: 'Papers not found' })
+    }
+    res.status(200).json(papers)
+  } catch (err) {
+    res.status(500).json({ status: 'fail', error: err.message })
+  }
+}
+
+exports.rejectedPapers = async (req, res) => {
+  try {
+    const papers = await ResearchPaper.find({ status: 'rejected' })
       .sort({ createdAt: -1 })
       .populate('uploadedBy', 'name email')
     if (!papers) {
@@ -182,76 +208,87 @@ exports.deletePaper = async (req, res) => {
 
 exports.changeStatus = async (req, res) => {
   try {
-    const { id } = req.params
-    const { status, response } = req.body
+    const { id } = req.params;
+    const { status, response } = req.body;
+
     const paper = await ResearchPaper.findByIdAndUpdate(
       id,
-      { status: status, response: response },
+      { status: status, adminComment: response },
       { new: true, runValidators: true }
-    ).populate('uploadedBy', 'name email')
+    ).populate('uploadedBy', 'name email');
+
     if (!paper) {
-      return res.status(404).json({ message: 'Paper not found' })
+      return res.status(404).json({ message: 'Paper not found' });
     }
 
     if (status === 'approved') {
       const text = `
         <p>Hello ${paper.uploadedBy.name},</p>
-
         <p>Congratulations! Your research paper 
         <strong>'${paper.title}'</strong> has been 
         <span style='color:green;font-weight:bold;'>approved</span> and is now published on ISA.</p>
-
         <p>You can view your paper here:  
         <a href='${process.env.CLIENT_URL}/research-papers/${paper.id}' target='_blank'>Read Paper</a></p>
-
-        <p>Thank you for your valuable academic contribution. We’re excited to share your research with the ISA community.</p>
-
-        <p>Best regards,<br>
-        Team ISA</p>
-      `
+        <p>Best regards,<br>Team ISA</p>
+      `;
       await sendEmail(
         paper.uploadedBy.email,
         `Your research paper '${paper.title}' is now live!`,
         text
-      )
+      );
     }
 
     if (status === 'rejected') {
       const text = `
         <p>Hello ${paper.uploadedBy.name},</p>
-
         <p>We regret to inform you that your research paper 
         <strong>'${paper.title}'</strong> has been 
         <span style='color:red;font-weight:bold;'>rejected</span> after review.</p>
-
         <p><strong>Reason from Admin:</strong></p>
         <blockquote style='border-left: 3px solid #ccc; margin: 10px 0; padding-left: 10px; color:#555;'>
           ${paper.adminComment || 'No specific reason provided.'}
         </blockquote>
-
         <p>You may revise and resubmit your research paper if you’d like to address the feedback provided.</p>
-
-        <p>We truly appreciate your effort and encourage you to continue contributing your research to the ISA platform.</p>
-
-        <p>Best regards,<br>
-        Team ISA</p>
-      `
+        <p>We truly appreciate your effort and encourage you to continue contributing.</p>
+        <p>Best regards,<br>Team ISA</p>
+      `;
       await sendEmail(
-        paper.createdBy.email,
+        paper.uploadedBy.email,
         `Update on your research paper: ${paper.title}`,
         text
-      )
+      );
     }
-    res.status(200).json({ message: 'Status changes sunccessfully.' })
+
+    res.status(200).json({ message: 'Status changed successfully.' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message })
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
-}
+};
 
 exports.userPapers = async (req, res) => {
   try {
     const { userId } = req.params
     const papers = await ResearchPaper.find({ uploadedBy: userId }).sort({
+      createdAt: -1
+    })
+    if (!papers) {
+      return res
+        .status(404)
+        .json({ message: 'No research papers written by the user.' })
+    }
+    res.status(200).json(papers)
+  } catch (err) {
+    res.status(500).json({
+      message: 'Server error finding user papers.',
+      error: err.message
+    })
+  }
+}
+
+exports.userApprovedPapers = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const papers = await ResearchPaper.find({ uploadedBy: userId, status: 'approved' }).sort({
       createdAt: -1
     })
     if (!papers) {

@@ -38,10 +38,22 @@ const researchPaperSchema = new mongoose.Schema(
     },
     response: {
       type: String
+    },
+    statusChangedAt: {
+      type: Date,
+      default: Date.now
     }
   },
   { timestamps: true }
 )
+
+// to timestamp the status changed
+researchPaperSchema.pre('save', function (next) {
+  if (this.isModified('status')) {
+    this.statusChangedAt = Date.now
+  }
+  next()
+})
 
 const ResearchPaper = mongoose.model('ResearchPaper', researchPaperSchema)
 module.exports = ResearchPaper

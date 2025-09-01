@@ -142,16 +142,23 @@ exports.updateUser = async (req, res) => {
     if ((!req.body || Object.keys(req.body).length === 0) && !req.file) {
       return res.status(400).json({
         status: 'fail',
-        message: 'No data or document provided to update'
+        message: 'No data or document provided to update',
       })
     }
 
-    // Only handle document if new one is uploaded
+    if (user.role === 'admin' && req.body.name) {
+      return res.status(403).json({
+        status: 'fail',
+        message: 'Admins are not allowed to change their name',
+      })
+    }
+
+    // only handle document if new one is uploaded
     if (req.file) {
       req.body.avatar = req.file.path
       req.body.avatarPublicId = req.file.filename
 
-      // Remove old doc from Cloudinary
+      // remove old doc from Cloudinary
       if (user.avatarPublicId) {
         await cloudinary.uploader.destroy(user.avatarPublicId)
       }
@@ -159,19 +166,19 @@ exports.updateUser = async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(id, req.body, {
       new: true,
-      runValidators: true
+      runValidators: true,
     })
 
     res.status(200).json({
       status: 'success',
       message: 'user updated',
-      data: updatedUser
+      data: updatedUser,
     })
   } catch (error) {
     res.status(500).json({
       status: 'fail',
       message: 'Server error, cannot update User',
-      error: error.message
+      error: error.message,
     })
   }
 }
