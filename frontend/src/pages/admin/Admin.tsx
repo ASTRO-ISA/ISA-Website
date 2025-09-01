@@ -20,7 +20,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("events");
   const { userInfo } = useAuth();
 
-  // Fetch research papers
+  // fetch research papers
   const fetchPapers = async () => {
     const res = await api.get("/research-papers/all");
     return res.data.data;
@@ -75,7 +75,7 @@ export default function AdminDashboard() {
 
           {/* Research Papers */}
           <TabsContent value="papers" className="space-y-6">
-            <AllResearchPapers papers={papers} />
+            <AllResearchPapers/>
           </TabsContent>
 
           {/* Blog Suggestions */}

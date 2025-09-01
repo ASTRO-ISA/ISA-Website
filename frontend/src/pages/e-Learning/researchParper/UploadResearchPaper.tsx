@@ -3,9 +3,11 @@ import api from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import Spinner from "@/components/ui/Spinner";
 
 const UploadResearchPaper = () => {
+  const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const { toast } = useToast();
   const [file, setFile] = useState<File | null>(null);
@@ -24,7 +26,7 @@ const UploadResearchPaper = () => {
     if (file) formData.append("file", file);
     Object.entries(form).forEach(([key, val]) => formData.append(key, val));
 
-    const res = await api.post("/research-papers/", formData, {
+    const res = await api.post("/research-papers/upload-paper", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
@@ -42,10 +44,12 @@ const UploadResearchPaper = () => {
         title: "Research paper uploaded successfully.",
         description: "You can check the status of the paper on your profile.",
       });
+      navigate('/training');
     },
     onError: () => {
       toast({
-        description: "Upload failed. Please try again.",
+        title: "Upload failed.",
+        description: "Something went wrong uploading paper. Please try again later.",
         variant: "destructive",
       });
     },

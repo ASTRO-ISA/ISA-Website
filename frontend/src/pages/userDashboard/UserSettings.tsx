@@ -15,18 +15,17 @@ const UserSettings = () => {
   const { userInfo, refetchUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(userInfo?.user.name || "");
-  const [location, setLocation] = useState(userInfo?.user.country || "");
   const [avatar, setAvatar] = useState(userInfo?.user.avatar || "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  const isAdmin = userInfo.user.role === "admin";
+
   const handleSaveProfile = async () => {
-    // check if any changes are actually made
-    const isNameChanged = name !== userInfo.user.name;
-    const isLocationChanged = location !== userInfo.user.country;
+    const isNameChanged = !isAdmin && name !== userInfo.user.name;
     const isAvatarChanged = Boolean(avatarFile);
 
-    if (!isNameChanged && !isLocationChanged && !isAvatarChanged) {
+    if (!isNameChanged && !isAvatarChanged) {
       toast({
         title: "No changes detected",
         description: "Make some changes before saving.",
@@ -38,8 +37,11 @@ const UserSettings = () => {
     try {
       setIsUpdating(true);
       const formData = new FormData();
-      formData.append("name", name);
-      formData.append("country", location);
+
+      if (!isAdmin) {
+        formData.append("name", name);
+      }
+
       if (avatarFile) {
         formData.append("avatar", avatarFile);
       }
@@ -59,6 +61,9 @@ const UserSettings = () => {
       setIsEditing(false);
     } catch (error) {
       setIsUpdating(false);
+      setName(userInfo.user.name);
+      setAvatarFile(null);
+    
       const errorMessage = error?.response?.data || "Something went wrong.";
       toast({
         title: "Error updating profile",
@@ -90,10 +95,10 @@ const UserSettings = () => {
         <CardContent className="space-y-4">
           {/* Avatar Section */}
           <div className="flex items-center gap-4">
-            <Avatar className="w-16 h-16">
-              <AvatarImage src={userInfo.user.avatar} />
-              <AvatarFallback>{name?.[0]}</AvatarFallback>
-            </Avatar>
+          <Avatar className="w-16 h-16">
+          <AvatarImage src={userInfo.user.avatar} className="object-cover" />
+          <AvatarFallback>{name?.[0]}</AvatarFallback>
+          </Avatar>
             {isEditing && (
               <div>
                 <Label
@@ -101,7 +106,7 @@ const UserSettings = () => {
                   className="flex items-center gap-2 cursor-pointer text-sm text-blue-500"
                 >
                   <Camera className="w-4 h-4" />
-                  Change Photo
+                  Change
                 </Label>
                 <Input
                   type="file"
@@ -117,38 +122,28 @@ const UserSettings = () => {
 
           {isEditing ? (
             <>
+              {/* Name field (disabled for admins) */}
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name" className="flex items-center gap-2 text-gray-400">
+                Full Name
+                {isAdmin && (
+                  <p className="text-gray-500 text-sm">
+                    *Admin is not allowed to change name.
+                  </p>
+                )}
+              </Label>
                 <Input
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  disabled={isAdmin}
                   className="bg-space-purple/10 border-space-purple/30"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={userInfo.user.email}
-                  disabled
-                  className="bg-space-purple/10 border-space-purple/30"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="bg-space-purple/10 border-space-purple/30"
-                />
-              </div>
+
               <div className="flex gap-2">
                 <Button onClick={handleSaveProfile}>
-                  {" "}
-                  {isUpdating ? <Spinner /> : " Save Changes"}
+                  {isUpdating ? <Spinner /> : "Save Changes"}
                 </Button>
                 <Button variant="outline" onClick={() => setIsEditing(false)}>
                   Cancel
@@ -161,14 +156,6 @@ const UserSettings = () => {
                 <div>
                   <Label className="text-gray-400">Full Name</Label>
                   <p className="font-medium">{name}</p>
-                </div>
-                <div>
-                  <Label className="text-gray-400">Email</Label>
-                  <p className="font-medium">{userInfo.user.email}</p>
-                </div>
-                <div>
-                  <Label className="text-gray-400">Location</Label>
-                  <p className="font-medium">{location}</p>
                 </div>
               </div>
               <Button onClick={() => setIsEditing(true)}>

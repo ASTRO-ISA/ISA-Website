@@ -2,9 +2,10 @@ const cron = require('node-cron')
 const Event = require('../../models/eventModel')
 const BlogSuggestion = require('../../models/blogSuggestion')
 const Blog = require('../../models/blogModel')
+const ResearchPaper = require('../../models/researchPaperModel')
 const cloudinary = require('cloudinary').v2
 
-cron.schedule('0 0 * * *', async () => {
+cron.schedule('0 2 * * *', async () => {
   const cutoffDate = new Date()
   cutoffDate.setDate(cutoffDate.getDate() - 2)
 
@@ -50,7 +51,7 @@ cron.schedule('0 0 * * *', async () => {
           await cloudinary.uploader.destroy(blog.publicId)
           console.log(`Deleted blog thumbnail: ${blog.publicId}`)
         } catch (err) {
-          console.error(`Failed to delete blog thubnail ${blog.publicId}:`, err)
+          console.error(`Failed to delete blog thumbnail ${blog.publicId}:`, err)
         }
       }
     }
@@ -59,5 +60,28 @@ cron.schedule('0 0 * * *', async () => {
     console.log('Blogs cleanup done')
   } catch (err) {
     console.error('Blog cleanup failed:', err)
+  }
+
+  try {
+    const rejectedPapers = await ResearchPaper.find({
+      status: 'rejected',
+      statusChangedAt: { $lt: cutoffDate },
+    })
+
+    for (let paper of rejectedPapers) {
+      if (paper.paperUrl && paper.paperPublicId) {
+        try {
+          await cloudinary.uploader.destroy(paper.paperPublicId)
+          console.log(`Deleted research paper document: ${paper.paperPublicId}`)
+        } catch (err) {
+          console.error(`Failed to delete research paper document ${paper.paperPublicId}:`, err)
+        }
+      }
+    }
+
+    await ResearchPaper.deleteMany({ status: 'rejected', statusChangedAt: { $lt: cutoffDate } })
+    console.log('Research papers cleanup done')
+  } catch (err) {
+    console.error('Research paper cleanup failed:', err)
   }
 })

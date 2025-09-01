@@ -52,6 +52,7 @@ const UserProfile = () => {
                 <AvatarImage
                   src={userInfo.user.avatar}
                   alt={userInfo.user.name}
+                  className="object-cover"
                 />{" "}
                 <AvatarFallback className="text-2xl bg-space-purple">
                   {userInfo.user.name
