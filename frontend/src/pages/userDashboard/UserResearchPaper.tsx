@@ -21,7 +21,7 @@ const UserResearchPaper = () => {
   const fetchPapers = async (userId) => {
     setLoading(true);
     try {
-      const res = await api.get(`/research-papers/my-papers/${userId}`);
+      const res = await api.get(`/research-papers/my-approved-papers/${userId}`);
       setPapers(res.data);
       setLoading(false);
     } catch (error) {
