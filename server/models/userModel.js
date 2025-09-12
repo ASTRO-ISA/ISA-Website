@@ -51,6 +51,9 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false
   },
+  transactions: [
+    { type: mongoose.Schema.Types.ObjectId, ref: 'PaymentTransaction' }
+  ],
   createdAt: {
     type: Date,
     default: Date.now
