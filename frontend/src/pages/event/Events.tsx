@@ -191,7 +191,7 @@ const Events = () => {
             {loading ? (
               <p>Loading...</p>
             ) : events.length === 0 ? (
-              <p>Nothing to see here right now!</p>
+              <p className="text-gray-400 italic">Nothing to see here right now!</p>
             ) : (
               (showAll ? events : events.slice(0, 3)).map((event) => (
                 <div
@@ -356,7 +356,7 @@ const Events = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Upcoming events */}
             {launches.length === 0 ? (
-              <p>Nothing to see here right now!</p>
+              <p className="text-gray-400 text-sm">Nothing to see here right now!</p>
             ) : (
               (showAll ? launches : launches.slice(0, 3)).map(
                 (
