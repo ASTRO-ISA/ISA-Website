@@ -27,7 +27,7 @@ const About = () => {
       image: "/images/aditi.jpeg",
       github: "https://github.com/aditikhare137",
       linkedin: "https://www.linkedin.com/in/aditikhare137",
-    },
+    }
   ]
   const teamMembers = [
     {
@@ -114,13 +114,13 @@ const About = () => {
       image: "/images/Srijan.png",
       linkedin: "https://www.linkedin.com/in/srijan-mishra-7b95692b5",
     },
-        {
-      name: "Sunaina Chaurasiya",
-      role: "Frontend Developer",
-      image: "/images/sunaina.png",
-      github: "https://github.com/Sunaina-Chaurasiya",
-      linkedin: "https://www.linkedin.com/in/sunaina-chaurasiya-252a06285/",
-    },
+    //     {
+    //   name: "Sunaina Chaurasiya",
+    //   role: "Frontend Developer",
+    //   image: "/images/sunaina.png",
+    //   github: "https://github.com/Sunaina-Chaurasiya",
+    //   linkedin: "https://www.linkedin.com/in/sunaina-chaurasiya-252a06285/",
+    // },
   ];
 
   return (
@@ -312,7 +312,7 @@ const About = () => {
             viewport={{ once: true }}
             className="text-3xl md:text-4xl font-bold text-center mb-10"
           >
-            Meet Our Team
+            Founders
           </motion.h2>
 
           <div className="flex justify-center grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
@@ -383,7 +383,7 @@ const About = () => {
             viewport={{ once: true }}
             className="text-3xl md:text-4xl font-bold text-center mb-10"
           >
-            Developers Behind This Web
+            Developers
           </motion.h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
@@ -454,7 +454,7 @@ const About = () => {
             viewport={{ once: true }}
             className="text-3xl md:text-4xl font-bold text-center mb-10"
           >
-            Core team Members (ISA)
+            Core Team
           </motion.h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
