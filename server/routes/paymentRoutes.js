@@ -22,8 +22,9 @@ const refundRequestLimiter = rateLimit({
   message: 'Too many payment requests. Try again later.'
 });
 
+// router.route('/').get(initiatePayment)
 router.use(authenticateToken)
-router.route('/pay').post(paymentLimiter, initiatePayment)
+router.route('/payment/initiate/:itemId').post(paymentLimiter, initiatePayment)
 router.route('/status/:transactionId').get(verifyPayment)
 router.route('/request-refund/:transactionId').post(refundRequestLimiter, requestRefund)
 

@@ -7,18 +7,38 @@ const { default: slugify } = require('slugify')
 
 exports.createWebinar = async (req, res) => {
   try {
-    const { title, description, webinarDate, presenter, guests, videoLink } = req.body
+    let {
+      title,
+      description,
+      webinarDate,
+      presenter,
+      guests,
+      videoLink,
+      isFree,
+      fee,
+    } = req.body
+
+    // Convert values from string -> proper types
+    isFree = isFree === "true" || isFree === true
+    if (!isFree) {
+      fee = Number(fee)
+      if (isNaN(fee) || fee <= 0) {
+        return res.status(400).json({ error: "Fee must be a valid number" })
+      }
+    } else {
+      fee = null
+    }
 
     const videoId = getVideoId(videoLink)
     if (!videoId) {
-      return res.status(400).json({ error: 'Invalid YouTube video link.' })
+      return res.status(400).json({ error: "Invalid YouTube video link." })
     }
 
-    const thumbnail = req.file ? req.file.path : ''
-    const publicId = req.file ? req.file.filename : ''
+    const thumbnail = req.file ? req.file.path : ""
+    const publicId = req.file ? req.file.filename : ""
     const slug = slugify(title, { lower: true, strict: true })
 
-    const webinar = new Webinar({
+    const webinarData = {
       thumbnail,
       publicId,
       title,
@@ -26,15 +46,18 @@ exports.createWebinar = async (req, res) => {
       description,
       webinarDate,
       presenter,
-      guests: Array.isArray(guests) ? guests : (guests ? [guests] : []),
-      videoId
-    })
+      guests: Array.isArray(guests) ? guests : guests ? [guests] : [],
+      videoId,
+      isFree,
+      fee,
+    }
 
+    const webinar = new Webinar(webinarData)
     await webinar.save()
 
-    res.status(201).json({ message: 'Webinar created successfully', webinar })
+    res.status(201).json({ message: "Webinar created successfully", webinar })
   } catch (error) {
-    console.log('Failed to create webinar!', error)
+    console.error("Failed to create webinar", error)
     res.status(500).json(error)
   }
 }
@@ -81,6 +104,10 @@ exports.pastWebinars = async (req, res) => {
 exports.registerWebinar = async (req, res) => {
   try {
     const { webinarid, userid } = req.params
+    const tokenUserId = req.user.id
+    if(userid !== tokenUserId){
+      return res.status(403).json({message: `Can't vadidate user`})
+    }
 
     const webinar = await Webinar.findById(webinarid)
     const user = await User.findById(userid)
@@ -92,28 +119,56 @@ exports.registerWebinar = async (req, res) => {
       return res.status(400).json({ message: 'Webinar not found' })
     }
 
-    if(webinar.attendees.includes(userid)){
-      return res.status(400).json({ message: 'User already registered for this webinar.'})
+    if(webinar.isFree){
+      if(webinar.attendees.includes(userid)){
+        return res.status(400).json({ message: 'User already registered for this webinar.'})
+      }
+  
+      const updatedWebinar = await Webinar.findByIdAndUpdate(
+        webinarid,
+        { $addToSet: { attendees: userid } },
+        { new: true }
+      ).populate('attendees', 'name email')
+  
+      const text = `Hi ${user.name},
+      You have successfully registered for "${webinar.title}" on ${new Date(webinar.webinarDate).toDateString()}.
+      See you there!
+      – ISA`
+  
+      await sendEmail(user.email, `Registered for ${webinar.title}`, text)
+  
+      res.status(200).json({
+        success: true,
+        message: 'User successfully registered for the webinar',
+        data: updatedWebinar
+      })
+    } else {
+      // verify payment - have to add
+      console.log('we got it')
     }
 
-    const updatedWebinar = await Webinar.findByIdAndUpdate(
-      webinarid,
-      { $addToSet: { attendees: userid } },
-      { new: true }
-    ).populate('attendees', 'name email')
+    // if(webinar.attendees.includes(userid)){
+    //   return res.status(400).json({ message: 'User already registered for this webinar.'})
+    // }
 
-    const text = `Hi ${user.name},
-You have successfully registered for "${webinar.title}" on ${new Date(webinar.webinarDate).toDateString()}.
-See you there!
-– ISA`
+    // const updatedWebinar = await Webinar.findByIdAndUpdate(
+    //   webinarid,
+    //   { $addToSet: { attendees: userid } },
+    //   { new: true }
+    // ).populate('attendees', 'name email')
 
-    await sendEmail(user.email, `Registered for ${webinar.title}`, text)
+    // const text = `Hi ${user.name},
+    // You have successfully registered for "${webinar.title}" on ${new Date(webinar.webinarDate).toDateString()}.
+    // See you there!
+    // – ISA`
 
-    res.status(200).json({
-      success: true,
-      message: 'User successfully registered for the webinar',
-      data: updatedWebinar
-    })
+    // await sendEmail(user.email, `Registered for ${webinar.title}`, text)
+
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'User successfully registered for the webinar',
+    //   data: updatedWebinar
+    // })
   } catch (error) {
     console.error('Error in registration:', error)
     res.status(500).json({
@@ -170,11 +225,39 @@ We are sorry to miss you, hope to see you in our future webinars!
 
 exports.updatedWebinar = async (req, res) => {
   const { id } = req.params
-  const updates = req.body
+  const updates = { ...req.body }
 
   try {
-    const webinar = await Webinar.findByIdAndUpdate(id, updates, { new: true })
-    if (!webinar) return res.status(404).json({ message: 'Webinar not found' })
+    const oldWebinar = await Webinar.findById(id)
+    if (!oldWebinar) {
+      return res.status(404).json({ message: 'Webinar not found' })
+    }
+
+    if (typeof updates.isFree !== 'undefined') {
+      if (updates.isFree === true) {
+        updates.fee = undefined
+      } else if (updates.isFree === false) {
+        if (!updates.fee || updates.fee <= 0) {
+          return res.status(400).json({
+            message: 'Fee must be provided for paid webinars and greater than 0',
+          })
+        }
+      }
+    }
+
+    if (req.file && oldWebinar.thumbnailPublicId) {
+      await cloudinary.uploader.destroy(oldWebinar.thumbnailPublicId)
+    }
+
+    if (updates.videoLink && updates.videoLink !== oldWebinar.videoLink) {
+      updates.oldVideoLink = oldWebinar.videoLink
+    }
+
+    const webinar = await Webinar.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    })
+
     res.status(200).json(webinar)
   } catch (error) {
     res.status(500).json({ message: 'Error updating webinar', error: error.message })

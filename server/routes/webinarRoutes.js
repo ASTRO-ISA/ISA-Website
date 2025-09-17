@@ -31,7 +31,7 @@ router.use(restrictTo(['admin', 'super-admin']))
 router
   .route('/create')
   .post(uploadImage.single('thumbnail'), webinarController.createWebinar)
-router.route('/:id').patch(webinarController.updatedWebinar)
+router.route('/:id').put(webinarController.updatedWebinar)
 router.route('/:id').delete(webinarController.deleteWebinar)
 
 module.exports = router

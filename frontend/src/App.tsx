@@ -14,7 +14,7 @@ import WriteBlog from "./pages/blog/WriteBlog";
 import Shop from "./pages/Shop";
 import Training from "./pages/e-Learning/Training";
 import Events from "./pages/event/Events";
-import Webinars from "./pages/Webinars";
+import Webinars from "./pages/webinar/Webinars";
 import Community from "./pages/Community";
 import Login from "./pages/authentication/Login";
 import CreateAccount from "./pages/authentication/CreateAccount";

@@ -15,7 +15,7 @@ const refundSchema = new mongoose.Schema({
 })
 
 const PaymentTransactionSchema = new mongoose.Schema({
-  userId: { 
+  user_id: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User',
     required: true,
