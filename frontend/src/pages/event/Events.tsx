@@ -37,7 +37,7 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
-      const res = await api.get("/events/upcoming");
+      const res = await api.get("/events/");
       setEvents(res.data);
       setLoading(false);
     } catch (err) {

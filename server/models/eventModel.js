@@ -89,6 +89,23 @@ const eventSchema = new mongoose.Schema({
   adminComment: {
     type: String,
     default: 'No specific reason provided.'
+  },
+  isFree: {
+    type: Boolean,
+    default: false
+  },
+  fee: {
+    type: Number,
+    min: [0, 'Fee cannot be negative'],
+    validate: {
+      validator: function (value) {
+        if (!this.isFree && (!value || value <= 0)) {
+          return false
+        }
+        return true
+      },
+      message: 'Paid events must have a valid fee greater than 0'
+    }
   }
 })
 

@@ -58,6 +58,23 @@ const webinarSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    isFree: {
+        type: Boolean,
+        default: false
+    },
+    fee: {
+        type: Number,
+        min: [0, 'Fee cannot be negative'],
+        validate: {
+          validator: function (value) {
+            if (!this.isFree && (!value || value <= 0)) {
+              return false
+            }
+            return true
+          },
+          message: 'Paid webinar must have a valid fee greater than 0'
+        }
+    }
 })
 
 // if somehow we missed setting slug

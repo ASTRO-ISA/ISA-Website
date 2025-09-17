@@ -204,7 +204,11 @@ const EventDetails = () => {
             <div>
               <hr className="mb-3" />
               <button
-                onClick={deleteEvent}
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to delete this event? This action can't be undone.")) {
+                    deleteEvent();
+                  }
+                }}
                 className="bg-red-600 text-white px-3 py-1 rounded mt-2"
               >
                 {deleting ? <Spinner /> : "Delete Event"}

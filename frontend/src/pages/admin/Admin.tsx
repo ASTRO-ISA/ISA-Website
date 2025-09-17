@@ -9,11 +9,12 @@ import ApprovedBlogSuggestions from "../blog/ApprovedBlogSuggestions";
 import AdminGallerySection from "./AdminGallerySection";
 import AdminJobs from "./AdJob";
 import AdminCourses from "./AdminCourses";
-import AdminWebinars from "./AdminWebinar";
+import AdminWebinars from "./AdmWebinar/AdminWebinar";
 import AdminNewsletterDraft from "./AdminNewsletterDraft";
 import AdminEvents from "./AdminEvents";
 import { useQuery } from "@tanstack/react-query";
 import ManageAdmins from "./ManageAdmins";
+import AdminTransactions from "./AdminTransactions";
 import { useAuth } from "@/context/AuthContext";
 
 export default function AdminDashboard() {
@@ -33,12 +34,14 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
+
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Admin</h1>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             Manage Content, Events, and Opportunities
           </p>
+          <p className="text-gray-400 text-sm">Logged in as: {userInfo.user.email}</p>
         </div>
 
         <Tabs
@@ -51,13 +54,16 @@ export default function AdminDashboard() {
               <TabsTrigger value="events">Manage Events</TabsTrigger>
               <TabsTrigger value="training">Manage Jobs</TabsTrigger>
               <TabsTrigger value="papers">Research Papers</TabsTrigger>
-              <TabsTrigger value="suggestions">Blog</TabsTrigger>
+              <TabsTrigger value="suggestions">Manage Blogs</TabsTrigger>
               <TabsTrigger value="courses">Manage Courses</TabsTrigger>
               <TabsTrigger value="gallery">Manage Gallery</TabsTrigger>
               <TabsTrigger value="webinar">Manage Webinars</TabsTrigger>
               <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
               {userInfo.user.role === "super-admin" && (
+                <>
                 <TabsTrigger value="manageAdmins">Manage Admins</TabsTrigger>
+                <TabsTrigger value="transactions">Manage Transactions</TabsTrigger>
+                </>
               )}
             </TabsList>
           </div>
@@ -108,9 +114,14 @@ export default function AdminDashboard() {
 
           {/* ManageAdmins */}
           {userInfo.user.role === "super-admin" && (
+            <>
             <TabsContent value="manageAdmins" className="space-y-6">
               <ManageAdmins />
             </TabsContent>
+            <TabsContent value="transactions" className="space-y-6">
+              <AdminTransactions />
+            </TabsContent>
+            </>
           )}
         </Tabs>
       </main>

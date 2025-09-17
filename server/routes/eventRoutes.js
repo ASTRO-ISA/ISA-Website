@@ -38,7 +38,7 @@ router
   .get(authenticateToken, eventController.registeredEvents)
 router
   .route('/status/:id')
-  .patch(authenticateToken, restrictTo('admin'), eventController.changeStatus)
+  .patch(authenticateToken, restrictTo(['admin', 'super-admin']), eventController.changeStatus)
 router.route('/register/:eventid/:userid').patch(eventController.registerEvent)
 router
   .route('/unregister/:eventid/:userid')

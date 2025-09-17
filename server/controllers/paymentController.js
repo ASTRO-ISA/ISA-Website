@@ -1,148 +1,131 @@
-const axios = require('axios')
-const crypto = require('crypto')
+const { StandardCheckoutClient, Env, StandardCheckoutPayRequest, RefundRequest } = require('pg-sdk-node')
 const User = require('../models/userModel')
+const Webinar = require('../models/webinarModel')
+const Event = require('../models/eventModel')
 const PaymentTransaction = require('../models/transactionsModel')
+const Course = require('../models/coursesModel')
 const Joi = require('joi')
 
-// validation schema - to validate the incoming data
+// phonepe client
+const clientId = process.env.PP_CLIENT_ID
+const clientSecret = process.env.PP_CLIENT_SECRET
+const clientVersion = process.env.PP_CLIENT_VERSION
+const phonepeEnv = process.env.NODE_ENV === 'production' ? Env.PRODUCTION : Env.SANDBOX
+const phonepeClient = StandardCheckoutClient.getInstance(clientId, clientSecret, clientVersion, phonepeEnv)
+
+// validation schema - to verify the amount
 const paymentSchema = Joi.object({
-  amount: Joi.number().positive().required(),
-  mobileNumber: Joi.string().pattern(/^[6-9]\d{9}$/).required()
+  amount: Joi.number().positive().required()
 })
 
-// initiate payment (idempotent + secure)
+// initiate payment (idempotent)
 exports.initiatePayment = async (req, res) => {
   try {
-    const { amount, mobileNumber } = req.body
-    const userId = req.user.id
+    const { amount, item_type } = req.body
+    const itemId = req.params.itemId
+    const user_id = req.user.id
 
-    // validate inputs
-    const { error } = paymentSchema.validate({ amount, mobileNumber })
+    // validate amount input
+    const { error } = paymentSchema.validate({ amount })
     if (error) return res.status(400).json({ error: error.details[0].message })
 
-    const user = await User.findById(userId)
-    // if (!user || !user.active) return res.status(403).json({ error: 'Unauthorized user' }) // we are not assigning active status when creating user
-    if (!user) return res.status(403).json({ error: 'Unauthorized user' })
-
-    // generate unique transaction ID and callback
-    const transactionId = `TXN_${Date.now()}_${Math.floor(Math.random() * 1000)}`
-    const callbackUrl = `${process.env.CLIENT_URL}/api/payments/callback`
-    const nonce = crypto.randomBytes(8).toString('hex')
-
-    // check idempotency
-    const existingTx = await PaymentTransaction.findOne({
-      userId,
-      amount,
-      status: 'pending'
-    })
-    if (existingTx) return res.json({ message: 'Pending transaction exists', transactionId: existingTx.orderId })
-
-    // construct payload
-    const payload = {
-      merchantId: process.env.PP_MERCHANT_ID,
-      merchantTransactionId: transactionId,
-      merchantUserId: userId,
-      amount: amount * 100,
-      redirectUrl: callbackUrl,
-      redirectMode: 'POST',
-      callbackUrl,
-      mobileNumber,
-      nonce,
-      paymentInstrument: { type: 'PAY_PAGE' }
+    // retrieve the actual item to verify amount
+    let realAmount
+    if (item_type === 'webinar') {
+      const webinar = await Webinar.findById(itemId)
+      if (!webinar) return res.status(404).json({ error: 'Webinar not found' })
+      realAmount = webinar.fee
+    } else if (item_type === 'event') {
+      const event = await Event.findById(itemId)
+      if (!event) return res.status(404).json({ error: 'Event not found' })
+      realAmount = event.fee
+    } else if (item_type === 'course') {
+      const course = await Course.findById(itemId)
+      if (!course) return res.status(404).json({ error: 'Course not found' })
+      realAmount = course.fee
+    } else {
+      return res.status(400).json({ error: 'Invalid item type' })
     }
 
-    const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64')
-    const checksum = crypto
-      .createHash('sha256')
-      .update(base64Payload + '/pg/v1/pay' + process.env.PP_SALT_KEY)
-      .digest('hex') + '###' + process.env.PP_SALT_INDEX
+    // check expected amount
+    if (realAmount !== amount) {
+      return res.status(422).json({ message: 'Transaction amount does not match the expected price.' })
+    }
 
-    // save transaction
+    // check user existence
+    const user = await User.findById(user_id)
+    if (!user) return res.status(403).json({ error: 'Unauthorized user' })
+
+    // idempotency: find existing pending transaction
+    const existingTx = await PaymentTransaction.findOne({ user_id, amount, status: 'pending' })
+    if (existingTx) {
+      return res.json({ message: 'Pending transaction exists', transactionId: existingTx.orderId })
+    }
+
+    // create a unique merchant order id for phonepe
+    const transactionId = `TXN_${Date.now()}_${Math.floor(Math.random() * 1000)}`
+    const redirectUrl = `${process.env.CLIENT_URL}/api/payments/callback`  // after payment completion
+
+    // save transaction log in our database
     const newTx = await PaymentTransaction.create({
-      userId,
+      user_id,
       orderId: transactionId,
       amount,
       status: 'pending',
       currency: 'INR'
     })
-
     // link transaction to user
-    await User.findByIdAndUpdate(userId, { $push: { transactions: newTx._id } })
+    await User.findByIdAndUpdate(user_id, { $push: { transactions: newTx._id } })
 
-    // hit PhonePe API
-    const response = await axios.post(
-      `${process.env.PP_HOST_URL}/pg/v1/pay`,
-      { request: base64Payload },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-VERIFY': checksum,
-          'X-MERCHANT-ID': process.env.PP_MERCHANT_ID
-        }
-      }
-    )
+    // build phonepe payment request
+    const request = StandardCheckoutPayRequest.builder()
+      .merchantOrderId(transactionId)
+      .amount(amount * 100)        // amount in paise
+      .redirectUrl(redirectUrl)    // url to redirect after payment
+      .build()
+    const response = await phonepeClient.pay(request)
 
-    res.json({ transactionId, data: response.data })
+    // respond with transaction id and redirect url
+    res.json({ transactionId, redirect_url: response.redirect_url })
   } catch (err) {
     console.error('Payment Initiation Error:', {
-      userId: req.user?.id,
+      user_id: req.user?.id,
       message: err.message
     })
     res.status(500).json({ error: 'Payment initiation failed' })
   }
 }
 
-// verify payment (idempotent and reconciliation)
+// verify payment status (idempotent, update our records)
 exports.verifyPayment = async (req, res) => {
   try {
     const { transactionId } = req.params
 
-    // construct PhonePe status URL
-    const url = `/pg/v1/status/${process.env.PP_MERCHANT_ID}/${transactionId}`
-    const checksum = crypto
-      .createHash('sha256')
-      .update(url + process.env.PP_SALT_KEY)
-      .digest('hex') + '###' + process.env.PP_SALT_INDEX
-
-    // hit PhonePe status API
-    const response = await axios.get(`${process.env.PP_HOST_URL}${url}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-VERIFY': checksum,
-        'X-MERCHANT-ID': process.env.PP_MERCHANT_ID
-      }
-    })
-
-    const paymentData = response.data
-    // const newStatus = paymentData.success ? 'success' : 'failed'
+    // query phonepe for order status
+    const statusResponse = await phonepeClient.getOrderStatus(transactionId)
+    const state = statusResponse.state
     let newStatus = 'failed'
-    if (paymentData.code === 'PAYMENT_SUCCESS') {
+    if (state === 'COMPLETED') {
       newStatus = 'success'
-    } else if (paymentData.code === 'PAYMENT_PENDING') {
+    } else if (state === 'PENDING') {
       newStatus = 'pending'
     }
 
-    // idempotent update
+    // update our transaction record if still pending
     const tx = await PaymentTransaction.findOneAndUpdate(
       { orderId: transactionId, status: 'pending' },
       {
-        $set: {
-          status: newStatus,
-          gatewayTransactionId: paymentData.data?.transactionId,
-          method: paymentData.data?.paymentInstrument?.type || 'unknown',
-          lastCheckedAt: new Date(),
-          rawGatewayResponse: {
-            status: paymentData.success,
-            transactionId: paymentData.data?.transactionId,
-            method: paymentData.data?.paymentInstrument?.type
-          },
-          attempts: (paymentData.success ? 0 : 1)
-        }
+        status: newStatus,
+        gatewayTransactionId: statusResponse.paymentDetails?.[0]?.transactionId,
+        method: statusResponse.paymentDetails?.[0]?.paymentMode || 'unknown',
+        lastCheckedAt: new Date(),
+        rawGatewayResponse: statusResponse,
+        attempts: newStatus === 'success' ? 0 : 1
       },
       { new: true }
     )
 
-    res.json({ transactionId, data: paymentData })
+    res.json({ transactionId, data: statusResponse })
   } catch (err) {
     console.error('Payment Verification Error:', {
       transactionId: req.params.transactionId,
@@ -152,23 +135,29 @@ exports.verifyPayment = async (req, res) => {
   }
 }
 
-// request refund
+// request a refund (user-initiated; admin approval required)
 exports.requestRefund = async (req, res) => {
   try {
     const { transactionId } = req.params
     const { amount, reason } = req.body
     const userId = req.user.id
 
-    const tx = await PaymentTransaction.findOne({ orderId: transactionId, userId })
+    // find the transaction and verify it's successful
+    const tx = await PaymentTransaction.findOne({ orderId: transactionId, user_id: userId })
     if (!tx) return res.status(404).json({ error: 'Transaction not found' })
-    if (tx.status !== 'success') return res.status(400).json({ error: 'Only successful transactions can be refunded' })
+    if (tx.status !== 'success') {
+      return res.status(400).json({ error: 'Only successful transactions can be refunded' })
+    }
 
+    // compute total already refunded
     const refundedAmount = tx.refunds?.reduce((sum, r) => r.status === 'success' ? sum + r.amount : sum, 0) || 0
     if (refundedAmount + amount > tx.amount) {
       return res.status(400).json({ error: 'Refund amount exceeds original payment' })
     }
 
+    // create a pending refund entry
     const refundId = `REF_${Date.now()}_${Math.floor(Math.random() * 1000)}`
+    tx.refunds = tx.refunds || []
     tx.refunds.push({ refundId, amount, reason, status: 'pending_approval' })
     await tx.save()
 
@@ -179,12 +168,12 @@ exports.requestRefund = async (req, res) => {
   }
 }
 
-// approve refund
+// approve or reject a refund (admin only)
 exports.approveRefund = async (req, res) => {
   try {
     const { transactionId, refundId } = req.params
-    const adminId = req.user.id // admin only
-    const { approve } = req.body // true = approve, false = reject
+    const adminId = req.user.id
+    const { approve } = req.body // true to approve, false to reject
 
     const tx = await PaymentTransaction.findOne({ orderId: transactionId })
     if (!tx) return res.status(404).json({ error: 'Transaction not found' })
@@ -202,39 +191,20 @@ exports.approveRefund = async (req, res) => {
       return res.json({ message: 'Refund rejected' })
     }
 
-    // proceed with PhonePe API call
-    const payload = {
-      merchantId: process.env.PP_MERCHANT_ID,
-      merchantTransactionId: transactionId,
-      merchantRefundId: refundId,
-      amount: refund.amount * 100,
-      callbackUrl: `${process.env.CLIENT_URL}/api/payments/refund/callback`
-    }
+    // initiate refund via phonepe sdk
+    const request = RefundRequest.builder()
+      .amount(refund.amount * 100)             // amount in paise
+      .merchantRefundId(refundId)
+      .originalMerchantOrderId(transactionId)
+      .build()
+    const response = await phonepeClient.refund(request)
 
-    const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64')
-    const checksum = crypto
-      .createHash('sha256')
-      .update(base64Payload + '/pg/v1/refund' + process.env.PP_SALT_KEY)
-      .digest('hex') + '###' + process.env.PP_SALT_INDEX
-
-    const response = await axios.post(
-      `${process.env.PP_HOST_URL}/pg/v1/refund`,
-      { request: base64Payload },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-VERIFY': checksum,
-          'X-MERCHANT-ID': process.env.PP_MERCHANT_ID
-        }
-      }
-    )
-
-    refund.status = response.data.success ? 'success' : 'failed'
-    refund.rawGatewayResponse = response.data
+    refund.status = response.state === 'COMPLETED' ? 'success' : 'failed'
+    refund.rawGatewayResponse = response
     refund.approvedBy = adminId
     await tx.save()
 
-    res.json({ message: 'Refund processed', refundId, data: response.data })
+    res.json({ message: 'Refund processed', refundId, data: response })
   } catch (err) {
     console.error('Refund Approval Error:', err.message)
     res.status(500).json({ error: 'Refund approval failed' })

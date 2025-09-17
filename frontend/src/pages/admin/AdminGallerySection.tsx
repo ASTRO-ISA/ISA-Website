@@ -440,7 +440,7 @@ const AdminGallerySection = () => {
         {/* user pics for potd Gallery */}
         <h3 className="font-semibold text-lg mb-2">User uploaded pics</h3>
         <ul className="text-gray-500 text-sm mb-3">
-          <li>*These are the pics uploaded by the users for the feature of club member featured pic</li>
+          <li>*These are the pics uploaded by the users for the feature of 'Club member featured pic'</li>
           <li>*You can set a fetured by clicking on the three dot menu</li>
         </ul>
         {userImages.length === 0 ? (
