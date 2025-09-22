@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
+import OtpVerification from "./OtpVerification";
 
 const Login = () => {
   const { refetchUser } = useAuth();
@@ -17,12 +18,13 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post("/users/login", form, {
+      const res = await api.post("/auth/login", form, {
         headers: {
           "Content-Type": "application/json",
         },
       });
 
+      // If login is successful
       toast({
         title: "Login successful!",
         description: "Welcome back!",
@@ -32,81 +34,94 @@ const Login = () => {
       navigate("/");
     } catch (err) {
       console.error("Login error:", err);
-      toast({
-        title: "Login failed",
-        description: "Invalid credentials",
-        variant: "destructive",
-      });
+
+      if (err.response && err.response.status === 403) {
+        // redirect to OTP page with email
+        navigate(`/otp-verification/${form.email}`);
+        toast({
+          title: "Verify your account",
+          description: "Please verify your email with the OTP sent.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login failed",
+          description: "Invalid credentials",
+          variant: "destructive",
+        });
+      }
     }
   };
 
   return (
-    <div className="min-h-screen bg-space-dark text-white flex flex-col">
-      <main className="flex-grow flex items-center justify-center px-4 pt-24 pb-16">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-space-purple/10 p-8 rounded-2xl shadow-lg w-full max-w-md"
-        >
-          <h2 className="text-3xl font-bold mb-6 text-center">Login</h2>
-
-          {/* Email */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
-            />
-          </div>
-
-          {/* Password */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
-            />
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            className="w-full bg-space-accent hover:bg-space-accent/80 text-white font-semibold py-2 rounded-md transition-colors"
+    <>
+      <div className="min-h-screen bg-space-dark text-white flex flex-col">
+        <main className="flex-grow flex items-center justify-center px-4 pt-24 pb-16">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-space-purple/10 p-8 rounded-2xl shadow-lg w-full max-w-md"
           >
-            Sign In
-          </button>
+            <h2 className="text-3xl font-bold mb-6 text-center">Login</h2>
 
-          {/* Forgot Password */}
-          <p className=" mt-4 text-center text-sm text-space-accent">
-            <Link to="/forgot-password" className="hover:underline">
-              Forgot Password?
-            </Link>
-          </p>
+            {/* Email */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
+              />
+            </div>
 
-          {/* Signup Redirect */}
-          <p className="mt-4 text-sm text-center text-gray-400">
-            Don&apos;t have an account?{" "}
-            <Link
-              to="/signup"
-              className="text-space-accent hover:underline hover:text-space-accent/80"
+            {/* Password */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 bg-space-purple/20 border border-space-purple/50 rounded-md focus:outline-none focus:ring-2 focus:ring-space-accent"
+              />
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              className="w-full bg-space-accent hover:bg-space-accent/80 text-white font-semibold py-2 rounded-md transition-colors"
             >
-              Create Account
-            </Link>
-          </p>
-        </form>
-      </main>
-    </div>
+              Sign In
+            </button>
+
+            {/* Forgot Password */}
+            <p className=" mt-4 text-center text-sm text-space-accent">
+              <Link to="/forgot-password" className="hover:underline">
+                Forgot Password?
+              </Link>
+            </p>
+
+            {/* Signup Redirect */}
+            <p className="mt-4 text-sm text-center text-gray-400">
+              Don&apos;t have an account?{" "}
+              <Link
+                to="/signup"
+                className="text-space-accent hover:underline hover:text-space-accent/80"
+              >
+                Create Account
+              </Link>
+            </p>
+          </form>
+        </main>
+      </div>
+    </>
   );
 };
 

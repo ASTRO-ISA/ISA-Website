@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
     enum: ['India', 'Canada', 'Nepal', 'USA']
   },
   passwordChangedAt: Date,
-  active: {
+  isVerified: {
     type: Boolean,
     default: true,
     select: false
@@ -74,11 +74,11 @@ userSchema.pre('save', function (next) {
   next()
 })
 
-//Hide inactive users
-userSchema.pre(/^find/, function (next) {
-  this.where({ active: { $ne: false } })
-  next()
-})
+// //Hide inActive users
+// userSchema.pre(/^find/, function (next) {
+//   this.where({ isActive: { $ne: false } })
+//   next()
+// })
 
 //Password verification
 userSchema.methods.correctPassword = async function (
