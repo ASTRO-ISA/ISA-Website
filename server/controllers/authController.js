@@ -1,51 +1,25 @@
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
-const cloudinary = require('cloudinary').v2
 const { sendEmail } = require('../utils/sendEmail')
-
-const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN
-  })
-}
-
-const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id)
-
-  const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true
-  }
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true
-
-  res.cookie('jwt', token, cookieOptions)
-
-  user.password = undefined
-
-  return res.status(statusCode).json({
-    message: 'Success',
-    token,
-    data: {
-      user
-    }
-  })
-}
+const generateAndSendToken = require('../utils/generateAndSendToken')
+const otpService = require('../services/otpService')
 
 exports.signup = async (req, res) => {
   try {
-    const newUser = await User.create({
+    const user = await User.create({
       name: req.body.name,
       email: req.body.email,
       phoneNo: req.body.phoneNo,
-      // role: req.body.role,
       password: req.body.password,
       confirmPassword: req.body.confirmPassword,
       country: req.body.country
     })
 
-    createSendToken(newUser, 201, res)
+    await otpService.sendOtp(user.email, sendEmail)
+
+    res.status(200).json({
+      message: 'Signup successful. Please verify your email with OTP.'
+    })
   } catch (error) {
     res.status(500).json({ status: 'Fail', message: error.message })
   }
@@ -71,19 +45,18 @@ exports.login = async (req, res) => {
         .json({ status: 'Fail', message: 'Incorrect email or password' })
     }
 
-    createSendToken(user, 200, res)
+    // 3) Check verification
+    if (!user.isVerified) {
+      // Re-send OTP
+      await otpService.sendOtp(user.email, sendEmail)
+      return res.status(403).json({
+        message: 'Please verify your email before logging in. OTP sent again.'
+      })
+    }
+
+    generateAndSendToken.createSendToken(user, 200, res)
   } catch (error) {
     res.status(500).json({ status: 'Fail', message: error.message })
-  }
-}
-
-exports.getMe = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id).select('-password')
-
-    res.status(200).json({ status: 'success', user })
-  } catch (err) {
-    res.status(500).json({ status: 'error', message: err.message })
   }
 }
 
@@ -118,68 +91,9 @@ exports.updatePassword = async (req, res) => {
     await user.save() // Will trigger pre-save hash + passwordChangedAt
 
     // 4. Send new JWT
-    createSendToken(user, 200, res)
+    generateAndSendToken.createSendToken(user, 200, res)
   } catch (error) {
     res.status(500).json({ status: 'error', message: error.message })
-  }
-}
-
-exports.updateUser = async (req, res) => {
-  try {
-    const { id } = req.params
-
-    if (!id) {
-      return res
-        .status(400)
-        .json({ status: 'fail', message: 'No ID provided in jobUpdater' })
-    }
-
-    const user = await User.findById(id)
-    if (!user) {
-      return res.status(404).json({ message: 'user does not exist' })
-    }
-
-    if ((!req.body || Object.keys(req.body).length === 0) && !req.file) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'No data or document provided to update',
-      })
-    }
-
-    if (user.role === 'admin' && req.body.name) {
-      return res.status(403).json({
-        status: 'fail',
-        message: 'Admins are not allowed to change their name',
-      })
-    }
-
-    // only handle document if new one is uploaded
-    if (req.file) {
-      req.body.avatar = req.file.path
-      req.body.avatarPublicId = req.file.filename
-
-      // remove old doc from Cloudinary
-      if (user.avatarPublicId) {
-        await cloudinary.uploader.destroy(user.avatarPublicId)
-      }
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    })
-
-    res.status(200).json({
-      status: 'success',
-      message: 'user updated',
-      data: updatedUser,
-    })
-  } catch (error) {
-    res.status(500).json({
-      status: 'fail',
-      message: 'Server error, cannot update User',
-      error: error.message,
-    })
   }
 }
 
@@ -197,7 +111,7 @@ exports.forgotPassword = async (req, res) => {
   const resetLink = `http://localhost:8080/reset-password/${token}`
 
   const html = `
-  <p>Hello ${user.name || "User"},</p>
+  <p>Hello ${user.name || 'User'},</p>
 
   <p>We received a request to reset your password for your ISA account.</p>
 
@@ -211,7 +125,7 @@ exports.forgotPassword = async (req, res) => {
 
   <p>Best regards,<br>
   Team ISA</p>
-`;
+`
 
   await sendEmail(user.email, 'Reset your password', html)
 
@@ -241,109 +155,44 @@ exports.resetPassword = async (req, res) => {
   }
 }
 
-exports.getSavedBlogs = async (req, res) => {
+// OTp--------------------------------------------
+
+exports.verifyOtp = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate({
-      path: 'savedBlogs',
-      populate: {
-        path: 'author',
-        select: 'name'
-      }
-    })
+    const { email, otp } = req.body
 
-    if (!user) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'User not found'
-      })
-    }
+    const user = await otpService.verifyOtp(email, otp)
 
-    res.status(200).json({
-      status: 'success',
-      savedBlogs: user.savedBlogs
-    })
+    generateAndSendToken.createSendToken(user, 200, res)
   } catch (error) {
-    return res.status(500).json({
-      status: 'error',
-      message: 'Something went wrong while saving the blog',
-      error: error.message
-    })
+    res.status(400).json({ status: 'fail', message: error.message })
   }
 }
 
-exports.saveBlog = async (req, res) => {
+exports.resendOtp = async (req, res) => {
   try {
-    const { blogid } = req.params
+    const { email } = req.body
 
-    if (!blogid) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'No blogId provided'
-      })
-    }
-
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { $addToSet: { savedBlogs: blogid } },
-      { new: true }
-    )
-
+    // if user exists
+    const user = await User.findOne({ email })
     if (!user) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'User not found'
-      })
+      return res.status(404).json({ status: 'fail', message: 'User not found' })
     }
+
+    if (user.isVerified) {
+      return res
+        .status(400)
+        .json({ status: 'fail', message: 'Email already verified' })
+    }
+
+    // Send new OTP
+    await otpService.sendOtp(email, sendEmail)
 
     res.status(200).json({
       status: 'success',
-      message: 'Blog saved successfully',
-
-      savedBlogs: user.savedBlogs
+      message: 'OTP resent successfully. Check your inbox.'
     })
   } catch (error) {
-    return res.status(500).json({
-      status: 'error',
-      message: 'Something went wrong while saving the blog',
-      error: error.message
-    })
-  }
-}
-
-exports.unSaveBlog = async (req, res) => {
-  try {
-    const { blogid } = req.params
-
-    if (!blogid) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'No blogId provided'
-      })
-    }
-
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { $pull: { savedBlogs: blogid } },
-      { new: true }
-    )
-
-    if (!user) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'User not found'
-      })
-    }
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Blog deleted successfully',
-      savedBlogs: user.savedBlogs
-    })
-  } catch (error) {
-    return res.status(500).json({
-      status: 'error',
-      message: 'Something went wrong while unsaving the blog',
-      error: error.message
-    })
+    res.status(500).json({ status: 'fail', message: error.message })
   }
 }

@@ -14,7 +14,7 @@ const UserProfile = () => {
 
   const handleLogout = async () => {
     try {
-      await api.get("/users/logout");
+      await api.get("/auth/logout");
       toast({
         title: "Logout successful!",
         description: "See you again!",

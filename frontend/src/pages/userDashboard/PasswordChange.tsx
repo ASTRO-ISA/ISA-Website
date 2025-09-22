@@ -44,7 +44,7 @@ const PasswordChange: React.FC = () => {
     }
   
     try {
-      const res = await api.patch("/users/updatePassword", password, {
+      const res = await api.patch("/auth/updatePassword", password, {
         headers: {
           "Content-Type": "application/json",
         },

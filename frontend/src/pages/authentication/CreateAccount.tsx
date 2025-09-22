@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
-const Signup = ({ url = "/users/signup" }) => {
+const Signup = ({ url = "/auth/signup" }) => {
   const { refetchUser } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -49,13 +49,11 @@ const Signup = ({ url = "/users/signup" }) => {
         withCredentials: true, // this is to ensure cookie is accepted by the browser
       });
 
-      // console.log("Account created!:", response.data);
       toast({
         title: "Account created!:",
         description: "Welcome!",
       });
-      refetchUser();
-      navigate("/");
+      navigate(`/otp-verification/${form.email}`);
     } catch (err) {
       console.error("Something went wrong", err);
       toast({

@@ -29,7 +29,7 @@ const ResetPassword = () => {
 
     try {
       const response = await api.post(
-        `/users/resetPassword`,
+        `/auth/resetPassword`,
         {
           token, // JWT token from URL
           newPassword: form.newPassword,
