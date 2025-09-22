@@ -34,6 +34,7 @@ import ForgotPassword from "./pages/authentication/ForgotPassword";
 import PotdPicsUpload from "./pages/PotdPicsUpload";
 import UploadResearchPaper from "./pages/e-Learning/researchParper/UploadResearchPaper";
 import PrivateRoute from "./components/PrivateRoute";
+import OtpVerification from "./pages/authentication/OtpVerification";
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,10 @@ const App = () => {
             <Route path="/webinars" element={<Webinars />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<CreateAccount />} />
+            <Route
+              path="/otp-verification/:email"
+              element={<OtpVerification />}
+            />
             <Route path="/blogs/:slug" element={<BlogDetail />} />
             <Route path="/host-event" element={<CreateEvent />} />
             <Route path="/about" element={<About />} />
