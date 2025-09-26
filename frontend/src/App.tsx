@@ -35,6 +35,7 @@ import PotdPicsUpload from "./pages/PotdPicsUpload";
 import UploadResearchPaper from "./pages/e-Learning/researchParper/UploadResearchPaper";
 import PrivateRoute from "./components/PrivateRoute";
 import OtpVerification from "./pages/authentication/OtpVerification";
+import EditEvent from "./pages/admin/admin-events/EditEvent";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +74,7 @@ const App = () => {
             <Route element={<PrivateRoute />}>
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/events/edit/:slug" element={<EditEvent />} />
             </Route>
             <Route path="/" element={<Index />} />
             <Route path="/community" element={<Community />} />

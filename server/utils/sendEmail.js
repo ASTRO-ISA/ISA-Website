@@ -49,4 +49,29 @@ const sendNewsletter = async ({bcc, subject, html}) => {
   }
 }
 
-module.exports = {sendEmail, sendNewsletter}
+const sendEmailWithAttachment = async (to, subject, html, attachments = []) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.SENDER_EMAIL,
+        pass: process.env.SENDER_APP_PASS
+      }
+    })
+
+    const mailOptions = {
+      from: `ISA-India <${process.env.SENDER_EMAIL}>`,
+      to,
+      subject,
+      html,
+      attachments // will include attachments if provided
+    }
+
+    const info = await transporter.sendMail(mailOptions)
+    console.log('Email sent:', info.response)
+  } catch (error) {
+    console.error('Error sending email:', error)
+  }
+}
+
+module.exports = {sendEmail, sendNewsletter, sendEmailWithAttachment}
