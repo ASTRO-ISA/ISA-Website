@@ -62,13 +62,6 @@ const About = () => {
 
   const clubDepartments = [
     {
-      name: "Jyotsana",
-      role: "Core Team Member",
-      image: "/images/Jyotsana.png",
-      github: "https://github.com/jyotsana20",
-      linkedin: "https://www.linkedin.com/in/jyotsana-rani-3a7a18298",
-    },
-    {
       name: "Chanchal Bairagi",
       role: "Core Team Member",
       image: "/images/Chanchal.png",
@@ -97,12 +90,6 @@ const About = () => {
       linkedin: "https://in.linkedin.com/in/manan-mayank",
     },
     {
-      name: "Niyati Richhariya",
-      role: "Core Team Member",
-      image: "/images/Niyati.png",
-      linkedin: "https://www.linkedin.com/in/niyati-richhariya-83a019334",
-    },
-    {
       name: "Akshat Shevalkar",
       role: "Core Team Member",
       image: "/images/Akshat.png",
@@ -114,13 +101,6 @@ const About = () => {
       image: "/images/Srijan.png",
       linkedin: "https://www.linkedin.com/in/srijan-mishra-7b95692b5",
     },
-    //     {
-    //   name: "Sunaina Chaurasiya",
-    //   role: "Frontend Developer",
-    //   image: "/images/sunaina.png",
-    //   github: "https://github.com/Sunaina-Chaurasiya",
-    //   linkedin: "https://www.linkedin.com/in/sunaina-chaurasiya-252a06285/",
-    // },
   ];
 
   return (
