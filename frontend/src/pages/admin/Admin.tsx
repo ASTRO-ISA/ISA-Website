@@ -16,6 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import ManageAdmins from "./ManageAdmins";
 import AdminTransactions from "./AdminTransactions";
 import { useAuth } from "@/context/AuthContext";
+import QRScannerPage from "./qr/QRScanner";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("events");
@@ -59,6 +60,7 @@ export default function AdminDashboard() {
               <TabsTrigger value="gallery">Manage Gallery</TabsTrigger>
               <TabsTrigger value="webinar">Manage Webinars</TabsTrigger>
               <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
+              <TabsTrigger value="qrscanner">QR Scanner</TabsTrigger>
               {userInfo.user.role === "super-admin" && (
                 <>
                 <TabsTrigger value="manageAdmins">Manage Admins</TabsTrigger>
@@ -110,6 +112,11 @@ export default function AdminDashboard() {
           {/* Newsletter */}
           <TabsContent value="newsletter" className="space-y-6">
             <AdminNewsletterDraft />
+          </TabsContent>
+
+          {/* Newsletter */}
+          <TabsContent value="qrscanner" className="space-y-6">
+            <QRScannerPage />
           </TabsContent>
 
           {/* ManageAdmins */}

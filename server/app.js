@@ -24,6 +24,7 @@ const newsletterRouter = require('./routes/newsletterRoutes.js')
 const userPicsPotdRouter = require('./routes/userPicsPotdRoutes.js')
 const superAdminRouter = require('./routes/superAdminRoutes.js')
 const paymentRouter = require('./routes/paymentRoutes.js')
+const qrRouter = require('./routes/qrRoutes.js')
 
 // middlewares
 app.use(helmet())
@@ -58,6 +59,7 @@ app.use('/api/v1/webinars', webinarRouter)
 app.use('/api/v1/newsletter', newsletterRouter)
 app.use('/api/v1/user-potd-pics', userPicsPotdRouter)
 app.use('/api/v1/phonepe', paymentRouter)
+app.use('/api/v1/qr', qrRouter)
 
 app.get('/', (req, res) => {
   res.status(200).json({
