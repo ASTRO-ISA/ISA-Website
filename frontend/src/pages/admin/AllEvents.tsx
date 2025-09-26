@@ -1,50 +1,153 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { useToast } from "@/hooks/use-toast";
-import { Link } from "react-router-dom";
-import { Calendar, MapPin, Clock, Users, MoreHorizontal, Share } from "lucide-react";
+import { useState, useEffect } from "react"
+import { useAuth } from "@/context/AuthContext"
+import { useToast } from "@/hooks/use-toast"
+import { Link } from "react-router-dom"
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import api from "@/lib/api";
+  Calendar,
+  MapPin,
+  Clock,
+  Users,
+  MoreHorizontal,
+  Share,
+} from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import api from "@/lib/api"
 
 const AllEvents = () => {
-    const [pendingEvents, setPendingEvents] = useState([]);
-    const [showAll, setShowAll] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const { toast } = useToast();
+  const [pendingEvents, setPendingEvents] = useState([])
+  const [showAll, setShowAll] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [loadingEventId, setLoadingEventId] = useState(null)
+  const { toast } = useToast()
+  const { userInfo, isLoggedIn } = useAuth()
 
-    const fetchPendingEvents = async () => {
-        try{
-            const res = await api.get("/events/pending", {withCredentials: true})
-            setPendingEvents(res.data)
-            setLoading(false);
-        } catch (err) {
-            console.error("Error fething events.");
-        }
+  const fetchPendingEvents = async () => {
+    try {
+      const res = await api.get("/events/pending", { withCredentials: true })
+      setPendingEvents(res.data)
+      setLoading(false)
+    } catch (err) {
+      console.error("Error fetching events.")
     }
+  }
 
-    useEffect(() => {
-        fetchPendingEvents();
-    }, []);
+  useEffect(() => {
+    fetchPendingEvents()
+  }, [])
 
-    const changeStatus = async (id, newStatus ) => {
-        try{
-            await api.patch(`/events/status/${id}`, {status: newStatus }, {withCredentials: true});
-            toast({
-              description: `Status changed to ${newStatus}`
-            })
-            fetchPendingEvents();
-        } catch (err) {
-            toast({
-                description: "Something went wrong changing the status."
-            })
-        }
+  const changeStatus = async (id, newStatus) => {
+    try {
+      await api.patch(
+        `/events/status/${id}`,
+        { status: newStatus },
+        { withCredentials: true }
+      )
+      toast({
+        description: `Status changed to ${newStatus}`,
+      })
+      fetchPendingEvents()
+    } catch (err) {
+      toast({
+        description: "Something went wrong changing the status.",
+      })
     }
+  }
+
+  // ✅ Register handlers
+  const handleRegister = async (userId, eventId) => {
+    if (!isLoggedIn) {
+      return toast({
+        title: "Login Required",
+        description: "Please login to register for this event.",
+        variant: "destructive",
+      })
+    }
+    setLoadingEventId(eventId)
+    try {
+      await api.post(
+        `/events/register/${eventId}`,
+        { userId },
+        { withCredentials: true }
+      )
+      toast({ description: "Registered successfully" })
+      fetchPendingEvents()
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Something went wrong while registering.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoadingEventId(null)
+    }
+  }
+
+  const handleUnregister = async (userId, eventId) => {
+    setLoadingEventId(eventId)
+    try {
+      await api.post(
+        `/events/unregister/${eventId}`,
+        { userId },
+        { withCredentials: true }
+      )
+      toast({ description: "Unregistered successfully" })
+      fetchPendingEvents()
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Something went wrong while unregistering.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoadingEventId(null)
+    }
+  }
+
+  const handlePaidRegister = async (userId, event) => {
+    if (!isLoggedIn) {
+      return toast({
+        title: "Login Required",
+        description: "Please login to register for this event.",
+        variant: "destructive",
+      })
+    }
+    setLoadingEventId(event._id)
+    try {
+      const res = await api.post(
+        `/phonepe/payment/initiate/${event._id}`,
+        {
+          amount: event.fee,
+          item_type: "event",
+        },
+        { withCredentials: true }
+      )
+
+      if (res.data?.redirect_url) {
+        window.location.href = res.data.redirect_url
+      } else {
+        toast({
+          title: "Payment Error",
+          description: "Could not initiate payment.",
+          variant: "destructive",
+        })
+      }
+    } catch (err) {
+      console.error("Payment initiation failed:", err.message)
+      toast({
+        title: "Payment Error",
+        description: "Something went wrong. Try again later.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoadingEventId(null)
+    }
+  }
 
   // to show the date in readable format
   const formatDate = (dateStr) =>
@@ -52,7 +155,7 @@ const AllEvents = () => {
       day: "numeric",
       month: "short",
       year: "numeric",
-    });
+    })
 
   // to set time in readable format
   const formatTime = (dateStr) =>
@@ -60,29 +163,28 @@ const AllEvents = () => {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-    });
+    })
 
-    
-    return (
-        <main>
-        {/* Upcoming ISA Events */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold mb-8">Pending Events</h2>
+  return (
+    <main>
+      {/* Pending Events */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-8">Pending Events</h2>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Upcoming events */}
-            {loading ? (
-              <p>Loading...</p>
-            ) : pendingEvents.length === 0 ? (
-              <p>Nothing to see here right now!</p>
-            ) : (
-              (showAll ? pendingEvents : pendingEvents.slice(0, 3)).map((event) => (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {loading ? (
+            <p>Loading...</p>
+          ) : pendingEvents.length === 0 ? (
+            <p>Nothing to see here right now!</p>
+          ) : (
+            (showAll ? pendingEvents : pendingEvents.slice(0, 3)).map(
+              (event) => (
                 <div
                   key={event._id}
                   className="cosmic-card overflow-hidden group relative flex flex-col"
                 >
                   <Link
-                    to={`/events/${event._id}`}
+                    to={`/events/${event.slug}`}
                     className="flex-1 flex flex-col"
                   >
                     <div className="h-48 overflow-hidden">
@@ -139,8 +241,62 @@ const AllEvents = () => {
                           ...
                         </p>
                       </div>
+
+                      {/* ✅ Register Button */}
+                      <div className="mt-4">
+                        <button
+                          onClick={() =>
+                            event.registeredUsers.some(
+                              (e) => e._id === userInfo?.user?._id
+                            )
+                              ? event.isFree
+                                ? handleUnregister(
+                                    userInfo?.user._id,
+                                    event._id
+                                  )
+                                : null
+                              : event.isFree
+                              ? handleRegister(userInfo?.user._id, event._id)
+                              : handlePaidRegister(userInfo?.user._id, event)
+                          }
+                          disabled={
+                            loadingEventId === event._id ||
+                            (!event.isFree &&
+                              event.registeredUsers.some(
+                                (e) => e._id === userInfo?.user?._id
+                              ))
+                          }
+                          className={`w-full px-4 py-2 rounded-md text-white font-semibold flex justify-center items-center transition
+                            ${
+                              isLoggedIn &&
+                              event.registeredUsers.some(
+                                (e) => e._id === userInfo?.user?._id
+                              )
+                                ? event.isFree
+                                  ? "bg-space-purple/30 hover:bg-space-purple/50"
+                                  : "bg-gray-500 cursor-not-allowed"
+                                : "bg-space-accent hover:bg-space-accent/80"
+                            }`}
+                        >
+                          {loadingEventId === event._id ? (
+                            <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                          ) : isLoggedIn &&
+                            event.registeredUsers.some(
+                              (e) => e._id === userInfo?.user?._id
+                            ) ? (
+                            event.isFree
+                              ? "Unregister"
+                              : "Already Registered (Paid)"
+                          ) : event.isFree ? (
+                            "Register for this Event"
+                          ) : (
+                            `Register - ₹${event.fee}`
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </Link>
+
                   <div className="absolute top-3 right-3 z-10">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -164,45 +320,43 @@ const AllEvents = () => {
                           <Share size={14} /> Share
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem 
-                        onClick={() => {
+                        <DropdownMenuItem
+                          onClick={() => {
                             changeStatus(event._id, "approved")
-                        }}
+                          }}
                         >
-                            Approve
+                          Approve
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem 
-                        onClick={() => {
+                        <DropdownMenuItem
+                          onClick={() => {
                             changeStatus(event._id, "rejected")
-                        }}
+                          }}
                         >
-                            Reject
+                          Reject
                         </DropdownMenuItem>
-
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-
-          {/* View all events button */}
-          {/* if there are no events, no need to show the see all events button */}
-          {pendingEvents.length > 3 && !showAll && (
-            <div className="text-center mt-10">
-              <button
-                onClick={() => setShowAll(true)}
-                className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
-              >
-                View All Events
-              </button>
-            </div>
+              )
+            )
           )}
-        </section>
-        </main>
-    )
+        </div>
+
+        {pendingEvents.length > 3 && !showAll && (
+          <div className="text-center mt-10">
+            <button
+              onClick={() => setShowAll(true)}
+              className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
+            >
+              View All Events
+            </button>
+          </div>
+        )}
+      </section>
+    </main>
+  )
 }
 
-export default AllEvents;
+export default AllEvents

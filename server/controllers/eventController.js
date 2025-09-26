@@ -1,15 +1,15 @@
 const { default: slugify } = require('slugify')
 const Event = require('../models/eventModel')
 const User = require('../models/userModel')
-const { sendEmail } = require('../utils/sendEmail')
+const { sendEmail, sendEmailWithAttachment } = require('../utils/sendEmail')
 const cloudinary = require('cloudinary').v2
 require('dotenv').config()
-
-// const currentDate = new Date()
+const { v4: uuidv4 } = require('uuid')
+const QRCode = require('qrcode')
 
 exports.createEvent = async (req, res) => {
   try {
-    const {
+    let {
       title,
       description,
       eventDate,
@@ -17,27 +17,49 @@ exports.createEvent = async (req, res) => {
       eventType,
       presentedBy,
       type,
-      status
+      status,
+      isFree,
+      fee,
+      seatCapacity
     } = req.body
 
-    // setting an event end time which will help us delete after the event ends
-    // if user have not entered a end time then we will assume it to last 1 day
+    isFree = isFree === 'true' || isFree === true
+    if (!isFree) {
+      fee = Number(fee)
+      if (isNaN(fee) || fee <= 0) {
+        return res.status(400).json({ error: 'Fee must be a valid number' })
+      }
+    } else {
+      fee = null
+    }
+
+    // validate seat capacity
+    seatCapacity = Number(seatCapacity)
+    if (isNaN(seatCapacity) || seatCapacity <= 0) {
+      return res.status(400).json({ error: 'Seat capacity must be a positive number' })
+    }
+
+    // handle end time (default = +24h)
     const eventEndTime = req.body.eventEndTime
       ? new Date(req.body.eventEndTime)
-      : new Date(Date.now() + 24 * 60 * 60 * 1000) // 24h later
+      : new Date(Date.now() + 24 * 60 * 60 * 1000)
 
-    // hostedBy is sent as JSON string from frontend because we can have multiple hosts
+    // parse hosts (array of objects)
     const hostedBy = JSON.parse(req.body.hostedBy || '[]')
 
+    // handle file uploads
     const thumbnail = req.file ? req.file.path : ''
-    const publicId = req.file.filename
+    const publicId = req.file ? req.file.filename : ''
     const createdBy = req.user.id
+
+    // slug for clean URLs
     const slug = slugify(title, {
       lower: true,
       strict: true
     })
 
-    const event = new Event({
+    // prepare event data
+    const eventData = {
       title,
       slug,
       description,
@@ -51,9 +73,14 @@ exports.createEvent = async (req, res) => {
       hostedBy,
       thumbnail,
       publicId,
-      createdBy
-    })
+      createdBy,
+      isFree,
+      fee,
+      seatCapacity,
+      attendeeCount: 0
+    }
 
+    const event = new Event(eventData)
     await event.save()
 
     res.status(201).json({ message: 'Event created successfully', event })
@@ -63,7 +90,6 @@ exports.createEvent = async (req, res) => {
   }
 }
 
-// instead of making separate api routes for them, we can import all and separate in the frontend
 exports.Events = async (req, res) => {
   try {
     const events = await Event.find({}).populate(
@@ -151,7 +177,6 @@ exports.getEvent = async (req, res) => {
     res.status(500).json({ message: 'Server error in getEvent' })
   }
 }
-
 exports.registerEvent = async (req, res) => {
   try {
     const { eventid, userid } = req.params
@@ -166,34 +191,100 @@ exports.registerEvent = async (req, res) => {
       return res.status(400).json({ message: 'Event not found' })
     }
 
-    if (event.registeredUsers.includes(userid)) {
-      return res.status(400).json({ message: 'User already registered for this event' })
+    // check if already registered
+    const alreadyRegistered = event.registeredUsers.some(
+      (reg) => reg.user.toString() === userid
+    )
+    if (alreadyRegistered) {
+      return res
+        .status(400)
+        .json({ message: 'User already registered for this event' })
     }
 
-    const updatedEvent = await Event.findByIdAndUpdate(
-      eventid,
-      { $addToSet: { registeredUsers: userid } }, // ensures no duplicates
-      { new: true }
-    ).populate('registeredUsers', 'name email')
+    // check if sold out
+    if (
+      event.seatCapacity &&
+      event.registeredUsers.length >= event.seatCapacity
+    ) {
+      return res
+        .status(400)
+        .json({ message: 'Sold Out. No more seats available.' })
+    }
 
-    // sending confirmation email
-    const text = `Hi ${user.name},
-You have successfully registered for "${event.title}" on ${new Date(event.eventDate).toDateString()} at ${event.location}.
-See you there!
-– ISA`
+    // generate unique token
+    let registrationToken
+    do {
+      registrationToken = uuidv4()
+    } while (event.registeredUsers.some(r => r.token === registrationToken))
 
-    await sendEmail(user.email, `Registered for ${event.title}`, text)
+    // Generate QR code (as Data URL)
+    const qrDataUrl = await QRCode.toDataURL(registrationToken)
+
+    // add user with token
+    event.registeredUsers.push({
+      user: userid,
+      token: registrationToken,
+      used: false,
+    })
+    await event.save()
+
+    await event.populate('registeredUsers.user', 'name email')
+
+    // upload QR code to cloudinary
+    const uploaded = await cloudinary.uploader.upload(qrDataUrl, {
+      folder: 'event_qrcodes',
+    })
+
+    // generate buffer for attachment
+    const qrBuffer = await QRCode.toBuffer(registrationToken)
+
+    // email content with Cloudinary QR (inline)
+    const emailContent = `
+      <div style="font-family: Arial, sans-serif; line-height:1.5;">
+        <h3>Event Registration Confirmed</h3>
+        <p>Hi ${user.name},</p>
+        <p>
+          You have successfully registered for 
+          <b>"${event.title}"</b> on 
+          <b>${new Date(event.eventDate).toDateString()}</b> 
+          at <b>${event.location}</b>.
+        </p>
+    <p style="background:#f9f9f9; padding:12px; border-left:4px solid #4F46E5; margin:20px 0;">
+      <strong>Important:</strong> For your convenience, a copy of the QR code has also been attached to this email. 
+      We recommend saving the attached QR code to your device in advance, so you can access it without requiring an internet connection at the event venue.
+    </p>
+    <p>We look forward to your participation.</p>
+        <p style="text-align:center;">
+          <img src="${uploaded.secure_url}" alt="QR Code" style="max-width:200px;"/>
+        </p>
+        <p>– ISA</p>
+      </div>
+    `
+
+    // send email with both cloudinary image inline + attached QR file
+    await sendEmailWithAttachment(
+      user.email,
+      `Registered for ${event.title}`,
+      emailContent,
+      [
+        {
+          filename: 'qrcode.png',
+          content: qrBuffer,
+          cid: 'qrcode@event' // inline attachment reference (optional if you want <img src="cid:..." />)
+        }
+      ]
+    )
 
     res.status(200).json({
       success: true,
       message: 'User successfully registered for the event',
-      data: updatedEvent
+      data: event,
     })
   } catch (error) {
     console.error('Error in registration:', error)
     res.status(500).json({
       success: false,
-      message: 'User registration failed for the event'
+      message: 'User registration failed for the event',
     })
   }
 }
@@ -212,15 +303,37 @@ exports.unregisterEvent = async (req, res) => {
       return res.status(400).json({ message: 'Event not found' })
     }
 
+    const regEntry = event.registeredUsers.find(
+      (u) => u.user.toString() === userid
+    )
+
+    if (!regEntry) {
+      return res
+        .status(400)
+        .json({ message: 'User is not registered for this event' })
+    }
+
+    // delete QR from cloudinary
+    if (regEntry.token) {
+      try {
+        await cloudinary.uploader.destroy(regEntry.token) // token holds the Cloudinary public_id
+      } catch (err) {
+        console.error('Error deleting QR from Cloudinary:', err.message)
+      }
+    }
+
+    // remove the registered user entry from event
     const updatedEvent = await Event.findByIdAndUpdate(
       eventid,
-      { $pull: { registeredUsers: userid } },
+      { $pull: { registeredUsers: { user: userid } } },
       { new: true }
-    ).populate('registeredUsers', 'name email')
+    ).populate('registeredUsers.user', 'name email')
 
-    // optional: send cancellation email
+    // send cancellation email
     const text = `Hi ${user.name},
-    You have successfully unregistered from "${event.title}" scheduled on ${new Date(event.eventDate).toDateString()} at ${event.location}.
+    You have successfully unregistered from "${event.title}" scheduled on ${new Date(
+      event.eventDate
+    ).toDateString()} at ${event.location}.
     Hope to see you at our future events!
     – ISA`
 
@@ -240,29 +353,65 @@ exports.unregisterEvent = async (req, res) => {
   }
 }
 
-
 exports.updateEvent = async (req, res) => {
   const { id } = req.params
   const updates = { ...req.body }
 
   try {
+    // parse boolean
+    if (updates.isFree !== undefined) {
+      updates.isFree = updates.isFree === 'true'
+    
+      // when switching to free, overwrite fee to 0
+      if (updates.isFree) {
+        updates.fee = 0
+      }
+    }
+    
+    // convert fee to number if it's paid
+    if (!updates.isFree && updates.fee !== undefined && updates.fee !== "") {
+      updates.fee = Number(updates.fee)
+    }
+
+    // convert seatCapacity to number
+    if (updates.seatCapacity !== undefined && updates.seatCapacity !== "") {
+      updates.seatCapacity = Number(updates.seatCapacity)
+    }
+
+    // parse hostedBy JSON if provided
+    if (updates.hostedBy) {
+      try {
+        updates.hostedBy = JSON.parse(updates.hostedBy)
+      } catch (err) {
+        return res.status(400).json({ message: 'Invalid hostedBy format' })
+      }
+    }
+
+    // handle slug if title changed
     if (updates.title) {
       const baseSlug = slugify(updates.title, { lower: true, strict: true })
       let slug = baseSlug
       let counter = 1
-
       while (await Event.findOne({ slug, _id: { $ne: id } })) {
         slug = `${baseSlug}-${counter++}`
       }
-
       updates.slug = slug
     }
 
-    const event = await Event.findByIdAndUpdate(id, updates, { new: true, runValidators: true })
-    if (!event) return res.status(404).json({ message: 'Event not found' })
+    // handle thumbnail file
+    if (req.file) updates.thumbnail = req.file.filename
 
-    res.status(200).json(event)
+    // pdate event
+    const event = await Event.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    })
+
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    res.status(200).json(event);
   } catch (error) {
+    console.error(error)
     res.status(500).json({ message: 'Error updating event', error })
   }
 }

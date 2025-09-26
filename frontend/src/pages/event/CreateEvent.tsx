@@ -11,11 +11,14 @@ const CreateEvent = () => {
     eventEndTime: "",
     location: "",
     attendeeCount: 0,
+    seatCapacity: "",
     eventType: "",
     hostedBy: [{ name: "" }],
     presentedBy: "",
     type: "",
     status: "",
+    isFree: true,
+    fee: "",
   });
 
   const [thumbnailFile, setThumbnailFile] = useState(null);
@@ -26,12 +29,17 @@ const CreateEvent = () => {
   const { toast } = useToast();
 
   const handleChange = (e, idx = null) => {
-    const { name, value } = e.target;
-
+    const { name, value, type } = e.target;
+  
     if (name.startsWith("hostedBy") && idx !== null) {
       const updatedHosts = [...formData.hostedBy];
       updatedHosts[idx].name = value;
       setFormData({ ...formData, hostedBy: updatedHosts });
+    } else if (name === "isFree") {
+      const isFree = value === "true";
+      setFormData({ ...formData, isFree, fee: isFree ? "" : formData.fee });
+    } else if (type === "number") {
+      setFormData({ ...formData, [name]: Number(value) });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -76,9 +84,11 @@ const CreateEvent = () => {
       const data = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
         if (key === "hostedBy") {
-          data.append(key, JSON.stringify(value)); // hostedBy is an array of objects
+          data.append(key, JSON.stringify(value));
         } else if (typeof value === "number") {
-          data.append(key, value.toString()); // convert number to string
+          data.append(key, value.toString());
+        } else if (typeof value === "boolean") {
+          data.append(key, value ? "true" : "false"); // store boolean as string
         } else if (value !== null && value !== undefined) {
           data.append(key, value.toString());
         }
@@ -99,11 +109,14 @@ const CreateEvent = () => {
         eventEndTime: "",
         location: "",
         attendeeCount: 0,
+        seatCapacity: "",
         eventType: "",
         hostedBy: [{ name: "" }],
         presentedBy: "",
         type: "",
         status: "",
+        isFree: true,   // <-- added
+        fee: "",        // <-- added
       });
       setThumbnailFile(null);
       navigate("/events");
@@ -207,6 +220,21 @@ const CreateEvent = () => {
               required
             />
 
+            <div>
+              <label htmlFor="seatCapacity" className="block text-sm text-gray-400">
+                Seat Capacity (Max Attendees Allowed) *
+              </label>
+              <input
+                id="seatCapacity"
+                name="seatCapacity"
+                value={formData.seatCapacity}
+                onChange={handleChange}
+                className="w-full p-2 rounded bg-zinc-800"
+                min="1"
+                required
+              />
+            </div>
+
             <input
               name="eventType"
               value={formData.eventType}
@@ -291,6 +319,41 @@ const CreateEvent = () => {
                 <option value="completed">Completed</option>
               </select>
             </div>
+
+            <div>
+  <label htmlFor="isFree" className="block text-sm text-gray-400">
+    Event Type (Free/Paid):
+  </label>
+  <select
+    id="isFree"
+    name="isFree"
+    value={formData.isFree ? "true" : "false"}
+    onChange={handleChange}
+    className="w-full p-2 rounded bg-zinc-800"
+    required
+  >
+    <option value="true">Free</option>
+    <option value="false">Paid</option>
+  </select>
+</div>
+
+{!formData.isFree && (
+  <div>
+    <label htmlFor="fee" className="block text-sm text-gray-400">
+      Fee Amount (₹):
+    </label>
+    <input
+      id="fee"
+      name="fee"
+      type="number"
+      value={formData.fee}
+      onChange={handleChange}
+      className="w-full p-2 rounded bg-zinc-800"
+      min="1"
+      required
+    />
+  </div>
+)}
 
             {/* Submit Button */}
             <button
