@@ -30,6 +30,10 @@ const eventSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  seatCapacity: {
+    type: Number,
+    default: 0,
+  },
   eventType: {
     type: String,
     required: [true, 'Specify if the event is virtual or In-person']
@@ -56,8 +60,19 @@ const eventSchema = new mongoose.Schema({
   },
   registeredUsers: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+      },
+      token: {
+        type: String,
+        required: true
+      },
+      used: {
+        type: Boolean,
+        default: false // mark true when scanned
+      }
     }
   ],
   createdAt: {
@@ -109,7 +124,7 @@ const eventSchema = new mongoose.Schema({
   }
 })
 
-eventSchema.index({ registeredUsers: 1 });
+eventSchema.index({ 'registeredUsers.token': 1 }, { unique: true, sparse: true })
 
 eventSchema.pre('validate', function (next) {
   if (this.title && !this.slug) {
