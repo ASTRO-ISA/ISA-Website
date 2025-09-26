@@ -11,7 +11,7 @@ import AdminJobs from "./AdJob";
 import AdminCourses from "./AdminCourses";
 import AdminWebinars from "./AdmWebinar/AdminWebinar";
 import AdminNewsletterDraft from "./AdminNewsletterDraft";
-import AdminEvents from "./AdminEvents";
+import AdminEvents from "./admin-events/AdminEvents";
 import { useQuery } from "@tanstack/react-query";
 import ManageAdmins from "./ManageAdmins";
 import AdminTransactions from "./AdminTransactions";

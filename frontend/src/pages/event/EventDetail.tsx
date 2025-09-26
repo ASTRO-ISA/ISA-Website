@@ -21,7 +21,7 @@ const EventDetails = () => {
       const res = await api.get(`/events/${slug}`);
       setEvent(res.data);
     } catch (err) {
-      console.error("Error fetching event:");
+      console.error("Error fetching event:", err);
     } finally {
       setLoading(false);
     }
@@ -31,44 +31,92 @@ const EventDetails = () => {
     fetchEvent();
   }, [slug]);
 
+  // Helpers
+  const isRegistered = () =>
+    event?.registeredUsers.some((e) => e._id.toString() === userInfo?.user._id.toString());
+
+  // Free Registration
   const handleRegister = async (userId) => {
     if (!isLoggedIn) {
-      toast({
+      return toast({
         title: "Hold on!",
         description: "Please login first to register for the event.",
         variant: "destructive",
       });
-      return;
     }
 
     setLoadingEventId(event._id);
     try {
       await api.patch(`/events/register/${event._id}/${userId}`);
       fetchEvent();
-      setLoadingEventId(null);
     } catch (err) {
-      console.error("Error registering for event:");
+      console.error("Error registering for event:", err);
+    } finally {
       setLoadingEventId(null);
     }
   };
 
+  // Paid Registration → Payment
+  const handlePaidRegister = async (userId) => {
+    if (!isLoggedIn) {
+      return toast({
+        title: "Hold on!",
+        description: "Please login first to register for the event.",
+        variant: "destructive",
+      });
+    }
+
+    setLoadingEventId(event._id);
+    try {
+      const res = await api.post(`/phonepe/payment/initiate/${event._id}`, {
+        amount: event.fee,
+        item_type: "event",
+      });
+
+      if (res.data?.redirect_url) {
+        window.location.href = res.data.redirect_url; // redirect to PhonePe
+      } else {
+        toast({
+          title: "Payment Error",
+          description: "Could not initiate payment.",
+          variant: "destructive",
+        });
+      }
+    } catch (err) {
+      console.error("Payment initiation failed:", err.message);
+      toast({
+        title: "Payment Error",
+        description: "Something went wrong. Try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingEventId(null);
+    }
+  };
+
+  // Unregister
   const handleUnregister = async (userId) => {
     if (!isLoggedIn) {
-      toast({
+      return toast({
         title: "Hold on!",
         description: "Please login first to unregister for the event.",
         variant: "destructive",
       });
-      return;
     }
 
     setLoadingEventId(event._id);
     try {
       await api.patch(`/events/unregister/${event._id}/${userId}`);
       fetchEvent();
-      setLoadingEventId(null);
+      toast({ description: "Unregistered successfully." });
     } catch (err) {
-      console.error("Error unregistering for event:");
+      console.error("Error unregistering for event:", err);
+      toast({
+        title: "Can't unregister.",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
       setLoadingEventId(null);
     }
   };
@@ -177,25 +225,36 @@ const EventDetails = () => {
           {/* Register Button */}
           <button
             onClick={() =>
-              event.registeredUsers.some((e) => e._id === userInfo?.user?._id)
-                ? handleUnregister(userInfo?.user._id)
-                : handleRegister(userInfo?.user?._id)
+              isRegistered()
+                ? event.isFree
+                  ? handleUnregister(userInfo?.user._id)
+                  : null // paid registered → cannot unregister
+                : event.isFree
+                ? handleRegister(userInfo?.user._id)
+                : handlePaidRegister(userInfo?.user._id)
             }
-            className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold
+            disabled={!event.isFree && isRegistered()} // disable click for paid+registered
+            className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold flex justify-center
               ${
-                isLoggedIn &&
-                event.registeredUsers.some((e) => e._id === userInfo?.user._id)
-                  ? "bg-space-purple/30 hover:bg-space-purple/50"
+                isLoggedIn && isRegistered()
+                  ? event.isFree
+                    ? "bg-space-purple/30 hover:bg-space-purple/50"
+                    : "bg-gray-500 cursor-not-allowed"
                   : "bg-space-accent hover:bg-space-accent/80"
               }`}
           >
             {loadingEventId === event._id ? (
               <Spinner />
-            ) : isLoggedIn &&
-              event.registeredUsers.some((e) => e._id === userInfo?.user._id) ? (
-              "Unregister"
-            ) : (
+            ) : isLoggedIn && isRegistered() ? (
+              event.isFree ? (
+                "Unregister"
+              ) : (
+                "Already Registered (Paid)"
+              )
+            ) : event.isFree ? (
               "Register for this Event"
+            ) : (
+              `Register - ₹${event.fee}`
             )}
           </button>
 
@@ -205,7 +264,11 @@ const EventDetails = () => {
               <hr className="mb-3" />
               <button
                 onClick={() => {
-                  if (window.confirm("Are you sure you want to delete this event? This action can't be undone.")) {
+                  if (
+                    window.confirm(
+                      "Are you sure you want to delete this event? This action can't be undone."
+                    )
+                  ) {
                     deleteEvent();
                   }
                 }}

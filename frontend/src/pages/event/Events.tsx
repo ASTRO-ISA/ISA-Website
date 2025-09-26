@@ -63,6 +63,43 @@ const Events = () => {
     }
   };
 
+  // Paid Registration → Payment
+const handlePaidRegister = async (userId, event) => {
+  if (!isLoggedIn)
+    return toast({
+      title: "Hold on!",
+      description: "Please login first to register for the event.",
+      variant: "destructive",
+    });
+
+  setLoadingEventId(event._id);
+  try {
+    const res = await api.post(`/phonepe/payment/initiate/${event._id}`, {
+      amount: event.fee,
+      item_type: "event",
+    });
+
+    if (res.data?.redirect_url) {
+      window.location.href = res.data.redirect_url; // redirect to PhonePe
+    } else {
+      toast({
+        title: "Payment Error",
+        description: "Could not initiate payment.",
+        variant: "destructive",
+      });
+    }
+  } catch (err) {
+    console.error("Payment initiation failed:", err.message);
+    toast({
+      title: "Payment Error",
+      description: "Something went wrong. Try again later.",
+      variant: "destructive",
+    });
+  } finally {
+    setLoadingEventId(null);
+  }
+};
+
   // registering a user for event
   const handleRegister = async (userId, eventId) => {
     if (isLoggedIn) {
@@ -296,34 +333,61 @@ const Events = () => {
                   </div>
 
                   <button
-                    onClick={() =>
-                      event.registeredUsers.some(
-                        (e) => e._id === userInfo?.user?._id
-                      )
-                        ? handleUnregister(userInfo?.user._id, event._id)
-                        : handleRegister(userInfo?.user?._id, event._id)
-                    }
-                    className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold flex justify-center
-                      ${
-                        isLoggedIn &&
-                        event.registeredUsers.some(
-                          (e) => e._id === userInfo?.user._id
-                        )
-                          ? "bg-space-purple/30 hover:bg-space-purple/50"
-                          : "bg-space-accent hover:bg-space-accent/80"
-                      }`}
-                  >
-                    {loadingEventId === event._id ? (
-                      <Spinner />
-                    ) : isLoggedIn &&
-                      event.registeredUsers.some(
-                        (e) => e._id === userInfo?.user._id
-                      ) ? (
-                      "Unregister"
-                    ) : (
-                      "Register for this Event"
-                    )}
-                  </button>
+  onClick={() => {
+    const alreadyRegistered = event.registeredUsers.some(
+      (e) => e.user === userInfo?.user?._id
+    );
+
+    if (alreadyRegistered) {
+      // Already registered → allow unregister if free event
+      if (event.isFree) {
+        handleUnregister(userInfo?.user._id, event._id);
+      }
+    } else {
+      // New user trying to register
+      if (event.seatCapacity && event.registeredUsers.length >= event.seatCapacity) {
+        toast({
+          title: "Sold Out",
+          description: "This event has reached maximum capacity.",
+          variant: "destructive",
+        });
+      } else if (event.isFree) {
+        handleRegister(userInfo?.user._id, event._id);
+      } else {
+        handlePaidRegister(userInfo?.user._id, event);
+      }
+    }
+  }}
+  disabled={
+    (!event.isFree &&
+      event.registeredUsers.some((e) => e.user === userInfo?.user?._id)) ||
+    (event.seatCapacity &&
+      event.registeredUsers.length >= event.seatCapacity &&
+      !event.registeredUsers.some((e) => e.user === userInfo?.user?._id))
+  }
+  className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold flex justify-center
+    ${
+      event.registeredUsers.some((e) => e.user === userInfo?.user?._id)
+        ? event.isFree
+          ? "bg-space-purple/30 hover:bg-space-purple/50"
+          : "bg-gray-500 cursor-not-allowed"
+        : event.seatCapacity && event.registeredUsers.length >= event.seatCapacity
+        ? "bg-gray-600 cursor-not-allowed"
+        : "bg-space-accent hover:bg-space-accent/80"
+    }`}
+>
+  {loadingEventId === event._id ? (
+    <Spinner />
+  ) : event.registeredUsers.some((e) => e.user === userInfo?.user?._id) ? (
+    event.isFree ? "Unregister" : "Already Registered (Paid)"
+  ) : event.seatCapacity && event.registeredUsers.length >= event.seatCapacity ? (
+    "Sold Out"
+  ) : event.isFree ? (
+    "Register for this Event"
+  ) : (
+    `Register - ₹${event.fee}`
+  )}
+</button>
                 </div>
               ))
             )}
