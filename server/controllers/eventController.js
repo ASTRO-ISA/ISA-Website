@@ -493,7 +493,7 @@ exports.changeStatus = async (req, res) => {
 exports.registeredEvents = async (req, res) => {
   try{
     const { userid } = req.params
-    const events = await Event.find({registeredUsers: userid})
+    const events = await Event.find({ 'registeredUsers.user': userid })
     if(events.length === 0){
       return res.status(404).json({message: 'No registerd events.'})
     }
