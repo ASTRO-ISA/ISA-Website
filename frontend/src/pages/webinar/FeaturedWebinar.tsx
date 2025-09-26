@@ -266,7 +266,7 @@ navigator.clipboard.writeText(webinarUrl)
                 e.preventDefault()
                 e.stopPropagation()
                 handleRemoveFeatured(featured)
-                setOpenMenuId(null)
+                // setOpenMenuId(null)
               }}
               className="p-1 border border-red-600 hover:text-red-800 hover:border-red-800 rounded text-red-600 flex items-center gap-2"
             >
