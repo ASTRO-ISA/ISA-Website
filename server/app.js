@@ -28,12 +28,32 @@ const qrRouter = require('./routes/qrRoutes.js')
 
 // middlewares
 app.use(helmet())
+// app.use(
+//   cors({
+//     origin: 'http://localhost:8080',
+//     credentials: true
+//   })
+// )
+
+const allowedOrigins = [
+  'http://localhost:8080',
+  'http://isa-website-24m1.vercel.app',
+  'http://isa-website-24m1-ii97q344h-isas-projects-5517bba9.vercel.app'
+]
+
 app.use(
   cors({
-    origin: 'http://localhost:8080',
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
     credentials: true
   })
 )
+
 app.use(express.json())
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')))
