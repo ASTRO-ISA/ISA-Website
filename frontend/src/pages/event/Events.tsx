@@ -78,6 +78,7 @@ const handlePaidRegister = async (userId, event) => {
       amount: event.fee,
       item_type: "event",
     });
+    console.log(res)
 
     if (res.data?.redirect_url) {
       window.location.href = res.data.redirect_url; // redirect to PhonePe
