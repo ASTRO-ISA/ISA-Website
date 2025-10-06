@@ -16,70 +16,17 @@ const FeaturedWebinars = () => {
     videoId: "",
   });
 
-  // to mark a webinar as featured and also to check if there is a featured exist
-  const [featuredId, setFeaturedId] = useState(null);
-
   // registering
   const [loadingRegWebId, setLoadingRegWebId] = useState(null);
 
-  const { isLoggedIn, isAdmin, userInfo } = useAuth();
+  const { isLoggedIn, isAdmin } = useAuth();
   const { toast } = useToast();
-
-  // to fetch all webinars
-  const fetchUpcomingWebinars = async () => {
-    try {
-      const res = await api.get("/webinars/upcoming");
-      console.log(res.data)
-    } catch (error) {
-      console.error("Error fetching webinars:", error.message);
-    }
-  };
-
-  // to featch all webinars on first render
-  useEffect(() => {
-    fetchUpcomingWebinars();
-  }, []);
-
-  const fetchPastWebinars = async () => {
-    try {
-      const res = await api.get("/webinars/past");
-    } catch (error) {
-      console.error("Error fetching webinars:", error.message);
-    }
-  };
-
-  // to featch all webinars on first render
-  useEffect(() => {
-    fetchPastWebinars();
-  }, []);
-
-  // registering a user for webinar
-  const handleRegister = async (userId, webinarId) => {
-    if(isLoggedIn){
-      setLoadingRegWebId(webinarId);
-      try{
-        const res = await api.patch(`/webinars/register/${webinarId}/${userId}`);
-        fetchUpcomingWebinars();
-        setLoadingRegWebId(null);
-      } catch (err) {
-        console.error("Error registering user for webinar.");
-        setLoadingRegWebId(null);
-      }
-    } else {
-      toast({
-        title: "Hold on!",
-        description: "Please login first to register for the webinar.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleUnregister = async (userId, webinarId) => {
     if(isLoggedIn){
       setLoadingRegWebId(webinarId);
       try {
         await api.patch(`/webinars/unregister/${webinarId}/${userId}`);
-        fetchUpcomingWebinars();
         setLoadingRegWebId(null);
       } catch (err) {
         toast({
@@ -117,48 +64,15 @@ const FeaturedWebinars = () => {
           guest: res.data.guests || [],
           videoId: res.data.videoId,
         });
-        setFeaturedId(res.data._id);
       }
     } catch (err) {
       console.error("Error fetching featured webinar.");
-      setFeaturedId(null);
     }
   };
 
   useEffect(() => {
     fetchFeatured();
   }, []);
-
-  // set as featured and fetch it
-  const handleSetFeatured = async (webinar) => {
-    // if there is alredy a featured, new featured is not allowed
-    if (featuredId !== null) {
-      toast({
-        title: "Already exist a featured webinar.",
-        description: "Remove previous featured to set it featured.",
-        variant: "destructive",
-      });
-      return;
-    }
-    try {
-      await api.patch(`/webinars/featured/${webinar._id}`);
-      // if its set featured then add its id to the featuredId so we know there exist a featured blog
-      setFeaturedId(webinar._id);
-      fetchFeatured();
-      toast({
-        title: `Webinar "${webinar.title}" set as featured.`,
-      });
-    } catch (err) {
-      setFeaturedId(null);
-      console.error(
-        `Failed to set webinar "${webinar.title}" as featured!`,
-        err.message
-      );
-      toast({
-        title: `Failed to set webinar "${webinar.title}" as featured!`,
-      });
-    }
-  };
 
   // remove featured
   const handleRemoveFeatured = (webinar) => {
@@ -174,7 +88,6 @@ const FeaturedWebinars = () => {
         guest: [],
         videoId: "",
       });
-      setFeaturedId(null);
       fetchFeatured();
       toast({
         title: `"${webinar.title}" removed from featured.`,
@@ -199,27 +112,6 @@ const FeaturedWebinars = () => {
       year: "numeric",
     });
 
-  // to set time in readable format
-  const formatTime = (dateStr) =>
-    new Date(dateStr).toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-
-  // share webinar
-  const handleShare = (webinar) => {
-    const webinarUrl = `${window.location.origin}/webinars?watch=${webinar._id}`
-navigator.clipboard.writeText(webinarUrl)
-    toast({
-      title: "Link copied.",
-    });
-    // const shareUrl = `${window.location.origin}/blogs/${webinar._id}`;
-    // navigator.clipboard.writeText(shareUrl);
-    // toast({
-    //   title: "Link copied.",
-    // });
-  };
     return (
         <section className="mb-16">
   <h2 className="text-2xl font-bold mb-8">Featured Talk</h2>
@@ -266,7 +158,6 @@ navigator.clipboard.writeText(webinarUrl)
                 e.preventDefault()
                 e.stopPropagation()
                 handleRemoveFeatured(featured)
-                // setOpenMenuId(null)
               }}
               className="p-1 border border-red-600 hover:text-red-800 hover:border-red-800 rounded text-red-600 flex items-center gap-2"
             >

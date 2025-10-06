@@ -21,9 +21,11 @@ const paymentSchema = Joi.object({
 // initiate payment (idempotent)
 exports.initiatePayment = async (req, res) => {
   try {
+    console.log('I am at the start')
     const { amount, item_type } = req.body
     const itemId = req.params.itemId
     const user_id = req.user.id
+    console.log(itemId, user_id)
 
     // validate amount input
     const { error } = paymentSchema.validate({ amount })
@@ -64,7 +66,12 @@ exports.initiatePayment = async (req, res) => {
 
     // create a unique merchant order id for phonepe
     const transactionId = `TXN_${Date.now()}_${Math.floor(Math.random() * 1000)}`
-    const redirectUrl = `${process.env.CLIENT_URL}/api/payments/callback`  // after payment completion
+    // const redirectUrl = `${process.env.CLIENT_URL}/phonepe/payments/callback`  // after payment completion
+
+    const callbackUrl = `${process.env.CLIENT_URL}/api/v1/phonepe/payments/callback`  // server-to-server
+    // const redirectUrl = `http://localhost:8080/events`  // frontend page
+    const redirectUrl = `http://localhost:8080/payment-status?orderId=${transactionId}&itemType=${item_type}`;
+    console.log(redirectUrl)
 
     // save transaction log in our database
     const newTx = await PaymentTransaction.create({
@@ -74,8 +81,10 @@ exports.initiatePayment = async (req, res) => {
       status: 'pending',
       currency: 'INR'
     })
+    console.log('i am here after saving transaction')
     // link transaction to user
     await User.findByIdAndUpdate(user_id, { $push: { transactions: newTx._id } })
+    console.log('i am here after linkin user to transaction')
 
     // build phonepe payment request
     const request = StandardCheckoutPayRequest.builder()
@@ -83,10 +92,12 @@ exports.initiatePayment = async (req, res) => {
       .amount(amount * 100)        // amount in paise
       .redirectUrl(redirectUrl)    // url to redirect after payment
       .build()
+      console.log(' ia ma herer')
     const response = await phonepeClient.pay(request)
+    console.log(response)
 
     // respond with transaction id and redirect url
-    res.json({ transactionId, redirect_url: response.redirect_url })
+    res.json({ transactionId, redirect_url: response.redirectUrl })
   } catch (err) {
     console.error('Payment Initiation Error:', {
       user_id: req.user?.id,
@@ -98,8 +109,9 @@ exports.initiatePayment = async (req, res) => {
 
 // verify payment status (idempotent, update our records)
 exports.verifyPayment = async (req, res) => {
+  console.log(' i am in verify using callback')
   try {
-    const { transactionId } = req.params
+    const { transactionId, itemType } = req.params
 
     // query phonepe for order status
     const statusResponse = await phonepeClient.getOrderStatus(transactionId)
@@ -125,7 +137,7 @@ exports.verifyPayment = async (req, res) => {
       { new: true }
     )
 
-    res.json({ transactionId, data: statusResponse })
+    res.json({ transactionId, data: statusResponse, itemType })
   } catch (err) {
     console.error('Payment Verification Error:', {
       transactionId: req.params.transactionId,

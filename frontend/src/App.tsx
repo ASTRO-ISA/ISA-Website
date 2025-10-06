@@ -37,6 +37,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import OtpVerification from "./pages/authentication/OtpVerification";
 import EditEvent from "./pages/admin/admin-events/EditEvent";
 import QRScannerPage from "./pages/admin/qr/QRScanner";
+import PaymentStatus from "./components/PaymentVerify";
 
 const queryClient = new QueryClient();
 
@@ -77,6 +78,7 @@ const App = () => {
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/events/edit/:slug" element={<EditEvent />} />
               <Route path="/events/scanner/:slug" element={<QRScannerPage />} />
+              <Route path="/payment-status" element={<PaymentStatus />} />
             </Route>
             <Route path="/" element={<Index />} />
             <Route path="/community" element={<Community />} />

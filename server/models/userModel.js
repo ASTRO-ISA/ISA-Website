@@ -48,8 +48,7 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   isVerified: {
     type: Boolean,
-    default: true,
-    select: false
+    default: false,
   },
   transactions: [
     { type: mongoose.Schema.Types.ObjectId, ref: 'PaymentTransaction' }
