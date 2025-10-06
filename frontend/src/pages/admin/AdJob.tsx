@@ -3,7 +3,6 @@ import api from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
-import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
 import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
@@ -11,9 +10,7 @@ import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const fetchJobs = async () => {
-  const res = await axios.get("http://localhost:3000/api/v1/jobs/", {
-    withCredentials: true,
-  });
+  const res = await api.get("/jobs/");
   return res.data.data;
 };
 

@@ -1,4 +1,3 @@
-// this is the main blog page where we will see all the featured blogs, recent blogs etc.
 import { Calendar, Clock, MoreVertical } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";

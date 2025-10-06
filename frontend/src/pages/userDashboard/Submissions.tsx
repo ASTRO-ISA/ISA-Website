@@ -8,7 +8,6 @@ import api from "@/lib/api";
 export default function Submissions() {
   const { userInfo } = useAuth();
 
-  // --- fetchers remain unchanged ---
   const fetchBlogs = async ({ queryKey }) => {
     const [_key, userId] = queryKey;
     const res = await api.get(`/blogs/my-blogs/${userId}`);
@@ -51,7 +50,6 @@ export default function Submissions() {
     enabled: !!userInfo?.user?._id,
   });
 
-  // --- card renderer stays same as before ---
   const renderCard = (item, type) => (
     <Card
       key={item.id}

@@ -1,10 +1,6 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Calendar,
-  Star,
-  Users,
-  Award,
   Instagram,
   MessageCircle,
   Github,
@@ -84,20 +80,20 @@ const About = () => {
     },
     {
       name: "Mayank Manan",
-      role: "Core Team Member",
+      role: "Co-Lead Non-Technical Department",
       image: "/images/Mayank.png",
       github: "https://github.com/MayankManan",
       linkedin: "https://in.linkedin.com/in/manan-mayank",
     },
     {
       name: "Akshat Shevalkar",
-      role: "Core Team Member",
+      role: "Team Lead - Technical Department",
       image: "/images/Akshat.png",
       linkedin: "https://www.linkedin.com/in/akshat-shevalkar-380711329",
     },
     {
       name: "Srijan Mishra",
-      role: "Technical",
+      role: "Technical Team Member",
       image: "/images/Srijan.png",
       linkedin: "https://www.linkedin.com/in/srijan-mishra-7b95692b5",
     },

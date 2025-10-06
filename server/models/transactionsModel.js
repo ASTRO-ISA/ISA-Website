@@ -21,6 +21,17 @@ const PaymentTransactionSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  // item: {
+  //   item_type: {
+  //     type: String,
+  //     required: true,
+  //     enum: ['event', 'webinar', 'course']
+  //   },
+  //   item_id: {
+  //     type: String,
+  //     required: true,
+  //   }
+  // },
   orderId: { 
     type: String, 
     unique: true, 
