@@ -5,9 +5,10 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server",
+    "start": "node server.js",
     "dev": "nodemon --exec \"npm run lint && node\" server.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "cd ../server && npm install && npm run build"
   },
   "author": "",
   "license": "ISC",
