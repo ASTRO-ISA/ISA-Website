@@ -4,6 +4,7 @@ const User = require('../models/userModel')
 const { sendEmail, sendEmailWithAttachment } = require('../utils/sendEmail')
 const cloudinary = require('cloudinary').v2
 require('dotenv').config()
+// const { v4: uuidv4 } = require('uuid')
 const { v4: uuidv4 } = require('uuid')
 const QRCode = require('qrcode')
 
@@ -36,7 +37,9 @@ exports.createEvent = async (req, res) => {
     // validate seat capacity
     seatCapacity = Number(seatCapacity)
     if (isNaN(seatCapacity) || seatCapacity <= 0) {
-      return res.status(400).json({ error: 'Seat capacity must be a positive number' })
+      return res
+        .status(400)
+        .json({ error: 'Seat capacity must be a positive number' })
     }
 
     // handle end time (default = +24h)
@@ -109,7 +112,7 @@ exports.Events = async (req, res) => {
 
 exports.pendingEvents = async (req, res) => {
   try {
-    const events = await Event.find({statusAR: 'pending'}).populate(
+    const events = await Event.find({ statusAR: 'pending' }).populate(
       'registeredUsers',
       'avatar name email'
     )
@@ -126,10 +129,9 @@ exports.pendingEvents = async (req, res) => {
 
 exports.approvedEvents = async (req, res) => {
   try {
-    const events = await Event.find({statusAR: 'approved'}).sort({createdAt: -1}).populate(
-      'registeredUsers',
-      'avatar name email'
-    )
+    const events = await Event.find({ statusAR: 'approved' })
+      .sort({ createdAt: -1 })
+      .populate('registeredUsers', 'avatar name email')
     if (!events) {
       return res.status(404).json({ message: 'Event not found' })
     }
@@ -143,10 +145,12 @@ exports.approvedEvents = async (req, res) => {
 
 exports.upcomingEvents = async (req, res) => {
   try {
-    const events = await Event.find({statusAR: 'approved', status: 'upcoming'}).sort({createdAt: -1}).populate(
-      'registeredUsers',
-      'avatar name email'
-    )
+    const events = await Event.find({
+      statusAR: 'approved',
+      status: 'upcoming'
+    })
+      .sort({ createdAt: -1 })
+      .populate('registeredUsers', 'avatar name email')
     if (!events) {
       return res.status(404).json({ message: 'Event not found' })
     }
@@ -161,13 +165,16 @@ exports.upcomingEvents = async (req, res) => {
 exports.getEvent = async (req, res) => {
   const { slug } = req.params
   try {
-    const event = await Event.findOne({slug}).populate([{
-      path: 'createdBy',
-      select: '_id name email',
-    },{
-      path: 'registeredUsers',
-      select: '_id name email'
-    }])
+    const event = await Event.findOne({ slug }).populate([
+      {
+        path: 'createdBy',
+        select: '_id name email'
+      },
+      {
+        path: 'registeredUsers',
+        select: '_id name email'
+      }
+    ])
     if (!event) {
       return res.status(404).json({ message: 'Event not found' })
     }
@@ -215,7 +222,7 @@ exports.registerEvent = async (req, res) => {
     let registrationToken
     do {
       registrationToken = uuidv4()
-    } while (event.registeredUsers.some(r => r.token === registrationToken))
+    } while (event.registeredUsers.some((r) => r.token === registrationToken))
 
     // Generate QR code (as Data URL)
     const qrDataUrl = await QRCode.toDataURL(registrationToken)
@@ -224,7 +231,7 @@ exports.registerEvent = async (req, res) => {
     event.registeredUsers.push({
       user: userid,
       token: registrationToken,
-      used: false,
+      used: false
     })
     await event.save()
 
@@ -232,7 +239,7 @@ exports.registerEvent = async (req, res) => {
 
     // upload QR code to cloudinary
     const uploaded = await cloudinary.uploader.upload(qrDataUrl, {
-      folder: 'event_qrcodes',
+      folder: 'event_qrcodes'
     })
 
     // generate buffer for attachment
@@ -278,13 +285,13 @@ exports.registerEvent = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'User successfully registered for the event',
-      data: event,
+      data: event
     })
   } catch (error) {
     console.error('Error in registration:', error)
     res.status(500).json({
       success: false,
-      message: 'User registration failed for the event',
+      message: 'User registration failed for the event'
     })
   }
 }
@@ -342,13 +349,13 @@ exports.unregisterEvent = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'User successfully unregistered from the event',
-      data: updatedEvent,
+      data: updatedEvent
     })
   } catch (error) {
     console.error('Error in unregistering:', error)
     res.status(500).json({
       success: false,
-      message: 'User unregistration failed for the event',
+      message: 'User unregistration failed for the event'
     })
   }
 }
@@ -361,20 +368,20 @@ exports.updateEvent = async (req, res) => {
     // parse boolean
     if (updates.isFree !== undefined) {
       updates.isFree = updates.isFree === 'true'
-    
+
       // when switching to free, overwrite fee to 0
       if (updates.isFree) {
         updates.fee = 0
       }
     }
-    
+
     // convert fee to number if it's paid
-    if (!updates.isFree && updates.fee !== undefined && updates.fee !== "") {
+    if (!updates.isFree && updates.fee !== undefined && updates.fee !== '') {
       updates.fee = Number(updates.fee)
     }
 
     // convert seatCapacity to number
-    if (updates.seatCapacity !== undefined && updates.seatCapacity !== "") {
+    if (updates.seatCapacity !== undefined && updates.seatCapacity !== '') {
       updates.seatCapacity = Number(updates.seatCapacity)
     }
 
@@ -404,12 +411,12 @@ exports.updateEvent = async (req, res) => {
     // pdate event
     const event = await Event.findByIdAndUpdate(id, updates, {
       new: true,
-      runValidators: true,
+      runValidators: true
     })
 
-    if (!event) return res.status(404).json({ message: 'Event not found' });
+    if (!event) return res.status(404).json({ message: 'Event not found' })
 
-    res.status(200).json(event);
+    res.status(200).json(event)
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Error updating event', error })
@@ -430,18 +437,22 @@ exports.deleteEvent = async (req, res) => {
 }
 
 exports.changeStatus = async (req, res) => {
-  try{
+  try {
     const { id } = req.params
     const status = req.body.status
 
-    const event = await Event.findByIdAndUpdate(id, { statusAR: status }, {new: true, runValidators: true}).populate('createdBy', 'name email')
-    if(!event) {
-      return res.status(404).json({message: 'Event not found.'})
+    const event = await Event.findByIdAndUpdate(
+      id,
+      { statusAR: status },
+      { new: true, runValidators: true }
+    ).populate('createdBy', 'name email')
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found.' })
     }
 
-    if(status === 'approved'){
-    // sending confirmation email
-    const text = `
+    if (status === 'approved') {
+      // sending confirmation email
+      const text = `
     <p>Hello ${event.createdBy.name},</p>
 
     <p>Good news! 🎉 Your event <strong>"${event.title}"</strong> scheduled for 
@@ -456,7 +467,11 @@ exports.changeStatus = async (req, res) => {
     <p>Best regards,<br>
     Team ISA</p>
     `
-    await sendEmail(event.createdBy.email, `Your event ${event.title} is now live.`, text)
+      await sendEmail(
+        event.createdBy.email,
+        `Your event ${event.title} is now live.`,
+        text
+      )
     }
 
     if (status === 'rejected') {
@@ -470,7 +485,7 @@ exports.changeStatus = async (req, res) => {
     
       <p><strong>Reason from Admin:</strong></p>
       <blockquote style="border-left: 3px solid #ccc; margin: 10px 0; padding-left: 10px; color:#555;">
-        ${event.adminComment || "No specific reason provided."}
+        ${event.adminComment || 'No specific reason provided.'}
       </blockquote>
     
       <p>If you believe this was a mistake, you may revise and resubmit your event for consideration.</p>
@@ -479,26 +494,32 @@ exports.changeStatus = async (req, res) => {
     
       <p>Best regards,<br>
       Team ISA</p>
-      `;
-    
-      await sendEmail(event.createdBy.email, `Update on your event: ${event.title}`, text);
+      `
+
+      await sendEmail(
+        event.createdBy.email,
+        `Update on your event: ${event.title}`,
+        text
+      )
     }
 
-    res.status(200).json({message: 'Status changes successfully'})
+    res.status(200).json({ message: 'Status changes successfully' })
   } catch (err) {
-    res.status(500).json({message: 'Server error changing event status'})
+    res.status(500).json({ message: 'Server error changing event status' })
   }
 }
 
 exports.registeredEvents = async (req, res) => {
-  try{
+  try {
     const { userid } = req.params
     const events = await Event.find({ 'registeredUsers.user': userid })
-    if(events.length === 0){
-      return res.status(404).json({message: 'No registerd events.'})
+    if (events.length === 0) {
+      return res.status(404).json({ message: 'No registerd events.' })
     }
     res.status(200).json(events)
   } catch (err) {
-    res.status(500).json({message: 'Server error finding the registerede events.'})
+    res
+      .status(500)
+      .json({ message: 'Server error finding the registerede events.' })
   }
 }
