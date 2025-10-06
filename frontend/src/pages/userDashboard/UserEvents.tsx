@@ -6,29 +6,11 @@ import { useAuth } from "@/context/AuthContext";
 
 const UserEvents = () => {
   const [events, setEvents] = useState([]);
-  // const [launches, setLaunches] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
   const { userInfo } = useAuth();
 
   const userId = userInfo?.user?._id;
-
-  // useEffect(() => {
-  //   const res = api
-  //     .get(`/events/my-events/${userId}`)
-  //     .then((res) => {
-  //       const userRegisteredEvents = res.data.filter((event) => {
-  //         return event.registeredUsers.some((u) => {
-  //           return u._id == userInfo.user._id;
-  //         });
-  //       });
-  //       setEvents(userRegisteredEvents);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Error fetching events", err);
-  //     });
-  // }, [userInfo]);
 
   const fetchRegisteredEvents = async (userId) => {
     try {
