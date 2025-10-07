@@ -8,7 +8,6 @@ const refundSchema = new mongoose.Schema({
     enum: ['pending_approval', 'initiated', 'success', 'failed', 'rejected'], 
     default: 'pending_approval' 
   },
-  reason: String,
   approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // admin user
   rawGatewayResponse: { type: Object, default: {} },
   createdAt: { type: Date, default: Date.now }
@@ -62,7 +61,7 @@ const PaymentTransactionSchema = new mongoose.Schema({
   },
   method: { 
     type: String,
-    enum: ['UPI', 'CARD', 'WALLET', 'NET_BANKING', 'unknown'],
+    enum: ['UPI', 'CARD', 'WALLET', 'UPI_QR', 'NET_BANKING', 'unknown'],
     default: 'unknown'
   },
   attempts: { 

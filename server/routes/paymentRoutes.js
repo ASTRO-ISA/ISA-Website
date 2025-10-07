@@ -4,7 +4,8 @@ const {
     initiatePayment,
     verifyPayment,
     requestRefund,
-    approveRefund
+    approveRefund,
+    getTransactions
 } = require('../controllers/paymentController')
 const authenticateToken = require('../middlewares/authenticateToken')
 const rateLimit = require('express-rate-limit')
@@ -31,5 +32,6 @@ router.route('/request-refund/:transactionId').post(refundRequestLimiter, reques
 
 router.use(restrictTo(['admin', 'super-admin']))
 router.route('/approve-refund/:transactionId/:refundId').post(approveRefund)
+router.route('/transactions').get(getTransactions)
 
 module.exports = router

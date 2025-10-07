@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema({
   country: {
     type: String,
     default: 'India',
-    enum: ['India', 'Canada', 'Nepal', 'USA']
+    // enum: ['India', 'Canada', 'Nepal', 'USA']
   },
   passwordChangedAt: Date,
   isVerified: {

@@ -3,13 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
+import Spinner from "@/components/ui/Spinner";
 
 const OtpVerification = () => {
   const { refetchUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { email } = useParams();
-
+  const [verifying, setVerifying] = useState(false);
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [resendTimer, setResendTimer] = useState(90);
   const [canResend, setCanResend] = useState(false);
@@ -96,7 +97,9 @@ const OtpVerification = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const code = otp.join("");
+    setVerifying(true);
     if (code.length !== 6) {
+      setVerifying(false);
       toast({
         title: "Invalid OTP",
         description: "Enter all 6 digits",
@@ -104,13 +107,19 @@ const OtpVerification = () => {
       });
       return;
     }
+  
 
     try {
       await api.post("/auth/verify-otp", { email, otp: code });
-      toast({ title: "Email verified!", description: "Welcome 🎉." });
+      setVerifying(false);
+      toast({
+        title: "Email Verified",
+        description: "Welcome aboard explorer, your journey through the cosmos begins now!",
+      });
       await refetchUser();
       navigate("/");
     } catch (err) {
+      setVerifying(false);
       toast({
         title: "Verification failed",
         description: err.response?.data?.message || "Invalid or expired OTP",
@@ -152,9 +161,9 @@ const OtpVerification = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-space-accent hover:bg-space-accent/80 text-white font-semibold py-2 rounded-md transition-colors"
+            className="w-full flex justify-center bg-space-accent hover:bg-space-accent/80 text-white font-semibold py-2 rounded-md transition-colors"
           >
-            Verify
+            {verifying ? <Spinner /> : "Verify"}
           </button>
 
           {/* Resend */}

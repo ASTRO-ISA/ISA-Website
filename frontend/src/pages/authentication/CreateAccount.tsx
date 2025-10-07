@@ -4,13 +4,14 @@ import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import Spinner from "@/components/ui/Spinner";
 
 const Signup = ({ url = "/auth/signup" }) => {
   const { refetchUser } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -26,41 +27,34 @@ const Signup = ({ url = "/auth/signup" }) => {
   };
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
+    setSigningIn(true);
+
+    // check if password and confirm password are matching
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match");
+      setSigningIn(false);
       return;
     }
-    // else if(
-    //   form.country !== 'India' &&
-    //   form.country !== 'Canada' &&
-    //   form.country !== 'USA' &&
-    //   form.country !== 'Nepal'){
-    //     toast({
-    //       description: "Enter a valid country name",
-    //     })
-    //   }
 
     try {
       const response = await api.post(url, form, {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true, // this is to ensure cookie is accepted by the browser
+        withCredentials: true,
       });
-
-      toast({
-        title: "Account created!:",
-        description: "Welcome!",
-      });
+      setSigningIn(false);
       navigate(`/otp-verification/${form.email}`);
     } catch (err) {
       console.error("Something went wrong", err);
       toast({
         title: "Something went wrong",
-        description: "error",
+        description: err.response.data.message,
         variant: "destructive",
       });
+      setSigningIn(false);
     }
   };
 
@@ -181,7 +175,7 @@ const Signup = ({ url = "/auth/signup" }) => {
                 type="submit"
                 className="bg-space-accent hover:bg-space-accent/80 text-white px-6 py-2 rounded transition-colors"
               >
-                Sign Up
+                {signingIn ? <Spinner /> : "Sign Up"}
               </button>
             </div>
 
@@ -197,8 +191,6 @@ const Signup = ({ url = "/auth/signup" }) => {
           </form>
         </div>
       </main>
-
-      {/* <Footer /> */}
     </div>
   );
 };

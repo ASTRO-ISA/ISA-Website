@@ -34,6 +34,8 @@ const Events = () => {
   const { isLoggedIn, userInfo, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
 
   const fetchEvents = async () => {
     try {
@@ -71,34 +73,9 @@ const handlePaidRegister = async (userId, event) => {
       description: "Please login first to register for the event.",
       variant: "destructive",
     });
-
-  setLoadingEventId(event._id);
-  try {
-    const res = await api.post(`/phonepe/payment/initiate/${event._id}`, {
-      amount: event.fee,
-      item_type: "event",
-    });
-    console.log(res)
-
-    if (res.data?.redirect_url) {
-      window.location.href = res.data.redirect_url; // redirect to PhonePe
-    } else {
-      toast({
-        title: "Payment Error",
-        description: "Could not initiate payment.",
-        variant: "destructive",
-      });
-    }
-  } catch (err) {
-    console.error("Payment initiation failed:", err.message);
-    toast({
-      title: "Payment Error",
-      description: "Something went wrong. Try again later.",
-      variant: "destructive",
-    });
-  } finally {
-    setLoadingEventId(null);
-  }
+  
+    setSelectedEvent(event); // open modal/popup
+    setAgreeToTerms(false);
 };
 
   // registering a user for event
@@ -545,6 +522,98 @@ const handlePaidRegister = async (userId, event) => {
             </div>
           </div>
         </section>
+
+{/* Payment Confirmation Modal - show a popup for terms and conditions*/}
+{selectedEvent && (
+  <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div className="bg-space-dark border border-gray-800 rounded-2xl p-6 w-[90%] max-w-md">
+      <h2 className="text-xl font-bold mb-4">Confirm Payment</h2>
+      <p className="text-gray-300 mb-4">
+        You’re about to register for <span className="font-semibold text-white">{selectedEvent.title}</span>.
+      </p>
+      <p className="text-gray-400 mb-4">
+        Registration Fee: <span className="text-space-accent font-semibold">₹{selectedEvent.fee}</span>
+      </p>
+
+      <div className="flex items-start mb-4 space-x-2">
+        <input
+          type="checkbox"
+          id="terms"
+          checked={agreeToTerms}
+          onChange={(e) => setAgreeToTerms(e.target.checked)}
+          className="mt-1 accent-space-accent"
+        />
+        <label htmlFor="terms" className="text-gray-400 text-sm">
+          I agree to the{" "}
+          <Link
+            to="/terms-and-conditions"
+            className="text-space-accent underline hover:text-space-accent/80"
+          >
+            Terms and Conditions
+          </Link>
+          .
+        </label>
+      </div>
+
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setSelectedEvent(null)}
+          className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={async () => {
+            if (!agreeToTerms) {
+              toast({
+                title: "Please agree to the Terms and Conditions",
+                variant: "destructive",
+              });
+              return;
+            }
+
+            setLoadingEventId(selectedEvent._id);
+            try {
+              const res = await api.post(
+                `/phonepe/payment/initiate/${selectedEvent._id}`,
+                { amount: selectedEvent.fee, item_type: "event" }
+              );
+
+              if (res.data?.redirect_url) {
+                window.location.href = res.data.redirect_url; // redirect to PhonePe
+              } else {
+                toast({
+                  title: "Payment Error",
+                  description: res.data.message,
+                  variant: "destructive",
+                });
+              }
+            } catch (err) {
+              console.error("Payment initiation failed:", err.message);
+              toast({
+                title: "Payment Error",
+                description: err.message,
+                variant: "destructive",
+              });
+            } finally {
+              setLoadingEventId(null);
+              setSelectedEvent(null);
+            }
+          }}
+          disabled={!agreeToTerms}
+          className={`px-4 py-2 rounded-md text-white font-medium ${
+            agreeToTerms
+              ? "bg-space-accent hover:bg-space-accent/80"
+              : "bg-gray-600 cursor-not-allowed"
+          }`}
+        >
+          {loadingEventId === selectedEvent._id ? <Spinner /> : "Proceed to Payment"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       </main>
       {/*<Footer /> */}
     </div>
