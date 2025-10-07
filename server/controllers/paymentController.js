@@ -21,11 +21,9 @@ const paymentSchema = Joi.object({
 // initiate payment (idempotent)
 exports.initiatePayment = async (req, res) => {
   try {
-    console.log('I am at the start')
     const { amount, item_type } = req.body
     const itemId = req.params.itemId
     const user_id = req.user.id
-    console.log(itemId, user_id)
 
     // validate amount input
     const { error } = paymentSchema.validate({ amount })
@@ -66,12 +64,10 @@ exports.initiatePayment = async (req, res) => {
 
     // create a unique merchant order id for phonepe
     const transactionId = `TXN_${Date.now()}_${Math.floor(Math.random() * 1000)}`
-    // const redirectUrl = `${process.env.CLIENT_URL}/phonepe/payments/callback`  // after payment completion
 
-    const callbackUrl = `${process.env.CLIENT_URL}/api/v1/phonepe/payments/callback`  // server-to-server
-    // const redirectUrl = `http://localhost:8080/events`  // frontend page
-    const redirectUrl = `http://localhost:8080/payment-status?orderId=${transactionId}&itemType=${item_type}`;
-    console.log(redirectUrl)
+    // const redirectUrl = `${process.env.CLIENT_URL}/phonepe/payments/callback`  // after payment completion
+    // const callbackUrl = `${process.env.CLIENT_URL}/api/v1/phonepe/payments/callback`  // server-to-server - not using because sdk does not support callback
+    const redirectUrl = `http://localhost:8080/payment-status?orderId=${transactionId}&itemType=${item_type}&itemId=${itemId}`
 
     // save transaction log in our database
     const newTx = await PaymentTransaction.create({
@@ -81,10 +77,9 @@ exports.initiatePayment = async (req, res) => {
       status: 'pending',
       currency: 'INR'
     })
-    console.log('i am here after saving transaction')
+
     // link transaction to user
     await User.findByIdAndUpdate(user_id, { $push: { transactions: newTx._id } })
-    console.log('i am here after linkin user to transaction')
 
     // build phonepe payment request
     const request = StandardCheckoutPayRequest.builder()
@@ -92,9 +87,7 @@ exports.initiatePayment = async (req, res) => {
       .amount(amount * 100)        // amount in paise
       .redirectUrl(redirectUrl)    // url to redirect after payment
       .build()
-      console.log(' ia ma herer')
     const response = await phonepeClient.pay(request)
-    console.log(response)
 
     // respond with transaction id and redirect url
     res.json({ transactionId, redirect_url: response.redirectUrl })
@@ -109,7 +102,6 @@ exports.initiatePayment = async (req, res) => {
 
 // verify payment status (idempotent, update our records)
 exports.verifyPayment = async (req, res) => {
-  console.log(' i am in verify using callback')
   try {
     const { transactionId, itemType } = req.params
 
@@ -151,11 +143,11 @@ exports.verifyPayment = async (req, res) => {
 exports.requestRefund = async (req, res) => {
   try {
     const { transactionId } = req.params
-    const { amount, reason } = req.body
+    const { amount } = req.body
     const userId = req.user.id
 
     // find the transaction and verify it's successful
-    const tx = await PaymentTransaction.findOne({ orderId: transactionId, user_id: userId })
+    const tx = await PaymentTransaction.findOne({ orderId: transactionId })
     if (!tx) return res.status(404).json({ error: 'Transaction not found' })
     if (tx.status !== 'success') {
       return res.status(400).json({ error: 'Only successful transactions can be refunded' })
@@ -170,7 +162,7 @@ exports.requestRefund = async (req, res) => {
     // create a pending refund entry
     const refundId = `REF_${Date.now()}_${Math.floor(Math.random() * 1000)}`
     tx.refunds = tx.refunds || []
-    tx.refunds.push({ refundId, amount, reason, status: 'pending_approval' })
+    tx.refunds.push({ refundId, amount, status: 'pending_approval' })
     await tx.save()
 
     res.json({ message: 'Refund request submitted for admin approval', refundId })
@@ -187,6 +179,15 @@ exports.approveRefund = async (req, res) => {
     const adminId = req.user.id
     const { approve } = req.body // true to approve, false to reject
 
+    if (typeof(approve) !== 'boolean') {
+      return res.status(400).json({ message: 'Request could not be processed' });
+    }
+
+    const sender = await User.findOne({ _id: adminId }).select('role')
+    if (sender.role !== 'admin' && sender.role !== 'super-admin') {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
     const tx = await PaymentTransaction.findOne({ orderId: transactionId })
     if (!tx) return res.status(404).json({ error: 'Transaction not found' })
 
@@ -194,6 +195,12 @@ exports.approveRefund = async (req, res) => {
     if (!refund) return res.status(404).json({ error: 'Refund not found' })
     if (refund.status !== 'pending_approval') {
       return res.status(400).json({ error: 'Refund is not pending approval' })
+    }
+
+    // check payment status with PhonePe before refund
+    const statusResponse = await phonepeClient.getOrderStatus(transactionId)
+    if (statusResponse.state !== 'COMPLETED') {
+      return res.status(400).json({ message: 'Transaction not in a refundable state' })
     }
 
     if (!approve) {
@@ -220,5 +227,17 @@ exports.approveRefund = async (req, res) => {
   } catch (err) {
     console.error('Refund Approval Error:', err.message)
     res.status(500).json({ error: 'Refund approval failed' })
+  }
+}
+
+exports.getTransactions = async (req, res) => {
+  try{
+    const txs = await PaymentTransaction.find({})
+    if(!txs) return res.status(404).json('Transactions not found')
+    
+    res.json({transactions: txs})
+  } catch {
+    console.error('Error finding the transactions.', err.message)
+    res.status(500).json({error: 'Internal server error finding the transactions'})
   }
 }
