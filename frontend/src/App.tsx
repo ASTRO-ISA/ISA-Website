@@ -38,6 +38,7 @@ import OtpVerification from "./pages/authentication/OtpVerification";
 import EditEvent from "./pages/admin/admin-events/EditEvent";
 import QRScannerPage from "./pages/admin/qr/QRScanner";
 import PaymentStatus from "./components/PaymentVerify";
+import TermsAndConditions from "./pages/TermsConditions";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +74,8 @@ const App = () => {
           <ScrollToTop />
           <Navbar />
           <Routes>
+            
+            {/* These are private routes only accessible after login. */}
             <Route element={<PrivateRoute />}>
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<AdminDashboard />} />
@@ -80,6 +83,8 @@ const App = () => {
               <Route path="/events/scanner/:slug" element={<QRScannerPage />} />
               <Route path="/payment-status" element={<PaymentStatus />} />
             </Route>
+
+            {/* These are public routes accessible without login. */}
             <Route path="/" element={<Index />} />
             <Route path="/community" element={<Community />} />
             <Route path="/blogs" element={<Blog />} />
@@ -91,10 +96,8 @@ const App = () => {
             <Route path="/webinars" element={<Webinars />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<CreateAccount />} />
-            <Route
-              path="/otp-verification/:email"
-              element={<OtpVerification />}
-            />
+            <Route path="terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/otp-verification/:email" element={<OtpVerification />} />
             <Route path="/blogs/:slug" element={<BlogDetail />} />
             <Route path="/host-event" element={<CreateEvent />} />
             <Route path="/about" element={<About />} />
