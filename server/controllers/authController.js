@@ -6,13 +6,19 @@ const otpService = require('../services/otpService')
 
 exports.signup = async (req, res) => {
   try {
+    const { name, email, phoneNo, password, confirmPassword, country } = req.body
+    
+    // check if email already registered
+    const existingUser = await User.findOne({ email })
+    if(existingUser) return res.status(409).json({ message: 'A user with this email or username already exists.' })
+
     const user = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      phoneNo: req.body.phoneNo,
-      password: req.body.password,
-      confirmPassword: req.body.confirmPassword,
-      country: req.body.country
+      name,
+      email,
+      phoneNo,
+      password,
+      confirmPassword,
+      country
     })
 
     await otpService.sendOtp(user.email, sendEmail)
@@ -155,8 +161,7 @@ exports.resetPassword = async (req, res) => {
   }
 }
 
-// OTp--------------------------------------------
-
+// otp
 exports.verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body

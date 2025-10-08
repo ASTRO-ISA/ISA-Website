@@ -28,6 +28,8 @@ const qrRouter = require('./routes/qrRoutes.js')
 
 // middlewares
 app.use(helmet())
+
+// cors
 // app.use(
 //   cors({
 //     origin: 'http://localhost:8080',
