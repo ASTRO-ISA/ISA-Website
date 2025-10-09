@@ -26,6 +26,7 @@ const superAdminRouter = require('./routes/superAdminRoutes.js')
 const paymentRouter = require('./routes/paymentRoutes.js')
 const qrRouter = require('./routes/qrRoutes.js')
 
+app.set('trust proxy', 1)
 // middlewares
 app.use(helmet())
 
