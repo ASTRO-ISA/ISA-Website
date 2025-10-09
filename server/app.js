@@ -40,7 +40,9 @@ app.use(helmet())
 const allowedOrigins = [
   'http://localhost:8080',
   'https://isa-website-24m1.vercel.app',
-  'https://isa-website-24m1-ii97q344h-isas-projects-5517bba9.vercel.app'
+  'https://isa-website-24m1-ii97q344h-isas-projects-5517bba9.vercel.app',
+  'https://isa-website-24m1-git-main-isas-projects-5517bba9.vercel.app',
+  'https://isa-website-24m1-87callqyw-isas-projects-5517bba9.vercel.app'
 ]
 
 app.use(
