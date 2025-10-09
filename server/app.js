@@ -44,7 +44,7 @@ const allowedOrigins = [
   'https://isa-website-24m1-ii97q344h-isas-projects-5517bba9.vercel.app',
   'https://isa-website-24m1-git-main-isas-projects-5517bba9.vercel.app',
   'https://isa-website-24m1-87callqyw-isas-projects-5517bba9.vercel.app',
-  'https://isa.org.in/api/v1',
+  'https://isa.org.in',
 ]
 
 app.use(
