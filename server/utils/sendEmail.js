@@ -18,8 +18,7 @@ const sendEmail = async (to, subject, html) => {
       html
     }
 
-    const info = await transporter.sendMail(mailOptions)
-    console.log('Email sent:', info.response)
+    await transporter.sendMail(mailOptions)
   } catch (error) {
     console.error('Error sending email:', error)
   }
@@ -42,8 +41,7 @@ const sendNewsletter = async ({bcc, subject, html}) => {
       html
     }
 
-    const newsletter = await transporter.sendMail(mailOptions)
-    console.log('Newsletter sent', newsletter.response)
+    await transporter.sendMail(mailOptions)
   } catch (err) {
     console.log('Error sending newsletter')
   }
@@ -67,8 +65,7 @@ const sendEmailWithAttachment = async (to, subject, html, attachments = []) => {
       attachments // will include attachments if provided
     }
 
-    const info = await transporter.sendMail(mailOptions)
-    console.log('Email sent:', info.response)
+    await transporter.sendMail(mailOptions)
   } catch (error) {
     console.error('Error sending email:', error)
   }

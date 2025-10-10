@@ -13,7 +13,13 @@ exports.createSendToken = (user, statusCode, res) => {
     expires: new Date(
       Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
     ),
-    httpOnly: true
+    httpOnly: true,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    // specifying the parent domain which will use the cookie
+    domain:
+      process.env.NODE_ENV === 'production'
+        ? process.env.COOKIE_DOMAIN // for production
+        : 'localhost', // for local dev
   }
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true
 

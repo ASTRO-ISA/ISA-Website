@@ -27,6 +27,7 @@ const paymentRouter = require('./routes/paymentRoutes.js')
 const qrRouter = require('./routes/qrRoutes.js')
 
 app.set('trust proxy', 1)
+
 // middlewares
 app.use(helmet())
 
@@ -39,12 +40,8 @@ app.use(helmet())
 // )
 
 const allowedOrigins = [
-  'http://localhost:8080',
-  'https://isa-website-24m1.vercel.app',
-  'https://isa-website-24m1-ii97q344h-isas-projects-5517bba9.vercel.app',
-  'https://isa-website-24m1-git-main-isas-projects-5517bba9.vercel.app',
-  'https://isa-website-24m1-87callqyw-isas-projects-5517bba9.vercel.app',
-  'https://isa.org.in',
+  process.env.ORIGIN_LOCALHOST,
+  process.env.ORIGIN_FRONTEND
 ]
 
 app.use(

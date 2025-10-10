@@ -3,13 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
-import OtpVerification from "./OtpVerification";
+import Spinner from "@/components/ui/Spinner";
 
 const Login = () => {
   const { refetchUser } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [logginIn, setLoggingIn] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -17,6 +18,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoggingIn(true);
     try {
       const res = await api.post("/auth/login", form, {
         headers: {
@@ -25,6 +27,7 @@ const Login = () => {
       });
 
       // If login is successful
+      setLoggingIn(false);
       toast({
         title: "Login successful!",
         description: "Welcome back!",
@@ -33,6 +36,7 @@ const Login = () => {
       await refetchUser();
       navigate("/");
     } catch (err) {
+      setLoggingIn(false);
       console.error("Login error:", err);
 
       if (err.response && err.response.status === 403) {
