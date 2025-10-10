@@ -201,7 +201,7 @@ const AdminGallerySection = () => {
   };
 
   const fetchUserPicsForPotd = async () => {
-    const res = await api.get("/userPotdPics/", {
+    const res = await api.get("/user-potd-pics/", {
       withCredentials: true,
     });
     setUserImages(
