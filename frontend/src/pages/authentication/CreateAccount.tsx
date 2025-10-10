@@ -46,7 +46,9 @@ const Signup = ({ url = "/auth/signup" }) => {
         withCredentials: true,
       });
       setSigningIn(false);
-      navigate(`/otp-verification/${form.email}`);
+      // navigate(`/otp-verification/${form.email}`);
+      await refetchUser();
+      navigate('/');
     } catch (err) {
       console.error("Something went wrong", err);
       toast({

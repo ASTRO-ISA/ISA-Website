@@ -21,11 +21,12 @@ exports.signup = async (req, res) => {
       country
     })
 
-    await otpService.sendOtp(user.email, sendEmail)
+    // await otpService.sendOtp(user.email, sendEmail)
+    generateAndSendToken.createSendToken(user, 200, res)
 
-    res.status(200).json({
-      message: 'Signup successful. Please verify your email with OTP.'
-    })
+    // res.status(200).json({
+    //   message: 'Signup successful. Please verify your email with OTP.'
+    // })
   } catch (error) {
     res.status(500).json({ status: 'Fail', message: error.message })
   }
@@ -52,13 +53,13 @@ exports.login = async (req, res) => {
     }
 
     // 3) Check verification
-    if (!user.isVerified) {
-      // Re-send OTP
-      await otpService.sendOtp(user.email, sendEmail)
-      return res.status(403).json({
-        message: 'Please verify your email before logging in. OTP sent again.'
-      })
-    }
+    // if (!user.isVerified) {
+    //   // Re-send OTP
+    //   await otpService.sendOtp(user.email, sendEmail)
+    //   return res.status(403).json({
+    //     message: 'Please verify your email before logging in. OTP sent again.'
+    //   })
+    // }
 
     generateAndSendToken.createSendToken(user, 200, res)
   } catch (error) {
