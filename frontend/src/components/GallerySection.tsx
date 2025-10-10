@@ -5,7 +5,6 @@ import 'yet-another-react-lightbox/styles.css';
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import "yet-another-react-lightbox/plugins/captions.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
-// import "yet-another-react-lightbox/plugins/zoom.css";
 
 const GallerySection = () => {
   const [open, setOpen] = useState(false);
@@ -19,7 +18,7 @@ const GallerySection = () => {
   useEffect(() => {
     setLoading(true);
     api
-      .get('http://localhost:3000/api/v1/gallery')
+      .get('/gallery')
       .then((res) => {
         setImages(
           res.data.map((img) => ({

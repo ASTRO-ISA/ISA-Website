@@ -51,9 +51,6 @@ const FeaturedWebinars = () => {
   const fetchFeatured = async () => {
     try {
       const res = await api.get("/webinars/featured");
-      if (res.status === 404) {
-        console.log("No featured webinar at the moment.");
-      } else {
         setFeatured({
           _id: res.data._id,
           thumbnail: res.data.thumbnail,
@@ -64,7 +61,6 @@ const FeaturedWebinars = () => {
           guest: res.data.guests || [],
           videoId: res.data.videoId,
         });
-      }
     } catch (err) {
       console.error("Error fetching featured webinar.");
     }

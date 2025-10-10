@@ -70,8 +70,7 @@ exports.Webinars = async (req, res) => {
     }
     res.status(200).json(webinars)
   } catch (err) {
-    console.log('Failed to fetch webinars:', err)
-    res.status(500).json({ message: 'Server error in get webinars' })
+    res.status(500).json({ message: 'Server error fetching webinars' })
   }
 }
 
@@ -83,8 +82,7 @@ exports.upcomingWebinars = async (req, res) => {
     }
     res.status(200).json(webinars)
   } catch (err) {
-    console.log('Failed to fetch webinars:', err)
-    res.status(500).json({ message: 'Server error in get upcoming webinars' })
+    res.status(500).json({ message: 'Server error fetching upcoming webinars' })
   }
 }
 
@@ -96,8 +94,7 @@ exports.pastWebinars = async (req, res) => {
     }
     res.status(200).json(webinars)
   } catch (err) {
-    console.log('Failed to fetch webinars:', err)
-    res.status(500).json({ message: 'Server error in get past webinars' })
+    res.status(500).json({ message: 'Server error fetching past webinars' })
   }
 }
 

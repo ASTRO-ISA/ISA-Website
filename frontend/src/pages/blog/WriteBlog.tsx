@@ -64,8 +64,6 @@ const WriteBlog = () => {
 
     try {
       const response = await api.post("/blogs/create", formData);
-
-      console.log("Blog published:", response.data);
       setContent("");
       setDescription("");
       setThumbnail(null);

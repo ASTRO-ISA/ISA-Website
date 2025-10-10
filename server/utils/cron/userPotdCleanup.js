@@ -14,7 +14,6 @@ cron.schedule("10 0 */2 * *", async () => {
       }
   
       await UserPicForPotdModel.deleteMany({})
-      console.log("Cleared all user images and emptied the collection.")
     } catch (error) {
       console.error("Error during cleanup:", error.message)
     }

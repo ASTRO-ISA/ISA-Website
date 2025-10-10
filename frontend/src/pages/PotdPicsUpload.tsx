@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/Spinner";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
+import api from "@/lib/api";
 
 const UserPicUpload = () => {
   const [userPicCaption, setUserPicCaption] = useState("");
@@ -99,11 +100,7 @@ const UserPicUpload = () => {
     if (userPicSocial.trim()) formData.append("social", result.sanitized || userPicSocial);
   
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/v1/user-potd-pics/upload",
-        formData,
-        { withCredentials: true }
-      );
+      const response = await api.post("/user-potd-pics/upload", formData );
   
       if (response.status === 500) {
         toast({ 

@@ -31,14 +31,6 @@ app.set('trust proxy', 1)
 // middlewares
 app.use(helmet())
 
-// cors
-// app.use(
-//   cors({
-//     origin: 'http://localhost:8080',
-//     credentials: true
-//   })
-// )
-
 const allowedOrigins = [
   process.env.ORIGIN_LOCALHOST,
   process.env.ORIGIN_FRONTEND

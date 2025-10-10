@@ -19,7 +19,6 @@ cron.schedule('0 2 * * *', async () => {
       if (event.thumbnail && event.publicId) {
         try {
           await cloudinary.uploader.destroy(event.publicId)
-          console.log(`Deleted event banner: ${event.publicId}`)
         } catch (err) {
           console.error(`Failed to delete event banner ${event.publicId}:`, err)
         }
@@ -27,14 +26,12 @@ cron.schedule('0 2 * * *', async () => {
     }
 
     await Event.deleteMany({ status: 'rejected', statusChangedAt: { $lt: cutoffDate } })
-    console.log('Events cleanup done')
   } catch (err) {
     console.error('Event cleanup failed:', err)
   }
 
   try {
     await BlogSuggestion.deleteMany({ status: 'rejected', statusChangedAt: { $lt: cutoffDate } })
-    console.log('BlogSuggestions cleanup done')
   } catch (err) {
     console.error('BlogSuggestions cleanup failed:', err)
   }
@@ -49,7 +46,6 @@ cron.schedule('0 2 * * *', async () => {
       if (blog.thumbnail && blog.publicId) {
         try {
           await cloudinary.uploader.destroy(blog.publicId)
-          console.log(`Deleted blog thumbnail: ${blog.publicId}`)
         } catch (err) {
           console.error(`Failed to delete blog thumbnail ${blog.publicId}:`, err)
         }
@@ -57,7 +53,6 @@ cron.schedule('0 2 * * *', async () => {
     }
 
     await Blog.deleteMany({ status: 'rejected', statusChangedAt: { $lt: cutoffDate } })
-    console.log('Blogs cleanup done')
   } catch (err) {
     console.error('Blog cleanup failed:', err)
   }
@@ -72,7 +67,6 @@ cron.schedule('0 2 * * *', async () => {
       if (paper.paperUrl && paper.paperPublicId) {
         try {
           await cloudinary.uploader.destroy(paper.paperPublicId)
-          console.log(`Deleted research paper document: ${paper.paperPublicId}`)
         } catch (err) {
           console.error(`Failed to delete research paper document ${paper.paperPublicId}:`, err)
         }
@@ -80,7 +74,6 @@ cron.schedule('0 2 * * *', async () => {
     }
 
     await ResearchPaper.deleteMany({ status: 'rejected', statusChangedAt: { $lt: cutoffDate } })
-    console.log('Research papers cleanup done')
   } catch (err) {
     console.error('Research paper cleanup failed:', err)
   }

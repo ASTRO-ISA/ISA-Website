@@ -104,8 +104,6 @@ exports.Events = async (req, res) => {
     }
     res.status(200).json(events)
   } catch (err) {
-    console.log(err)
-
     res.status(500).json({ message: 'Server error in get events' })
   }
 }
@@ -121,8 +119,6 @@ exports.pendingEvents = async (req, res) => {
     }
     res.status(200).json(events)
   } catch (err) {
-    console.log(err)
-
     res.status(500).json({ message: 'Server error in get events' })
   }
 }
@@ -137,8 +133,6 @@ exports.approvedEvents = async (req, res) => {
     }
     res.status(200).json(events)
   } catch (err) {
-    console.log(err)
-
     res.status(500).json({ message: 'Server error in get events' })
   }
 }
@@ -156,8 +150,6 @@ exports.upcomingEvents = async (req, res) => {
     }
     res.status(200).json(events)
   } catch (err) {
-    console.log(err)
-
     res.status(500).json({ message: 'Server error in get events' })
   }
 }
@@ -180,7 +172,6 @@ exports.getEvent = async (req, res) => {
     }
     res.status(200).json(event)
   } catch (err) {
-    console.log(err)
     res.status(500).json({ message: 'Server error in getEvent' })
   }
 }

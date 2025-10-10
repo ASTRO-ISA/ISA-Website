@@ -13,9 +13,7 @@ exports.reconcilePendingTransactions = async () => {
 
     for (const tx of pendingTxs) {
       try {
-        await verifyPayment({ params: { transactionId: tx.orderId } }, { 
-          json: (data) => console.log(`Re-verified ${tx.orderId}`, data) 
-        })
+        await verifyPayment({ params: { transactionId: tx.orderId } })
       } catch (err) {
         console.error(`Reconciliation failed for ${tx.orderId}:`, err.message)
       }

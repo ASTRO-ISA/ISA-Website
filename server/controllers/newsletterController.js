@@ -19,7 +19,6 @@ exports.subscribeToNewsletter = async (req, res) => {
     
     const alreadySubscribed = newsletter.subscribers.some(sub => {
       if (!sub.user) return false
-      // console.log('Checking subscriber', sub.user.toString())
       return sub.user.toString() === userId
     })
 
@@ -160,7 +159,6 @@ exports.sendNewsletter = async (req, res) => {
     if (!bcc.length) {
       return res.status(400).json({ msg: 'No valid emails found' })
     }
-    console.log(draft.blogs)
 
     const html = `
     <h1>You should definitely check out</h1>
@@ -202,7 +200,6 @@ exports.sendNewsletter = async (req, res) => {
 
     try {
       await sendNewsletter({ bcc, subject: `Your Weekly Newsletter ${new Date().toDateString()}`, html })
-      console.log('Newsletter email sent successfully')
     } catch (err) {
       console.error('Email send failed', err)
       return res.status(500).json({ msg: 'Send email failed', error: err.message })

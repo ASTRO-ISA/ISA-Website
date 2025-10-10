@@ -114,7 +114,7 @@ exports.forgotPassword = async (req, res) => {
     expiresIn: '15m'
   })
 
-  const resetLink = `http://localhost:8080/reset-password/${token}`
+  const resetLink = `${process.env.ORIGIN_FRONTEND}/reset-password/${token}`
 
   const html = `
   <p>Hello ${user.name || 'User'},</p>

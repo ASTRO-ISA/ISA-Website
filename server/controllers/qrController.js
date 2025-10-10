@@ -68,25 +68,21 @@ exports.verifyQR = async (req, res) => {
   }
 
 exports.addScanner = async (req, res) => {
-    console.log('i am up here')
     try {
       const { eventSlug } = req.params
       const { email } = req.body
-      console.log(email)
   
       // Find user by email
       const user = await User.findOne({ email })
       if (!user) {
         return res.status(404).json({ success: false, message: 'User not found' })
       }
-      console.log(' i am here')
   
       // Find event by slug
       const event = await Event.findOne({ slug: eventSlug })
       if (!event) {
         return res.status(404).json({ success: false, message: 'Event not found' })
       }
-      console.log(' i am here')
       // Only event creator or admin can add scanners
       if (event.createdBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
         return res.status(403).json({ success: false, message: 'Not authorized to add scanners' })

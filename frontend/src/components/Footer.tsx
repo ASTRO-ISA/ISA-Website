@@ -19,7 +19,6 @@ const Footer = () => {
     if (isLoggedIn) {
       setUploadingEmail(true);
       try {
-        console.log(userEmail);
         const response = await api.post(
           "/newsletter/subscribe",
           { userEmail },
@@ -61,7 +60,7 @@ const Footer = () => {
           setIsSubscribedToNewsletter(false);
         }
       } catch (err) {
-        console.log("Error checking subscription status");
+        console.error("Error checking subscription status");
       }
     }
   };
@@ -74,7 +73,6 @@ const Footer = () => {
     if (isLoggedIn && isSubscribedToNewsletter) {
       setUnsubscribing(true);
       try {
-        // console.log(userEmail);
         const response = await api.patch(
           "/newsletter/unsubscribe",
           {},

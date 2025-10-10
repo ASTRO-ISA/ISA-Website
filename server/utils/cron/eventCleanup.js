@@ -13,8 +13,7 @@ cron.schedule('10 1 * * *', async () => {
       if (event.publicId) {
         await cloudinary.uploader.destroy(event.publicId)
       }
-      await event.deleteOne();
-      console.log(`Deleted completed event: ${event.title}`)
+      await event.deleteOne()
     }
   } catch (err) {
     console.error('Error deleting completed events:', err.message)

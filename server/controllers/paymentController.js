@@ -67,7 +67,7 @@ exports.initiatePayment = async (req, res) => {
 
     // const redirectUrl = `${process.env.CLIENT_URL}/phonepe/payments/callback`  // after payment completion
     // const callbackUrl = `${process.env.CLIENT_URL}/api/v1/phonepe/payments/callback`  // server-to-server - not using because sdk does not support callback
-    const redirectUrl = `http://localhost:8080/payment-status?orderId=${transactionId}&itemType=${item_type}&itemId=${itemId}`
+    const redirectUrl = `${process.env.ORIGIN_FRONTEND}/payment-status?orderId=${transactionId}&itemType=${item_type}&itemId=${itemId}`
 
     // save transaction log in our database
     const newTx = await PaymentTransaction.create({

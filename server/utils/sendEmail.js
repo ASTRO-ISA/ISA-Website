@@ -43,7 +43,7 @@ const sendNewsletter = async ({bcc, subject, html}) => {
 
     await transporter.sendMail(mailOptions)
   } catch (err) {
-    console.log('Error sending newsletter')
+    console.error('Error sending newsletter', err.message)
   }
 }
 

@@ -5,7 +5,6 @@ import api from "@/lib/api";
 
 const ResetPassword = () => {
   const { token } = useParams();
-  console.log(token);
 
   const [form, setForm] = useState({ newPassword: "", confirmPassword: "" });
   const navigate = useNavigate();
