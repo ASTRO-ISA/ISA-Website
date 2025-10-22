@@ -4,9 +4,9 @@ const User = require('../models/userModel')
 const { sendEmail, sendEmailWithAttachment } = require('../utils/sendEmail')
 const cloudinary = require('cloudinary').v2
 require('dotenv').config()
-// const { v4: uuidv4 } = require('uuid')
 const { v4: uuidv4 } = require('uuid')
 const QRCode = require('qrcode')
+const PaymentTransaction = require('../models/transactionsModel')
 
 exports.createEvent = async (req, res) => {
   try {
@@ -175,68 +175,77 @@ exports.getEvent = async (req, res) => {
     res.status(500).json({ message: 'Server error in getEvent' })
   }
 }
+
 exports.registerEvent = async (req, res) => {
   try {
     const { eventid, userid } = req.params
+    const tokenUserId = req.user.id
+
+    // user validation
+    if (userid !== tokenUserId) {
+      return res.status(403).json({ message: "Can't validate user" })
+    }
 
     const event = await Event.findById(eventid)
     const user = await User.findById(userid)
 
-    if (!user) {
-      return res.status(400).json({ message: 'Please make login' })
-    }
-    if (!event) {
-      return res.status(400).json({ message: 'Event not found' })
-    }
+    if (!user) return res.status(400).json({ message: 'Please login first' })
+    if (!event) return res.status(400).json({ message: 'Event not found' })
 
-    // check if already registered
-    const alreadyRegistered = event.registeredUsers.some(
-      (reg) => reg.user.toString() === userid
-    )
-    if (alreadyRegistered) {
-      return res
-        .status(400)
-        .json({ message: 'User already registered for this event' })
-    }
+    // for paid events — verify payment
+    if (!event.isFree) {
+      const payment = await PaymentTransaction.findOne({
+        user_id: userid,
+        'item.item_type': 'event',
+        'item.item_id': eventid,
+        status: 'success'
+      })
 
-    // check if sold out
-    if (
-      event.seatCapacity &&
-      event.registeredUsers.length >= event.seatCapacity
-    ) {
-      return res
-        .status(400)
-        .json({ message: 'Sold Out. No more seats available.' })
+      if (!payment) {
+        return res.status(400).json({
+          message: 'Payment not completed for this event. Please complete payment first.'
+        })
+      }
     }
 
     // generate unique token
     let registrationToken
     do {
       registrationToken = uuidv4()
-    } while (event.registeredUsers.some((r) => r.token === registrationToken))
+    } while (event.registeredUsers?.some((r) => r.token === registrationToken))
 
-    // Generate QR code (as Data URL)
+    // prevent duplicates + overbooking
+    const updatedEvent = await Event.findOneAndUpdate(
+      {
+        _id: eventid,
+        'registeredUsers.user': { $ne: userid }, // not already registered
+        $or: [
+          { seatCapacity: { $exists: false } },
+          { $expr: { $lt: [{ $size: '$registeredUsers' }, '$seatCapacity'] } }
+        ]
+      },
+      {
+        $push: {
+          registeredUsers: { user: userid, token: registrationToken, used: false }
+        }
+      },
+      { new: true }
+    ).populate('registeredUsers.user', 'name email')
+
+    if (!updatedEvent) {
+      return res.status(400).json({ message: 'Already registered or seats full.' })
+    }
+
+    // generate QR code
     const qrDataUrl = await QRCode.toDataURL(registrationToken)
+    const qrBuffer = await QRCode.toBuffer(registrationToken)
 
-    // add user with token
-    event.registeredUsers.push({
-      user: userid,
-      token: registrationToken,
-      used: false
-    })
-    await event.save()
-
-    await event.populate('registeredUsers.user', 'name email')
-
-    // upload QR code to cloudinary
+    // upload QR code to Cloudinary
     const uploaded = await cloudinary.uploader.upload(qrDataUrl, {
       folder: 'event_qrcodes'
     })
 
-    // generate buffer for attachment
-    const qrBuffer = await QRCode.toBuffer(registrationToken)
-
-    // email content with Cloudinary QR (inline)
+    // email content
     const emailContent = `
       <div style="font-family: Arial, sans-serif; line-height:1.5;">
         <h3>Event Registration Confirmed</h3>
@@ -247,11 +256,9 @@ exports.registerEvent = async (req, res) => {
           <b>${new Date(event.eventDate).toDateString()}</b> 
           at <b>${event.location}</b>.
         </p>
-    <p style="background:#f9f9f9; padding:12px; border-left:4px solid #4F46E5; margin:20px 0;">
-      <strong>Important:</strong> For your convenience, a copy of the QR code has also been attached to this email. 
-      We recommend saving the attached QR code to your device in advance, so you can access it without requiring an internet connection at the event venue.
-    </p>
-    <p>We look forward to your participation.</p>
+        <p style="background:#f9f9f9; padding:12px; border-left:4px solid #4F46E5; margin:20px 0;">
+          <strong>Important:</strong> Please save the attached QR code for entry at the venue.
+        </p>
         <p style="text-align:center;">
           <img src="${uploaded.secure_url}" alt="QR Code" style="max-width:200px;"/>
         </p>
@@ -259,7 +266,7 @@ exports.registerEvent = async (req, res) => {
       </div>
     `
 
-    // send email with both cloudinary image inline + attached QR file
+    // send email with QR
     await sendEmailWithAttachment(
       user.email,
       `Registered for ${event.title}`,
@@ -268,18 +275,18 @@ exports.registerEvent = async (req, res) => {
         {
           filename: 'qrcode.png',
           content: qrBuffer,
-          cid: 'qrcode@event' // inline attachment reference (optional if you want <img src="cid:..." />)
+          cid: 'qrcode@event'
         }
       ]
     )
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: 'User successfully registered for the event',
-      data: event
+      message: `User successfully registered for the ${event.isFree ? 'free' : 'paid'} event`,
+      data: updatedEvent
     })
   } catch (error) {
-    console.error('Error in registration:', error)
+    console.error('Error in event registration:', error)
     res.status(500).json({
       success: false,
       message: 'User registration failed for the event'

@@ -9,17 +9,16 @@ const restrictTo = require('../middlewares/restrictTo')
 const uploadImage = multer({ storage: imageStorage('event-banners') })
 
 router.route('/').get(eventController.approvedEvents)
+router.use(authenticateToken)
 router
   .route('/pending')
   .get(
-    authenticateToken,
     restrictTo(['admin', 'super-admin']),
     eventController.pendingEvents
   )
 router
   .route('/all')
   .get(
-    authenticateToken,
     restrictTo(['admin', 'super-admin']),
     eventController.Events
   )
@@ -28,23 +27,21 @@ router.route('/:slug').get(eventController.getEvent)
 router
   .route('/create')
   .post(
-    authenticateToken,
     uploadImage.single('thumbnail'),
     eventController.createEvent
   )
 
 router
   .route('/my-events/:userid')
-  .get(authenticateToken, eventController.registeredEvents)
+  .get(eventController.registeredEvents)
 router
   .route('/status/:id')
-  .patch(authenticateToken, restrictTo(['admin', 'super-admin']), eventController.changeStatus)
+  .patch(restrictTo(['admin', 'super-admin']), eventController.changeStatus)
 router.route('/register/:eventid/:userid').patch(eventController.registerEvent)
 router
   .route('/unregister/:eventid/:userid')
   .patch(eventController.unregisterEvent)
 
-router.use(authenticateToken)
 router.delete('/:id', eventController.deleteEvent)
 router
   .route('/:id')

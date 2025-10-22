@@ -15,9 +15,7 @@ const AllBlogs = () => {
   const [loadingUserBlogs, setLoadingUserBlogs] = useState(false);
   const [userBlogs, setUserBlogs] = useState([]);
   const [showAllUserBlogs, setShowAllUserBlogs] = useState(false);
-  const [formData, setFormData] = useState<
-    Record<string, { response: string }>
-  >({});
+  const [formData, setFormData] = useState<Record<string, { response: string }>>({});
   const { toast } = useToast();
 
   // Fetch blogs
@@ -45,14 +43,15 @@ const AllBlogs = () => {
     }));
   };
 
-  // Change status with response
+  // Change status with optional response
   const changeStatus = async (id: string, newStatus: string) => {
     const response = formData[id]?.response?.trim() || "";
 
-    if (!response) {
+    // Require response only for rejection
+    if (newStatus === "rejected" && !response) {
       toast({
         title: "Response required",
-        description: "Please add a response before approving or rejecting.",
+        description: "Please add a response before rejecting.",
         variant: "destructive",
       });
       return;
@@ -66,7 +65,7 @@ const AllBlogs = () => {
       );
 
       toast({
-        description: `Blog marked as ${newStatus} with response: "${response}"`,
+        description: `Blog marked as ${newStatus}${response ? ` with response: "${response}"` : ""}`,
       });
       fetchBlogs();
     } catch (err) {
@@ -135,9 +134,7 @@ const AllBlogs = () => {
                 <div className="p-5 flex-1 flex flex-col justify-between">
                   <div>
                     <h3 className="text-xl font-semibold mb-3">{blog.title}</h3>
-                    <p className="text-gray-400 text-sm mb-4">
-                      {blog.description}
-                    </p>
+                    <p className="text-gray-400 text-sm mb-4">{blog.description}</p>
 
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center text-sm text-gray-400">
@@ -181,23 +178,17 @@ const AllBlogs = () => {
 
                         {/* Admin Response Textarea */}
                         <textarea
-                          onChange={(e) =>
-                            handleResponseChange(blog._id, e.target.value)
-                          }
+                          onChange={(e) => handleResponseChange(blog._id, e.target.value)}
                           value={formData[blog._id]?.response || ""}
                           placeholder="Write admin response here..."
                           className="w-full p-2 mt-2 mb-2 text-sm text-black border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-space-purple"
                         />
 
-                        <DropdownMenuItem
-                          onSelect={() => changeStatus(blog._id, "approved")}
-                        >
+                        <DropdownMenuItem onSelect={() => changeStatus(blog._id, "approved")}>
                           Approve
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem
-                          onSelect={() => changeStatus(blog._id, "rejected")}
-                        >
+                        <DropdownMenuItem onSelect={() => changeStatus(blog._id, "rejected")}>
                           Reject
                         </DropdownMenuItem>
                       </DropdownMenuContent>

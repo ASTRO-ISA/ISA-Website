@@ -26,17 +26,49 @@ exports.BlogSuggestedByUser = async (req, res) => {
   }
 }
 
+// exports.pendingBlogSuggestions = async (req, res) => {
+//   try {
+//     const blogs = await BlogSuggestion.find({ status: 'pending' })
+//       .sort({ createdAt: -1 })
+//       .populate('submittedBy', 'name email')
+
+//     res.status(200).json(blogs)
+//   } catch (err) {
+//     res
+//       .status(500)
+//       .json({ message: 'Server error getting pending blogs.', err })
+//   }
+// }
 exports.pendingBlogSuggestions = async (req, res) => {
   try {
     const blogs = await BlogSuggestion.find({ status: 'pending' })
       .sort({ createdAt: -1 })
       .populate('submittedBy', 'name email')
+      .lean() // .lean() returns plain js object instead of pure mongoose document (more fast) / use only while you want to display only on frontend
 
-    res.status(200).json(blogs)
+    // sanitizing the response before sending it to frontend to prevent accidental null and crashes
+    const safeBlogs = blogs.map((b) => ({
+      _id: b._id,
+      title: b.title || 'Untitled',
+      description: b.description || 'No description provided',
+      status: b.status || 'pending',
+      response: b.response || '',
+      createdAt: b.createdAt,
+      submittedBy: b.submittedBy
+        ? {
+            email: b.submittedBy.email || 'Unknown',
+            name: b.submittedBy.name || 'Anonymous'
+          }
+        : { email: 'Unknown', name: 'Anonymous' }
+    }))
+
+    res.status(200).json({ status: 'success', data: safeBlogs })
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: 'Server error getting pending blogs.', err })
+    res.status(500).json({
+      status: 'fail',
+      message: 'Server error getting pending blogs.',
+      error: err.message
+    })
   }
 }
 

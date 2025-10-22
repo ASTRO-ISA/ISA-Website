@@ -38,7 +38,7 @@ exports.approvedBlogs = async (req, res) => {
 
 exports.createBlog = async (req, res) => {
   try {
-    const imageUrl = req.file.path // we arae saving the url which we are getting from createBlog route
+    const imageUrl = req.file.path // we are saving the url which we are getting from createBlog route
     const publicId = req.file.filename
     const slug = slugify(req.body.title, {
       lower: true,
@@ -90,10 +90,10 @@ exports.featuredBlog = async (req, res) => {
       'author',
       'name country'
     )
-    if (!featuredBlog) {
-      return res.status(404).json({ message: 'Blog not found' })
-    }
-    res.status(200).json(featuredBlog)
+    // if (!featuredBlog) {
+    //   return res.status(404).json({ message: 'Blog not found' })
+    // }
+    res.status(200).json(featuredBlog || null)
   } catch (err) {
     res
       .status(500)

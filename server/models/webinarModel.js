@@ -41,8 +41,9 @@ const webinarSchema = new mongoose.Schema({
     },
     attendees: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
+          user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+          token: { type: String, required: true },
+          used: { type: Boolean, default: false }
         }
     ],
     featured: {

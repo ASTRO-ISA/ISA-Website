@@ -22,8 +22,9 @@ import {
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/Spinner";
 import AstronomyCalendar from "./AstronomyCalendar";
-
-// import StarBackground from "@/components/StarBackground";
+import PaymentModal from "@/components/popups/PymentModal";
+import FormatDate from "@/components/ui/FormatDate";
+import FormatTime from "@/components/ui/FormatTime";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -166,22 +167,6 @@ const handlePaidRegister = async (userId, event) => {
     );
   }
 
-  // to show the date in readable format
-  const formatDate = (dateStr) =>
-    new Date(dateStr).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-
-  // to set time in readable format
-  const formatTime = (dateStr) =>
-    new Date(dateStr).toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-
   return (
     <div className="min-h-screen bg-space-dark text-white">
       {/* <StarBackground /> */}
@@ -246,11 +231,11 @@ const handlePaidRegister = async (userId, event) => {
                         <div className="space-y-2 mb-4">
                           <div className="flex items-center text-sm text-gray-400">
                             <Calendar className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{formatDate(event.eventDate)}</span>
+                            <span><FormatDate date={event.eventDate}/></span>
                           </div>
                           <div className="flex items-center text-sm text-gray-400">
                             <Clock className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{formatTime(event.eventDate)}</span>
+                            <span><FormatTime date={event.eventDate}/></span>
                           </div>
                           <div className="flex items-center text-sm text-gray-400">
                             <MapPin className="h-4 w-4 mr-2 text-space-accent" />
@@ -357,7 +342,7 @@ const handlePaidRegister = async (userId, event) => {
   {loadingEventId === event._id ? (
     <Spinner />
   ) : event.registeredUsers.some((e) => e.user === userInfo?.user?._id) ? (
-    event.isFree ? "Unregister" : "Already Registered (Paid)"
+    event.isFree ? "Unregister" : "Registered"
   ) : event.seatCapacity && event.registeredUsers.length >= event.seatCapacity ? (
     "Sold Out"
   ) : event.isFree ? (
@@ -391,20 +376,18 @@ const handlePaidRegister = async (userId, event) => {
           <AstronomyCalendar />
         </section>
 
-        {/* launches */}
+        {/* Upcoming Launches */}
         <section className="mb-16">
           <h2 className="text-2xl font-bold mb-8">Upcoming Launches</h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Upcoming events */}
             {launches.length === 0 ? (
               <p className="text-gray-400 text-sm">Nothing to see here right now!</p>
             ) : (
               (showAll ? launches : launches.slice(0, 3)).map(
                 (
-                  launch // for time being using just events
+                  launch
                 ) => (
-                  // <Link to={launch.url} key={launch.url}>
                   <div
                     className="cosmic-card overflow-hidden group flex flex-col min-h-[28rem]"
                     key={launch.name}
@@ -429,11 +412,11 @@ const handlePaidRegister = async (userId, event) => {
                         <div className="space-y-2 mb-4 text-sm text-gray-400">
                           <div className="flex items-center">
                             <Calendar className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{formatDate(launch.window_start)}</span>
+                            <span><FormatDate date={launch.window_start}/></span>
                           </div>
                           <div className="flex items-center">
                             <Clock className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{formatTime(launch.window_start)}</span>
+                            <span><FormatTime date={launch.window_start}/></span>
                           </div>
                           <div className="flex items-center">
                             <MapPin className="h-4 w-4 mr-2 text-space-accent" />
@@ -522,100 +505,15 @@ const handlePaidRegister = async (userId, event) => {
             </div>
           </div>
         </section>
-
-{/* Payment Confirmation Modal - show a popup for terms and conditions*/}
-{selectedEvent && (
-  <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div className="bg-space-dark border border-gray-800 rounded-2xl p-6 w-[90%] max-w-md">
-      <h2 className="text-xl font-bold mb-4">Confirm Payment</h2>
-      <p className="text-gray-300 mb-4">
-        You’re about to register for <span className="font-semibold text-white">{selectedEvent.title}</span>.
-      </p>
-      <p className="text-gray-400 mb-4">
-        Registration Fee: <span className="text-space-accent font-semibold">₹{selectedEvent.fee}</span>
-      </p>
-
-      <div className="flex items-start mb-4 space-x-2">
-        <input
-          type="checkbox"
-          id="terms"
-          checked={agreeToTerms}
-          onChange={(e) => setAgreeToTerms(e.target.checked)}
-          className="mt-1 accent-space-accent"
-        />
-        <label htmlFor="terms" className="text-gray-400 text-sm">
-          I agree to the{" "}
-          <Link
-            to="/terms-and-conditions"
-            className="text-space-accent underline hover:text-space-accent/80"
-          >
-            Terms and Conditions
-          </Link>
-          .
-        </label>
-      </div>
-
-      <div className="flex justify-end gap-3">
-        <button
-          onClick={() => setSelectedEvent(null)}
-          className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={async () => {
-            if (!agreeToTerms) {
-              toast({
-                title: "Please agree to the Terms and Conditions",
-                variant: "destructive",
-              });
-              return;
-            }
-
-            setLoadingEventId(selectedEvent._id);
-            try {
-              const res = await api.post(
-                `/phonepe/payment/initiate/${selectedEvent._id}`,
-                { amount: selectedEvent.fee, item_type: "event" }
-              );
-
-              if (res.data?.redirect_url) {
-                window.location.href = res.data.redirect_url; // redirect to PhonePe
-              } else {
-                toast({
-                  title: "Payment Error",
-                  description: res.data.message,
-                  variant: "destructive",
-                });
-              }
-            } catch (err) {
-              console.error("Payment initiation failed:", err.message);
-              toast({
-                title: "Payment Error",
-                description: err.message,
-                variant: "destructive",
-              });
-            } finally {
-              setLoadingEventId(null);
-              setSelectedEvent(null);
-            }
-          }}
-          disabled={!agreeToTerms}
-          className={`px-4 py-2 rounded-md text-white font-medium ${
-            agreeToTerms
-              ? "bg-space-accent hover:bg-space-accent/80"
-              : "bg-gray-600 cursor-not-allowed"
-          }`}
-        >
-          {loadingEventId === selectedEvent._id ? <Spinner /> : "Proceed to Payment"}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
       </main>
-      {/*<Footer /> */}
+              {/* Payment Confirmation Modal - show a popup for terms and conditions*/}
+              {selectedEvent && (
+          <PaymentModal
+            event={selectedEvent}
+            userId={userInfo?.user?._id}
+            onClose={() => setSelectedEvent(null)}
+          />
+        )}
     </div>
   );
 };

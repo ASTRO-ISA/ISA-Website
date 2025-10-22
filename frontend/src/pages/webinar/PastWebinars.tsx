@@ -14,16 +14,6 @@ import {
 const PastWebinars = () => {
   const [pastWebinars, setPastWebinars] = useState([]);
   const [playingId, setPlayingId] = useState(null);
-  const [featured, setFeatured] = useState({
-    _id: "",
-    thumbnail: "",
-    title: "",
-    description: "",
-    webinarDate: "",
-    presenter: "",
-    guest: [],
-    videoId: "",
-  });
   const [featuredId, setFeaturedId] = useState(null);
 
   const { isAdmin } = useAuth();
@@ -57,7 +47,7 @@ const PastWebinars = () => {
       const res = await api.get("/webinars/past");
       setPastWebinars(res.data);
     } catch (error) {
-      console.error("Error fetching past webinars:", error.message);
+      console.error("No past webinar at the moment.");
     }
   };
 
@@ -65,20 +55,10 @@ const PastWebinars = () => {
     try {
       const res = await api.get("/webinars/featured");
       if (res.status !== 404) {
-        setFeatured({
-          _id: res.data._id,
-          thumbnail: res.data.thumbnail,
-          title: res.data.title,
-          description: res.data.description,
-          webinarDate: res.data.webinarDate,
-          presenter: res.data.presenter,
-          guest: res.data.guests || [],
-          videoId: res.data.videoId,
-        });
         setFeaturedId(res.data._id);
       }
     } catch (err) {
-      console.error("Error fetching featured webinar.");
+      console.error("No featured webinar at the moment.");
       setFeaturedId(null);
     }
   };
@@ -115,16 +95,6 @@ const PastWebinars = () => {
   const handleRemoveFeatured = async (webinar) => {
     try {
       await api.patch(`/webinars/featured/remove/${webinar._id}`);
-      setFeatured({
-        _id: "",
-        thumbnail: "",
-        title: "",
-        description: "",
-        webinarDate: "",
-        presenter: "",
-        guest: [],
-        videoId: "",
-      });
       setFeaturedId(null);
       fetchFeatured();
       toast({ title: `\"${webinar.title}\" removed from featured.` });

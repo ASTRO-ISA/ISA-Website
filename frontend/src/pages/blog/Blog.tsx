@@ -616,6 +616,16 @@ const Blog = () => {
                               )}
                             </DropdownMenuContent>
                           </DropdownMenu>
+                          {/* <DropdownActions
+  item={blog}
+  isAdmin={isAdmin}
+  featuredId={featuredId} // current featured blog id
+  handleSetFeatured={handleSetFeatured}
+  handleRemoveFeatured={handleRemoveFeatured}
+  handleAddToNewsletter={handleAddToNewsletter} // admin only
+  handleSave={handleSaveBlog} // blog save
+  variant="light"
+/> */}
                         </div>
                       </div>
                     </Link>

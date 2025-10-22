@@ -107,17 +107,17 @@ const SuggestedBlogTopic = () => {
               <ul className="space-y-4">
                 {suggestions.map((s) => (
                   <li
-                    key={s._id}
+                    key={s?._id}
                     className="p-4 border border-space-purple/30 rounded bg-space-purple/20 space-y-2"
                   >
-                    <p className="font-medium">{s.title}</p>
+                    <p className="font-medium">{s?.title || "No title"}</p>
                     <p className="text-sm text-gray-400">
                       <span className="text-white">Description: </span>{" "}
-                      {s.description}
+                      {s?.description || "No description"}
                     </p>
                     <p className="text-sm text-gray-400">
                       <span className="text-white">Suggested By: </span>{" "}
-                      {s.submittedBy.email}
+                      {s?.submittedBy?.email || "Unknown"}
                     </p>
 
                     {/* Approve / Reject Radio */}

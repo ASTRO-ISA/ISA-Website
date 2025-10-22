@@ -5,6 +5,9 @@ import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
+import PaymentModal from "@/components/popups/PymentModal";
+import FormatDate from "@/components/ui/FormatDate";
+import FormatTime from "@/components/ui/FormatTime";
 
 const EventDetails = () => {
   const { slug } = useParams();
@@ -15,6 +18,7 @@ const EventDetails = () => {
   const [loadingEventId, setLoadingEventId] = useState(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const fetchEvent = async () => {
     try {
@@ -93,43 +97,6 @@ const EventDetails = () => {
     }
   };
 
-  const handlePaidRegister = async (userId, event) => {
-    if (!isLoggedIn) {
-      return toast({
-        title: "Hold on!",
-        description: "Please login first to register for the event.",
-        variant: "destructive",
-      });
-    }
-
-    setLoadingEventId(event._id);
-    try {
-      const res = await api.post(`/phonepe/payment/initiate/${event._id}`, {
-        amount: event.fee,
-        item_type: "event",
-      });
-
-      if (res.data?.redirect_url) {
-        window.location.href = res.data.redirect_url; // redirect to PhonePe
-      } else {
-        toast({
-          title: "Payment Error",
-          description: "Could not initiate payment.",
-          variant: "destructive",
-        });
-      }
-    } catch (err) {
-      console.error("Payment initiation failed:", err.message);
-      toast({
-        title: "Payment Error",
-        description: "Something went wrong. Try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoadingEventId(null);
-    }
-  };
-
   // Delete Event
   const deleteEvent = async () => {
     setDeleting(true);
@@ -160,21 +127,6 @@ const EventDetails = () => {
     );
   }
 
-  // Format date & time
-  const formatDate = (dateStr) =>
-    new Date(dateStr).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-
-  const formatTime = (dateStr) =>
-    new Date(dateStr).toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-
   return (
     <div className="min-h-screen bg-space-dark text-white pt-20 px-4">
       <main className="container mx-auto px-4 pt-8 pb-16">
@@ -195,11 +147,11 @@ const EventDetails = () => {
             <div className="space-y-4">
               <div className="flex items-center text-gray-400">
                 <Calendar className="h-5 w-5 mr-2 text-space-accent" />
-                {formatDate(event.eventDate)}
+                <FormatDate date={event.eventDate} />
               </div>
               <div className="flex items-center text-gray-400">
                 <Clock className="h-5 w-5 mr-2 text-space-accent" />
-                {formatTime(event.eventDate)}
+                <FormatTime date={event.eventDate} />
               </div>
               <div className="flex items-center text-gray-400">
                 <MapPin className="h-5 w-5 mr-2 text-space-accent" />
@@ -233,49 +185,48 @@ const EventDetails = () => {
 
           {/* Register Button */}
           <button
-            onClick={() => {
-              if (isRegistered()) {
-                if (event.isFree) handleUnregister(userInfo?.user._id, event._id);
-              } else {
-                if (isSoldOut()) {
-                  toast({
-                    title: "Sold Out",
-                    description: "This event has reached maximum capacity.",
-                    variant: "destructive",
-                  });
-                } else if (event.isFree) {
-                  handleRegister(userInfo?.user._id, event._id);
-                } else {
-                  handlePaidRegister(userInfo?.user._id, event);
-                }
-              }
-            }}
-            disabled={
-              (isRegistered() && !event.isFree) || isSoldOut()
-            }
-            className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold flex justify-center
-              ${
-                isRegistered()
-                  ? event.isFree
-                    ? "bg-space-purple/30 hover:bg-space-purple/50"
-                    : "bg-gray-500 cursor-not-allowed"
-                  : isSoldOut()
-                  ? "bg-gray-600 cursor-not-allowed"
-                  : "bg-space-accent hover:bg-space-accent/80"
-              }`}
-          >
-            {loadingEventId === event._id ? (
-              <Spinner />
-            ) : isRegistered() ? (
-              event.isFree ? "Unregister" : "Already Registered (Paid)"
-            ) : isSoldOut() ? (
-              "Sold Out"
-            ) : event.isFree ? (
-              "Register for this Event"
-            ) : (
-              `Register - ₹${event.fee}`
-            )}
-          </button>
+  onClick={() => {
+    if (isRegistered()) {
+      if (event.isFree) handleUnregister(userInfo?.user._id, event._id);
+    } else {
+      if (isSoldOut()) {
+        toast({
+          title: "Sold Out",
+          description: "This event has reached maximum capacity.",
+          variant: "destructive",
+        });
+      } else if (event.isFree) {
+        handleRegister(userInfo?.user._id, event._id);
+      } else {
+        // Open payment modal instead of directly initiating payment
+        setSelectedEvent(event);
+      }
+    }
+  }}
+  disabled={(isRegistered() && !event.isFree) || isSoldOut()}
+  className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold flex justify-center
+    ${
+      isRegistered()
+        ? event.isFree
+          ? "bg-space-purple/30 hover:bg-space-purple/50"
+          : "bg-gray-500 cursor-not-allowed"
+        : isSoldOut()
+        ? "bg-gray-600 cursor-not-allowed"
+        : "bg-space-accent hover:bg-space-accent/80"
+    }`}
+>
+  {loadingEventId === event._id ? (
+    <Spinner />
+  ) : isRegistered() ? (
+    event.isFree ? "Unregister" : "Registered"
+  ) : isSoldOut() ? (
+    "Sold Out"
+  ) : event.isFree ? (
+    "Register for this Event"
+  ) : (
+    `Register - ₹${event.fee}`
+  )}
+</button>
 
           {/* Creator Only Buttons */}
           {userInfo && event.createdBy._id === userInfo.user?._id && (
@@ -320,6 +271,13 @@ const EventDetails = () => {
           )}
         </div>
       </main>
+      {selectedEvent && (
+        <PaymentModal
+          event={selectedEvent}
+          userId={userInfo?.user?._id}
+          onClose={() => setSelectedEvent(null)}
+        />
+      )}
     </div>
   );
 };

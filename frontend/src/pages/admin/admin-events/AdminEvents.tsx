@@ -40,7 +40,7 @@ export default function AdminEvents() {
         const response = await api.get("/events/all");
         return Array.isArray(response.data) ? response.data : [];
       } catch (err) {
-        console.error("Error fetching events:", err);
+        console.error("Error fetching events:");
         return [];
       }
     },

@@ -18,7 +18,7 @@ const paymentSchema = Joi.object({
   amount: Joi.number().positive().required()
 })
 
-// initiate payment (idempotent)
+// initiate payment (idempotent, Option B: always new transaction)
 exports.initiatePayment = async (req, res) => {
   try {
     const { amount, item_type } = req.body
@@ -56,26 +56,26 @@ exports.initiatePayment = async (req, res) => {
     const user = await User.findById(user_id)
     if (!user) return res.status(403).json({ error: 'Unauthorized user' })
 
-    // idempotency: find existing pending transaction
-    const existingTx = await PaymentTransaction.findOne({ user_id, amount, status: 'pending' })
-    if (existingTx) {
-      return res.json({ message: 'Pending transaction exists', transactionId: existingTx.orderId })
-    }
+    // mark any existing pending transaction as abandoned
+    // await PaymentTransaction.updateMany(
+    //   { user_id, amount, status: 'pending' },
+    //   { status: 'abandoned', lastCheckedAt: new Date() }
+    // )
 
     // create a unique merchant order id for phonepe
     const transactionId = `TXN_${Date.now()}_${Math.floor(Math.random() * 1000)}`
 
-    // const redirectUrl = `${process.env.CLIENT_URL}/phonepe/payments/callback`  // after payment completion
-    // const callbackUrl = `${process.env.CLIENT_URL}/api/v1/phonepe/payments/callback`  // server-to-server - not using because sdk does not support callback
+    // frontend will redirect to this url after gateway payment page
     const redirectUrl = `${process.env.ORIGIN_FRONTEND}/payment-status?orderId=${transactionId}&itemType=${item_type}&itemId=${itemId}`
 
-    // save transaction log in our database
+    // save new transaction log in our database
     const newTx = await PaymentTransaction.create({
       user_id,
+      item: { item_type: item_type, item_id: itemId },
       orderId: transactionId,
       amount,
-      status: 'pending',
-      currency: 'INR'
+      currency: 'INR',
+      status: 'created', // initially created
     })
 
     // link transaction to user
@@ -84,10 +84,14 @@ exports.initiatePayment = async (req, res) => {
     // build phonepe payment request
     const request = StandardCheckoutPayRequest.builder()
       .merchantOrderId(transactionId)
-      .amount(amount * 100)        // amount in paise
-      .redirectUrl(redirectUrl)    // url to redirect after payment
+      .amount(amount * 100) // amount in paise
+      .redirectUrl(redirectUrl)
       .build()
+
     const response = await phonepeClient.pay(request)
+
+    // update status to pending after successful request
+    await PaymentTransaction.findByIdAndUpdate(newTx._id, { status: 'pending' })
 
     // respond with transaction id and redirect url
     res.json({ transactionId, redirect_url: response.redirectUrl })
@@ -115,19 +119,18 @@ exports.verifyPayment = async (req, res) => {
       newStatus = 'pending'
     }
 
-    // update our transaction record if still pending
-    const tx = await PaymentTransaction.findOneAndUpdate(
-      { orderId: transactionId, status: 'pending' },
-      {
-        status: newStatus,
-        gatewayTransactionId: statusResponse.paymentDetails?.[0]?.transactionId,
-        method: statusResponse.paymentDetails?.[0]?.paymentMode || 'unknown',
-        lastCheckedAt: new Date(),
-        rawGatewayResponse: statusResponse,
-        attempts: newStatus === 'success' ? 0 : 1
-      },
-      { new: true }
-    )
+    // fetch transaction
+    const tx = await PaymentTransaction.findOne({ orderId: transactionId })
+    if (!tx) return res.status(404).json({ error: 'Transaction not found' })
+
+    // update transaction
+    tx.status = newStatus
+    tx.gatewayTransactionId = statusResponse.paymentDetails?.[0]?.transactionId
+    tx.method = statusResponse.paymentDetails?.[0]?.paymentMode || 'unknown'
+    tx.lastCheckedAt = new Date()
+    tx.rawGatewayResponse = statusResponse
+    tx.attempts = newStatus === 'success' ? 0 : tx.attempts + 1
+    await tx.save()
 
     res.json({ transactionId, data: statusResponse, itemType })
   } catch (err) {

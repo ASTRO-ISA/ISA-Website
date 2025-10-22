@@ -62,7 +62,7 @@ const FeaturedWebinars = () => {
           videoId: res.data.videoId,
         });
     } catch (err) {
-      console.error("Error fetching featured webinar.");
+      console.error("No featured webinar at the moment.");
     }
   };
 

@@ -4,6 +4,10 @@ const { sendEmail } = require('../utils/sendEmail')
 const getVideoId = require('../utils/getVideoId')
 const cloudinary = require('cloudinary').v2
 const { default: slugify } = require('slugify')
+const { v4: uuidv4 } = require('uuid')
+const QRCode = require('qrcode')
+const { sendEmailWithAttachment } = require('../utils/sendEmail')
+const PaymentTransaction = require('../models/transactionsModel')
 
 exports.createWebinar = async (req, res) => {
   try {
@@ -64,11 +68,11 @@ exports.createWebinar = async (req, res) => {
 
 exports.Webinars = async (req, res) => {
   try {
-    const webinars = await Webinar.find({})
-    if (!webinars || webinars.length === 0) {
-      return res.status(404).json({ message: 'No webinars found' })
-    }
-    res.status(200).json(webinars)
+    const webinars = await Webinar.find({}).populate('attendees.user', 'name email');
+    // if (!webinars || webinars.length === 0) {
+    //   return res.status(404).json({ message: 'No webinars found' })
+    // }
+    res.status(200).json(webinars || null) 
   } catch (err) {
     res.status(500).json({ message: 'Server error fetching webinars' })
   }
@@ -77,10 +81,10 @@ exports.Webinars = async (req, res) => {
 exports.upcomingWebinars = async (req, res) => {
   try {
     const webinars = await Webinar.find({status: 'upcoming'}).sort({createdAt: -1}).populate('attendees', 'name email avatar')
-    if (!webinars || webinars.length === 0) {
-      return res.status(404).json({ message: 'No upcoming webinars found' })
-    }
-    res.status(200).json(webinars)
+    // if (!webinars || webinars.length === 0) {
+    //   return res.status(404).json({ message: 'No upcoming webinars found' })
+    // }
+    res.status(200).json(webinars || null)
   } catch (err) {
     res.status(500).json({ message: 'Server error fetching upcoming webinars' })
   }
@@ -89,10 +93,10 @@ exports.upcomingWebinars = async (req, res) => {
 exports.pastWebinars = async (req, res) => {
   try {
     const webinars = await Webinar.find({status: 'past'})
-    if (!webinars || webinars.length === 0) {
-      return res.status(404).json({ message: 'No past webinars found' })
-    }
-    res.status(200).json(webinars)
+    // if (!webinars || webinars.length === 0) {
+    //   return res.status(404).json({ message: 'No past webinars found' })
+    // }
+    res.status(200).json(webinars || null)
   } catch (err) {
     res.status(500).json({ message: 'Server error fetching past webinars' })
   }
@@ -102,75 +106,96 @@ exports.registerWebinar = async (req, res) => {
   try {
     const { webinarid, userid } = req.params
     const tokenUserId = req.user.id
-    if(userid !== tokenUserId){
-      return res.status(403).json({message: `Can't vadidate user`})
+
+    if (userid !== tokenUserId) {
+      return res.status(403).json({ message: "Can't validate user" })
     }
 
     const webinar = await Webinar.findById(webinarid)
     const user = await User.findById(userid)
 
-    if (!user) {
-      return res.status(400).json({ message: 'Please login first' })
-    }
-    if (!webinar) {
-      return res.status(400).json({ message: 'Webinar not found' })
-    }
+    if (!user) return res.status(400).json({ message: 'Please login first' })
+    if (!webinar) return res.status(400).json({ message: 'Webinar not found' })
 
-    if(webinar.isFree){
-      if(webinar.attendees.includes(userid)){
-        return res.status(400).json({ message: 'User already registered for this webinar.'})
-      }
-  
-      const updatedWebinar = await Webinar.findByIdAndUpdate(
-        webinarid,
-        { $addToSet: { attendees: userid } },
-        { new: true }
-      ).populate('attendees', 'name email')
-  
-      const text = `Hi ${user.name},
-      You have successfully registered for "${webinar.title}" on ${new Date(webinar.webinarDate).toDateString()}.
-      See you there!
-      – ISA`
-  
-      await sendEmail(user.email, `Registered for ${webinar.title}`, text)
-  
-      res.status(200).json({
-        success: true,
-        message: 'User successfully registered for the webinar',
-        data: updatedWebinar
+    // Paid webinar: verify payment
+    if (!webinar.isFree) {
+      const payment = await PaymentTransaction.findOne({
+        user_id: userid,
+        'item.item_type': 'webinar',
+        'item.item_id': webinarid,
+        status: 'success'
       })
-    } else {
-      // verify payment - have to add
-      console.log('we got it')
+
+      if (!payment) {
+        return res.status(400).json({
+          message: 'Payment not completed for this webinar. Please complete payment first.'
+        })
+      }
     }
 
-    // if(webinar.attendees.includes(userid)){
-    //   return res.status(400).json({ message: 'User already registered for this webinar.'})
-    // }
+    // Generate unique token for registration
+    let registrationToken
+    do {
+      registrationToken = uuidv4()
+    } while (webinar.attendees?.some(att => att.token === registrationToken))
 
-    // const updatedWebinar = await Webinar.findByIdAndUpdate(
-    //   webinarid,
-    //   { $addToSet: { attendees: userid } },
-    //   { new: true }
-    // ).populate('attendees', 'name email')
+    // Atomic update: prevent duplicate registration and overbooking
+    const updatedWebinar = await Webinar.findOneAndUpdate(
+      {
+        _id: webinarid,
+        'attendees.user': { $ne: userid }, // not already registered
+        $or: [{ seatCapacity: { $exists: false } }, { $expr: { $lt: [{ $size: "$attendees" }, "$seatCapacity"] } }]
+      },
+      {
+        $push: { attendees: { user: userid, token: registrationToken, used: false } }
+      },
+      { new: true }
+    ).populate('attendees.user', 'name email')
 
-    // const text = `Hi ${user.name},
-    // You have successfully registered for "${webinar.title}" on ${new Date(webinar.webinarDate).toDateString()}.
-    // See you there!
-    // – ISA`
+    if (!updatedWebinar) {
+      return res.status(400).json({ message: 'Already registered or seats full.' })
+    }
 
-    // await sendEmail(user.email, `Registered for ${webinar.title}`, text)
+    // Generate QR code
+    const qrDataUrl = await QRCode.toDataURL(registrationToken)
+    const qrBuffer = await QRCode.toBuffer(registrationToken)
 
-    // res.status(200).json({
-    //   success: true,
-    //   message: 'User successfully registered for the webinar',
-    //   data: updatedWebinar
-    // })
+    // Upload QR code to Cloudinary
+    const uploaded = await cloudinary.uploader.upload(qrDataUrl, { folder: 'webinar_qrcodes' })
+
+    // Send email with QR
+    const emailContent = `
+      <div style="font-family: Arial, sans-serif; line-height:1.5;">
+        <h3>Webinar Registration Confirmed</h3>
+        <p>Hi ${user.name},</p>
+        <p>You have successfully registered for <b>"${webinar.title}"</b> on <b>${new Date(webinar.webinarDate).toDateString()}</b>.</p>
+        <p style="background:#f9f9f9; padding:12px; border-left:4px solid #4F46E5; margin:20px 0;">
+          <strong>Important:</strong> A copy of the QR code has been attached to this email. Save it to access the webinar without internet issues.
+        </p>
+        <p style="text-align:center;">
+          <img src="${uploaded.secure_url}" alt="QR Code" style="max-width:200px;"/>
+        </p>
+        <p>– ISA</p>
+      </div>
+    `
+
+    await sendEmailWithAttachment(
+      user.email,
+      `Registered for ${webinar.title}`,
+      emailContent,
+      [{ filename: 'qrcode.png', content: qrBuffer, cid: 'qrcode@webinar' }]
+    )
+
+    return res.status(200).json({
+      success: true,
+      message: `User successfully registered for the ${webinar.isFree ? 'free' : 'paid'} webinar`,
+      data: updatedWebinar
+    })
   } catch (error) {
-    console.error('Error in registration:', error)
+    console.error('Error in webinar registration:', error)
     res.status(500).json({
       success: false,
-      message: 'User registration failed for the event'
+      message: 'User registration failed for the webinar',
     })
   }
 }
@@ -293,15 +318,14 @@ exports.setFeatured = async (req, res) => {
 
 exports.getFeatured = async (req, res) => {
   try {
-    const getFeatured = await Webinar.findOne({ featured: true })
-    if (!getFeatured) {
-      return res.status(404).json({ message: 'No featured webinar.' })
-    }
-    res.status(200).json(getFeatured)
+    const getFeatured = await Webinar.findOne({ featured: true });
+
+    // Return null if none found
+    res.status(200).json(getFeatured || null);
   } catch (error) {
-    res.status(500).json({ message: 'Server error in getFeatured', error: error.message })
+    res.status(500).json({ message: 'Server error in getFeatured', error: error.message });
   }
-}
+};
 
 exports.removeFeatured = async (req, res) => {
   try {

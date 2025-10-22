@@ -14,6 +14,7 @@ const BlogDetail = () => {
   const [loading, setLoading] = useState(true);
   const { userInfo } = useAuth();
   const [deleting, setDeleting] = useState(false);
+  (blog)
 
   // to get the blog data form database
   useEffect(() => {

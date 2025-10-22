@@ -58,7 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     () => ({
       userInfo: userInfo ?? null,
       isLoggedIn: isSuccess && !!userInfo,
-      isAdmin: userInfo?.user.role === "admin",
+      isAdmin: ["admin", "super-admin"].includes(userInfo?.user.role),
       refetchUser: refetch,
       logout,
     }),

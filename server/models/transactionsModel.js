@@ -20,17 +20,17 @@ const PaymentTransactionSchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  // item: {
-  //   item_type: {
-  //     type: String,
-  //     required: true,
-  //     enum: ['event', 'webinar', 'course']
-  //   },
-  //   item_id: {
-  //     type: String,
-  //     required: true,
-  //   }
-  // },
+  item: {
+    item_type: {
+      type: String,
+      required: true,
+      enum: ['event', 'webinar', 'course']
+    },
+    item_id: {
+      type: String,
+      required: true,
+    }
+  },
   orderId: { 
     type: String, 
     unique: true, 
@@ -47,7 +47,7 @@ const PaymentTransactionSchema = new mongoose.Schema({
   amount: { 
     type: Number, 
     required: true,
-    min: [1, "Amount must be at least 1 paise"],
+    min: [Number.MIN_VALUE, "Amount must be greater than 0"],
   },
   currency: { 
     type: String, 
