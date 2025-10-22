@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import Spinner from "@/components/ui/Spinner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const BlogDetail = () => {
   const { toast } = useToast();
@@ -114,12 +115,19 @@ const BlogDetail = () => {
 
           {/* Author Info */}
           <div className="flex items-center gap-4 mt-12 pt-6 border-t border-gray-600">
-            <img
-              loading="lazy"
-              src={blog.author?.avatar}
-              alt={blog.author?.name}
-              className="w-12 h-12 rounded-full object-cover"
-            />
+                          <Avatar className="w-16 h-16">
+                <AvatarImage
+                  src={userInfo.user.avatar}
+                  alt={userInfo.user.name}
+                  className="object-cover"
+                />{" "}
+                <AvatarFallback className="text-2xl bg-space-purple">
+                  {userInfo.user.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
             <div>
               <h4 className="font-semibold">{blog.author?.name}</h4>
               <p className="text-sm text-gray-400">{blog.author?.country}</p>
@@ -127,12 +135,16 @@ const BlogDetail = () => {
           </div>
           <hr className="mb-3 mt-6" />
           {userInfo && blog?.author?._id === userInfo?.user?._id && (
-            <button
-              onClick={() => deleteBlog(blog._id)}
-              className="bg-red-600 text-white px-3 py-1 rounded mt-2"
-            >
-              {deleting ? <Spinner /> : "Delete Blog"}
-            </button>
+          <button
+            onClick={() => {
+              if (window.confirm("Are you sure you want to delete this blog? This action can't be undone.")) {
+                deleteBlog(blog._id);
+              }
+            }}
+            className="bg-red-600 text-white px-3 py-1 rounded mt-2"
+          >
+            {deleting ? <Spinner /> : "Delete Blog"}
+          </button>
           )}
         </div>
       </main>
