@@ -39,6 +39,7 @@ import EditEvent from "./pages/admin/admin-events/EditEvent";
 import QRScannerPage from "./pages/admin/qr/QRScanner";
 import PaymentStatus from "./components/PaymentVerify";
 import TermsAndConditions from "./pages/TermsConditions";
+import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,7 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <HelmetProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -110,6 +112,7 @@ const App = () => {
           <Footer />
         </BrowserRouter>
       </TooltipProvider>
+      </HelmetProvider>
     </QueryClientProvider>
   );
 };

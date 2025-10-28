@@ -8,6 +8,7 @@ const { v4: uuidv4 } = require('uuid')
 const QRCode = require('qrcode')
 const { sendEmailWithAttachment } = require('../utils/sendEmail')
 const PaymentTransaction = require('../models/transactionsModel')
+const webinarEmailTemplate = require('../templates/webinarEmailTemplate')
 
 exports.createWebinar = async (req, res) => {
   try {
@@ -164,20 +165,7 @@ exports.registerWebinar = async (req, res) => {
     const uploaded = await cloudinary.uploader.upload(qrDataUrl, { folder: 'webinar_qrcodes' })
 
     // Send email with QR
-    const emailContent = `
-      <div style="font-family: Arial, sans-serif; line-height:1.5;">
-        <h3>Webinar Registration Confirmed</h3>
-        <p>Hi ${user.name},</p>
-        <p>You have successfully registered for <b>"${webinar.title}"</b> on <b>${new Date(webinar.webinarDate).toDateString()}</b>.</p>
-        <p style="background:#f9f9f9; padding:12px; border-left:4px solid #4F46E5; margin:20px 0;">
-          <strong>Important:</strong> A copy of the QR code has been attached to this email. Save it to access the webinar without internet issues.
-        </p>
-        <p style="text-align:center;">
-          <img src="${uploaded.secure_url}" alt="QR Code" style="max-width:200px;"/>
-        </p>
-        <p>– ISA</p>
-      </div>
-    `
+    const emailContent = webinarEmailTemplate(user, webinar, uploaded.secure_url)
 
     await sendEmailWithAttachment(
       user.email,

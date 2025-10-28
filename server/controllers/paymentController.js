@@ -18,7 +18,7 @@ const paymentSchema = Joi.object({
   amount: Joi.number().positive().required()
 })
 
-// initiate payment (idempotent, Option B: always new transaction)
+// initiate payment (idempotent, always new transaction -> new transaction will be made on every re-attempt)
 exports.initiatePayment = async (req, res) => {
   try {
     const { amount, item_type } = req.body
@@ -38,6 +38,18 @@ exports.initiatePayment = async (req, res) => {
     } else if (item_type === 'event') {
       const event = await Event.findById(itemId)
       if (!event) return res.status(404).json({ error: 'Event not found' })
+      
+      // seat capacity check
+      const registeredCount = await PaymentTransaction.countDocuments({
+        "item.item_type": "event",
+        "item.item_id": itemId,
+        status: "success" // only successful payments count
+      })
+    
+      if (registeredCount >= event.seatCapacity) {
+        return res.status(400).json({ message: 'The event is sold out.' })
+      }
+    
       realAmount = event.fee
     } else if (item_type === 'course') {
       const course = await Course.findById(itemId)
@@ -55,12 +67,6 @@ exports.initiatePayment = async (req, res) => {
     // check user existence
     const user = await User.findById(user_id)
     if (!user) return res.status(403).json({ error: 'Unauthorized user' })
-
-    // mark any existing pending transaction as abandoned
-    // await PaymentTransaction.updateMany(
-    //   { user_id, amount, status: 'pending' },
-    //   { status: 'abandoned', lastCheckedAt: new Date() }
-    // )
 
     // create a unique merchant order id for phonepe
     const transactionId = `TXN_${Date.now()}_${Math.floor(Math.random() * 1000)}`

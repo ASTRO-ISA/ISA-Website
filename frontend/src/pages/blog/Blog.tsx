@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import api from "@/lib/api";
+import { Helmet } from "react-helmet-async";
 
 const Blog = () => {
   const { toast } = useToast();
@@ -321,6 +322,7 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-space-dark text-white">
       {/* <Navbar /> */}
+
 
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="text-center mb-12">

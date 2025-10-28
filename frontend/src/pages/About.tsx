@@ -7,6 +7,7 @@ import {
   Linkedin,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const About = () => {
   const leaders = [
@@ -104,6 +105,12 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-space-purple/20 via-space-dark to-space-accent/20 text-white pt-20">
+      
+      <Helmet>
+        <title>About | ISA-India</title>
+        <meta name="description" content="Learn about ISA-India's mission to expand access to space education in India." />
+      </Helmet>
+
       <section className="py-10">
         <div className="container mx-auto px-4 text-center">
           <motion.h1
