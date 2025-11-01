@@ -109,10 +109,10 @@ const PastWebinars = () => {
 
   return (
     <section className="mb-20">
-      <h2 className="text-2xl font-bold mb-8">Past Webinars</h2>
+      <h2 className="text-2xl font-bold mb-8 text-center sm:text-start">Past Webinars</h2>
 
       {pastWebinars.length === 0 ? (
-        <p className="text-gray-500 italic">No past webinars at the moment.</p>
+        <p className="text-gray-500 italic text-center sm:text-start">No past webinars at the moment.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {pastWebinars.map((webinar) => (

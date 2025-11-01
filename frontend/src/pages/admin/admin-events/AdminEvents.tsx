@@ -75,7 +75,7 @@ export default function AdminEvents() {
       queryClient.invalidateQueries({ queryKey: ["events"] });
     },
     onError: (err) => {
-      console.error("Toggle registration error:", err);
+      console.error("Toggle registration error:");
       toast({ title: "Error updating registration status" });
     },
   });
@@ -100,16 +100,16 @@ export default function AdminEvents() {
 
               return (
                 <li key={event._id} className="p-4 border bg-space-purple/20 rounded">
-                  <p className="font-semibold">{event.title}</p>
-                  <p>{event.description}</p>
-                  <p className="text-sm text-gray-400">
+                  <p className="font-semibold">Title: {event.title}</p>
+                  <p className="text-gray-400">Description: {event.description}</p>
+                  <p className="text-sm text-gray-300">
                     Date: {event.eventDate ? new Date(event.eventDate).toLocaleDateString() : "N/A"}
                   </p>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-gray-300 pb-2">
                     Seats: {seatsTaken}/{event.seatCapacity}{" "}
                     {soldOut && <span className="text-red-500 font-semibold">(Sold Out)</span>}
                   </p>
-                  <div className="flex gap-2 mt-2">
+                  <div className="flex border-t border-white pt-2 flex-col sm:flex-row gap-2 mt-2">
                     <Button
                       size="sm"
                       onClick={() => navigate(`/events/edit/${event.slug}`)}
@@ -119,18 +119,23 @@ export default function AdminEvents() {
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => deleteEventMutation.mutate(event._id)}
-                      variant="destructive"
-                    >
-<Trash2 className="w-4 h-4 mr-1" /> {deletingEventId === event._id ? <Spinner /> : "Delete"}
-                    </Button>
-                    <Button
-                      size="sm"
                       onClick={() => toggleRegistrationMutation.mutate(event._id)}
                       variant={event.isRegistrationOpen ? "destructive" : "outline"}
                       disabled={soldOut}
                     >
                       {event.isRegistrationOpen ? "Disable Registration" : "Enable Registration"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => {
+                        if (window.confirm("Are you sure you want to delete this? This action cannot be undone.")) {
+                          deleteEventMutation.mutate(event._id)
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      {deletingEventId === event._id ? <Spinner /> : "Delete"}
                     </Button>
                   </div>
                 </li>

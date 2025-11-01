@@ -43,6 +43,7 @@ router
   .patch(eventController.unregisterEvent)
 
 router.delete('/:id', eventController.deleteEvent)
+router.patch('/:id/toggle-registration', eventController.toggleRegistration)
 router
   .route('/:id')
   .put(restrictTo(['admin', 'super-admin']), eventController.updateEvent)

@@ -192,6 +192,11 @@ exports.registerEvent = async (req, res) => {
     if (!user) return res.status(400).json({ message: 'Please login first' })
     if (!event) return res.status(400).json({ message: 'Event not found' })
 
+    // check if registration are open
+    if (!event.isRegistrationOpen) {
+      return res.status(400).json({ message: 'Registration for this event is currently closed.' })
+    }
+
     // for paid events — verify payment
     if (!event.isFree) {
       const payment = await PaymentTransaction.findOne({
@@ -519,5 +524,35 @@ exports.registeredEvents = async (req, res) => {
     res
       .status(500)
       .json({ message: 'Server error finding the registerede events.' })
+  }
+}
+
+exports.toggleRegistration = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    // Find event by ID
+    const event = await Event.findById(id)
+    if (!event) {
+      return res.status(404).json({ success: false, message: 'Event not found' })
+    }
+
+    // Toggle registration status
+    event.isRegistrationOpen = !event.isRegistrationOpen
+
+    // Save updated event
+    await event.save()
+
+    res.status(200).json({
+      success: true,
+      message: `Registration has been ${event.isRegistrationOpen ? 'opened' : 'closed'} successfully.`,
+      isRegistrationOpen: event.isRegistrationOpen
+    })
+  } catch (error) {
+    console.error('Error toggling registration:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    })
   }
 }

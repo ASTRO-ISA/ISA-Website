@@ -115,6 +115,10 @@ const eventSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  isRegistrationOpen: {
+    type: Boolean,
+    default: true
+  },
   fee: {
     type: Number,
     min: [0, 'Fee cannot be negative'],

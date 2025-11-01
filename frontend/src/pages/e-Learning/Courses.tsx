@@ -37,7 +37,7 @@ const Courses = () => {
     <div>
       <section className="mb-20">
         {courses.length === 0 ? (
-          <p className="text-gray-400 italic flex justify-center items-center">
+          <p className="text-gray-400 italic flex justify-center items-center text-center sm:text-start">
             Nothing to see here right now. Listed courses will appear here!
           </p>
         ) : (

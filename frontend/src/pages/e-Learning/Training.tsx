@@ -25,7 +25,7 @@ export default function AdminDashboard() {
           className="space-y-4"
         >
           <div className="mb-6 bg-space-purple/20 rounded">
-            <TabsList className="grid h-full w-full grid-cols-2 grid-rows-2 sm:grid-cols-3 sm:grid-rows-1">
+            <TabsList className="grid h-full w-full grid-cols-1 grid-rows-3 sm:grid-cols-3 sm:grid-rows-1">
               <TabsTrigger value="jobs">Jobs & Internships</TabsTrigger>
               <TabsTrigger value="courses">Courses</TabsTrigger>
               <TabsTrigger value="researchPaper">Research papers</TabsTrigger>

@@ -15,15 +15,11 @@ import Shop from "./pages/Shop";
 import Training from "./pages/e-Learning/Training";
 import Events from "./pages/event/Events";
 import Webinars from "./pages/webinar/Webinars";
-import Community from "./pages/Community";
 import Login from "./pages/authentication/Login";
 import CreateAccount from "./pages/authentication/CreateAccount";
 import Profile from "./pages/userDashboard/Dashboard";
 import EventDetails from "./pages/event/EventDetail";
 import CreateEvent from "./pages/event/CreateEvent";
-// import SplineModels from "./pages/SplineModels";
-// import FigmaDesign from "./pages/FigmaDesign";
-// import AstronomyResources from "./pages/AstronomyResources";
 import NotFound from "./pages/authentication/NotFound";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -88,7 +84,6 @@ const App = () => {
 
             {/* These are public routes accessible without login. */}
             <Route path="/" element={<Index />} />
-            <Route path="/community" element={<Community />} />
             <Route path="/blogs" element={<Blog />} />
             <Route path="/write" element={<WriteBlog />} />
             <Route path="/upload-paper" element={<UploadResearchPaper />} />

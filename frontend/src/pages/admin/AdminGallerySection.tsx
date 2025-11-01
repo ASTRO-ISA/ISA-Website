@@ -217,7 +217,7 @@ const AdminGallerySection = () => {
   const deleteUserPicsForPotd = async (id) => {
     try {
       setDeletingId(id);
-      await api.delete(`/userPotdPics/delete/${id}`);
+      await api.delete(`/user-potd-pics/delete/${id}`);
       setUserImages((prev) => prev.filter((img) => img._id !== id));
       toast({ title: "Deleted Successfully." });
       setDeletingId(null);
@@ -239,7 +239,7 @@ const AdminGallerySection = () => {
       return;
     }
     try {
-      const res = await api.post('/userPotdPics/setFeatured', { imageId }, { withCredentials: true })
+      const res = await api.post('/user-potd-pics/setFeatured', { imageId }, { withCredentials: true })
       toast({description: 'Image set as featured!'})
     } catch (err) {
       toast({description: 'Failed to set as featured'})

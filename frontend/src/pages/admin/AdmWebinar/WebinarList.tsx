@@ -72,12 +72,16 @@ const WebinarList = ({
                       <Pencil className="w-4 h-4 mr-1" /> Edit
                     </Button>
                     <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleDelete(webinar._id)}
-                    >
-                      <Trash2 className="w-4 h-4 mr-1" /> Delete
-                    </Button>
+  size="sm"
+  variant="destructive"
+  onClick={() => {
+    if (window.confirm("Are you sure you want to delete this webinar? This action cannot be undone.")) {
+      handleDelete(webinar._id)
+    }
+  }}
+>
+  <Trash2 className="w-4 h-4 mr-1" /> Delete
+</Button>
                   </div>
                 </div>
               )}

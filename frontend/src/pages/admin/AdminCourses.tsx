@@ -180,12 +180,17 @@ const AdminCourses = () => {
                 src={course.imageUrl}
                 alt={course.title}
                 className="w-full h-40 object-cover mt-2 rounded"
+                loading="lazy"
               />
               <Button
                 size="sm"
-                onClick={() => handleDeleteCourse(course._id)}
                 variant="destructive"
                 className="mt-2"
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to delete this course? This action cannot be undone.")) {
+                    handleDeleteCourse(course._id)
+                  }
+                }}
               >
                 <Trash2 className="w-4 h-4 mr-1" /> Delete
               </Button>

@@ -77,17 +77,22 @@ const options = {
 const getAstronomyCalender = async () => {
   try {
     const response = await axios.request(options)
+    console.log(response)
+
+    const isProduction = process.env.NODE_ENV === 'production'
 
     const cleanedData = response.data.map((event) => ({
       ...event,
-      image: event.image?.replace(/\s/g, '') // remove spaces in URL
+      image: isProduction
+        ? event.image?.replace(/\s/g, 's')  // Replace spaces with 's' in production
+        : event.image?.replace(/\s/g, '')   // Just remove spaces in dev/local
     }))
 
     cache.astroCalender = cleanedData
     timestamps.astroCalender = new Date()
   } catch (error) {
     console.error(
-      'Failed to fetch astronomy calendar:',
+      "Failed to fetch astronomy calendar:",
       error.response?.data || error.message
     )
   }

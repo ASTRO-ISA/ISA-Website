@@ -20,11 +20,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import Spinner from "@/components/ui/Spinner";
 import AstronomyCalendar from "./AstronomyCalendar";
 import PaymentModal from "@/components/popups/PymentModal";
 import FormatDate from "@/components/ui/FormatDate";
 import FormatTime from "@/components/ui/FormatTime";
+import RegisterButton from "./RegisterButton";
+import UpcomingLaunches from "./UpcomingLaunches";
+import EventsCalendar from "@/components/EventsCalendar";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -295,62 +297,15 @@ const handlePaidRegister = async (userId, event) => {
                     </DropdownMenu>
                   </div>
 
-                  <button
-  onClick={() => {
-    const alreadyRegistered = event.registeredUsers.some(
-      (e) => e.user === userInfo?.user?._id
-    );
-
-    if (alreadyRegistered) {
-      // Already registered → allow unregister if free event
-      if (event.isFree) {
-        handleUnregister(userInfo?.user._id, event._id);
-      }
-    } else {
-      // New user trying to register
-      if (event.seatCapacity && event.registeredUsers.length >= event.seatCapacity) {
-        toast({
-          title: "Sold Out",
-          description: "This event has reached maximum capacity.",
-          variant: "destructive",
-        });
-      } else if (event.isFree) {
-        handleRegister(userInfo?.user._id, event._id);
-      } else {
-        handlePaidRegister(userInfo?.user._id, event);
-      }
-    }
-  }}
-  disabled={
-    (!event.isFree &&
-      event.registeredUsers.some((e) => e.user === userInfo?.user?._id)) ||
-    (event.seatCapacity &&
-      event.registeredUsers.length >= event.seatCapacity &&
-      !event.registeredUsers.some((e) => e.user === userInfo?.user?._id))
-  }
-  className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold flex justify-center
-    ${
-      event.registeredUsers.some((e) => e.user === userInfo?.user?._id)
-        ? event.isFree
-          ? "bg-space-purple/30 hover:bg-space-purple/50"
-          : "bg-gray-500 cursor-not-allowed"
-        : event.seatCapacity && event.registeredUsers.length >= event.seatCapacity
-        ? "bg-gray-600 cursor-not-allowed"
-        : "bg-space-accent hover:bg-space-accent/80"
-    }`}
->
-  {loadingEventId === event._id ? (
-    <Spinner />
-  ) : event.registeredUsers.some((e) => e.user === userInfo?.user?._id) ? (
-    event.isFree ? "Unregister" : "Registered"
-  ) : event.seatCapacity && event.registeredUsers.length >= event.seatCapacity ? (
-    "Sold Out"
-  ) : event.isFree ? (
-    "Register for this Event"
-  ) : (
-    `Register - ₹${event.fee}`
-  )}
-</button>
+                <RegisterButton
+                  event={event}
+                  userInfo={userInfo}
+                  loadingEventId={loadingEventId}
+                  handleRegister={handleRegister}
+                  handleUnregister={handleUnregister}
+                  handlePaidRegister={handlePaidRegister}
+                  toast={toast}
+                />
                 </div>
               ))
             )}
@@ -371,98 +326,20 @@ const handlePaidRegister = async (userId, event) => {
         </section>
 
         {/* Astronomical Calendar */}
-        <section className=" mb-20">
-          <h2 className="  text-2xl font-bold mb-8">Astronomical Calendar</h2>
+        <section>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+            Astronomical Calendar
+          </h2>
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            Discover upcoming celestial events; from meteor showers to eclipses — and never miss a night worth watching.
+          </p>
+        </div>
           <AstronomyCalendar />
         </section>
 
         {/* Upcoming Launches */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold mb-8">Upcoming Launches</h2>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {launches.length === 0 ? (
-              <p className="text-gray-400 text-sm">Nothing to see here right now!</p>
-            ) : (
-              (showAll ? launches : launches.slice(0, 3)).map(
-                (
-                  launch
-                ) => (
-                  <div
-                    className="cosmic-card overflow-hidden group flex flex-col min-h-[28rem]"
-                    key={launch.name}
-                  >
-                    {/* Image */}
-                    <div className="h-48 overflow-hidden">
-                      <img
-                        loading="lazy"
-                        src={launch.image?.image_url}
-                        alt={launch.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    </div>
-
-                    {/* Card Content */}
-                    <div className="p-5 flex flex-col flex-1 justify-between">
-                      <div>
-                        <h3 className="text-xl font-semibold mb-3 min-h-[3rem]">
-                          {launch.name}
-                        </h3>
-
-                        <div className="space-y-2 mb-4 text-sm text-gray-400">
-                          <div className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-2 text-space-accent" />
-                            <span><FormatDate date={launch.window_start}/></span>
-                          </div>
-                          <div className="flex items-center">
-                            <Clock className="h-4 w-4 mr-2 text-space-accent" />
-                            <span><FormatTime date={launch.window_start}/></span>
-                          </div>
-                          <div className="flex items-center">
-                            <MapPin className="h-4 w-4 mr-2 text-space-accent" />
-                            <span>{launch.launch_service_provider?.name}</span>
-                          </div>
-                        </div>
-
-                        <p className="text-gray-400 text-sm line-clamp-3">
-                          {launch.mission?.description
-                            ?.split(" ")
-                            .slice(0, 30)
-                            .join(" ")}
-                          ...
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  // </Link>
-                )
-              )
-            )}
-          </div>
-
-          {/* View all events button */}
-          {/* if there are no events, no need to show the see all events button */}
-          {launches.length > 6 && !showAll && (
-            <div className="text-center mt-10">
-              <button
-                onClick={() => setShowAll(true)}
-                className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
-              >
-                View All Events
-              </button>
-            </div>
-          )}
-          {launches.length > 6 && showAll && (
-            <div className="text-center mt-10">
-              <button
-                onClick={() => setShowAll(false)}
-                className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors"
-              >
-                View Less
-              </button>
-            </div>
-          )}
-        </section>
+        <UpcomingLaunches launches={launches}/>
 
         {/* Host Your Own Event */}
         <section className="cosmic-card p-8">

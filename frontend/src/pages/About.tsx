@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import TeamsSection from "@/components/TeamsSection";
 
 const About = () => {
   const leaders = [
@@ -287,287 +288,17 @@ const About = () => {
         </div>
       </section>
 
-
-      {/* Meet Our Team - 1 */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-center mb-10"
-          >
-            Founders
-          </motion.h2>
-
-          <div className="flex justify-center gap-32 max-w-6xl mx-auto">
-            {leaders.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -4 }}
-                className="text-center"
-              >
-                <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
-                <div className="relative">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover select-none"
-                  />
-                  <div className="absolute inset-0 z-10" />
-                  </div>
-                </div>
-                <h3 className="text-base font-semibold text-white">
-                  {member.name}
-                </h3>
-                <p className="text-sm text-space-accent">{member.role}</p>
-                <div className="flex justify-center space-x-4 mt-2 cursor-pointer">
-                  {member.github && (
-                    <a
-                      href={member.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Github
-                        size={18}
-                        className="text-space-light hover:text-space-accent transition-colors"
-                      />
-                    </a>
-                  )}
-                  {member.linkedin && (
-                    <a
-                      href={member.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Linkedin
-                        size={18}
-                        className="text-space-light hover:text-space-accent transition-colors"
-                      />
-                    </a>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Meet Our Team */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-center mb-10"
-          >
-            Developers
-          </motion.h2>
-
-          <div className="flex justify-center gap-32 max-w-6xl mx-auto">
-            {teamMembers.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -4 }}
-                className="text-center"
-              >
-              <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
-                <div className="relative w-full h-full">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover select-none"
-                  />
-                  <div className="absolute inset-0 z-10" />
-                </div>
-              </div>
-                <h3 className="text-base font-semibold text-white">
-                  {member.name}
-                </h3>
-                <p className="text-sm text-space-accent">{member.role}</p>
-                <div className="flex justify-center space-x-4 mt-2 cursor-pointer">
-                  {member.github && (
-                    <a
-                      href={member.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Github
-                        size={18}
-                        className="text-space-light hover:text-space-accent transition-colors"
-                      />
-                    </a>
-                  )}
-                  {member.linkedin && (
-                    <a
-                      href={member.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Linkedin
-                        size={18}
-                        className="text-space-light hover:text-space-accent transition-colors"
-                      />
-                    </a>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Club Department Team */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-center mb-10"
-          >
-            Core Team
-          </motion.h2>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            {clubDepartments.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -4 }}
-                className="text-center"
-              >
-                <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h3 className="text-base font-semibold text-white">
-                  {member.name}
-                </h3>
-                <p className="text-sm text-space-accent">{member.role}</p>
-                <div className="flex justify-center space-x-4 mt-2 cursor-pointer">
-                  {member.github && (
-                    <a
-                      href={member.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Github
-                        size={18}
-                        className="text-space-light hover:text-space-accent transition-colors"
-                      />
-                    </a>
-                  )}
-                  {member.linkedin && (
-                    <a
-                      href={member.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Linkedin
-                        size={18}
-                        className="text-space-light hover:text-space-accent transition-colors"
-                      />
-                    </a>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+            {/* Meet Our Team - 1 */}
+            <TeamsSection department={leaders} teamName={"Founders"}/>
 
             {/* Meet Our Team */}
-            <section className="py-16">
-            <div className="container mx-auto px-4">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-center mb-10"
-          >
-            Contributors
-          </motion.h2>
+            <TeamsSection department={teamMembers} teamName={"Developers"}/>
 
-          <div className="flex justify-center gap-32 max-w-6xl mx-auto">
-            {contributors.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -4 }}
-                className="text-center"
-              >
-              <div className="w-28 h-28 mx-auto mb-3 rounded-full overflow-hidden border-2 border-space-purple bg-gradient-to-br from-space-purple/30 to-space-dark">
-                <div className="relative w-full h-full">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover select-none"
-                  />
-                  <div className="absolute inset-0 z-10" />
-                </div>
-              </div>
-                <h3 className="text-base font-semibold text-white">
-                  {member.name}
-                </h3>
-                <p className="text-sm text-space-accent">{member.role}</p>
-                <div className="flex justify-center space-x-4 mt-2 cursor-pointer">
-                  {member.github && (
-                    <a
-                      href={member.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Github
-                        size={18}
-                        className="text-space-light hover:text-space-accent transition-colors"
-                      />
-                    </a>
-                  )}
-                  {member.linkedin && (
-                    <a
-                      href={member.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Linkedin
-                        size={18}
-                        className="text-space-light hover:text-space-accent transition-colors"
-                      />
-                    </a>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+            {/* Club Department Team */}
+            <TeamsSection department={clubDepartments} teamName={"Core Team"}/>
+
+            {/* Contributors */}
+            <TeamsSection department={contributors} teamName={"Contributors"}/>
 
       <section className="py-20">
         <div className="container mx-auto px-4">
@@ -607,15 +338,6 @@ const About = () => {
                 Join WhatsApp Group
               </a>
             </div>
-
-            {/* <div className="mt-6">
-        <img
-          src="/images/6e2f90e0-d9db-42ef-9c2d-def808dc9cef.png"
-          alt="Community QR Code"
-          className="h-32 w-auto mx-auto border border-space-purple rounded-lg shadow-md"
-        />
-        <p className="text-sm text-space-light mt-2">Scan to join our WhatsApp group</p>
-      </div> */}
           </motion.div>
         </div>
       </section>

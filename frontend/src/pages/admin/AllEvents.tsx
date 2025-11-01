@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import api from "@/lib/api"
+import RegisterButton from "../event/RegisterButton"
 
 const AllEvents = () => {
   const [pendingEvents, setPendingEvents] = useState([])
@@ -59,7 +60,7 @@ const AllEvents = () => {
     }
   }
 
-  // ✅ Register handlers
+  // Register handlers
   const handleRegister = async (userId, eventId) => {
     if (!isLoggedIn) {
       return toast({
@@ -149,7 +150,7 @@ const AllEvents = () => {
     }
   }
 
-  // to show the date in readable format
+  // Format helpers
   const formatDate = (dateStr) =>
     new Date(dateStr).toLocaleDateString("en-IN", {
       day: "numeric",
@@ -157,7 +158,6 @@ const AllEvents = () => {
       year: "numeric",
     })
 
-  // to set time in readable format
   const formatTime = (dateStr) =>
     new Date(dateStr).toLocaleTimeString("en-IN", {
       hour: "2-digit",
@@ -167,7 +167,6 @@ const AllEvents = () => {
 
   return (
     <main>
-      {/* Pending Events */}
       <section className="mb-16">
         <h2 className="text-2xl font-bold mb-8">Pending Events</h2>
 
@@ -242,57 +241,17 @@ const AllEvents = () => {
                         </p>
                       </div>
 
-                      {/* ✅ Register Button */}
+                      {/* RegisterButton integrated */}
                       <div className="mt-4">
-                        <button
-                          onClick={() =>
-                            event.registeredUsers.some(
-                              (e) => e._id === userInfo?.user?._id
-                            )
-                              ? event.isFree
-                                ? handleUnregister(
-                                    userInfo?.user._id,
-                                    event._id
-                                  )
-                                : null
-                              : event.isFree
-                              ? handleRegister(userInfo?.user._id, event._id)
-                              : handlePaidRegister(userInfo?.user._id, event)
-                          }
-                          disabled={
-                            loadingEventId === event._id ||
-                            (!event.isFree &&
-                              event.registeredUsers.some(
-                                (e) => e._id === userInfo?.user?._id
-                              ))
-                          }
-                          className={`w-full px-4 py-2 rounded-md text-white font-semibold flex justify-center items-center transition
-                            ${
-                              isLoggedIn &&
-                              event.registeredUsers.some(
-                                (e) => e._id === userInfo?.user?._id
-                              )
-                                ? event.isFree
-                                  ? "bg-space-purple/30 hover:bg-space-purple/50"
-                                  : "bg-gray-500 cursor-not-allowed"
-                                : "bg-space-accent hover:bg-space-accent/80"
-                            }`}
-                        >
-                          {loadingEventId === event._id ? (
-                            <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
-                          ) : isLoggedIn &&
-                            event.registeredUsers.some(
-                              (e) => e._id === userInfo?.user?._id
-                            ) ? (
-                            event.isFree
-                              ? "Unregister"
-                              : "Already Registered (Paid)"
-                          ) : event.isFree ? (
-                            "Register for this Event"
-                          ) : (
-                            `Register - ₹${event.fee}`
-                          )}
-                        </button>
+                        <RegisterButton
+                          event={event}
+                          userInfo={userInfo}
+                          loadingEventId={loadingEventId}
+                          handleRegister={handleRegister}
+                          handleUnregister={handleUnregister}
+                          handlePaidRegister={handlePaidRegister}
+                          toast={toast}
+                        />
                       </div>
                     </div>
                   </Link>
@@ -311,7 +270,7 @@ const AllEvents = () => {
                               ? navigator.share({
                                   title: event.title,
                                   text: "Check out this event!",
-                                  url: `${window.location.origin}/events/${event._id}`,
+                                  url: `${window.location.origin}/events/${event.slug}`,
                                 })
                               : alert("Sharing not supported on this browser.")
                           }

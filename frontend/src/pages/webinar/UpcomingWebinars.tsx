@@ -145,11 +145,11 @@ const UpcomingWebinars = () => {
 
   return (
     <section className="mb-20 relative">
-      <h2 className="text-2xl font-bold mb-8">Upcoming Webinars</h2>
+      <h2 className="text-2xl font-bold mb-8 text-center sm:text-start">Upcoming Webinars</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {upcomingWebinars.length === 0 ? (
-          <p className="text-gray-500 italic">No upcoming webinars right now!</p>
+          <p className="text-gray-500 italic text-center sm:text-start">No upcoming webinars right now!</p>
         ) : (
           upcomingWebinars.map((webinar) => (
             <div

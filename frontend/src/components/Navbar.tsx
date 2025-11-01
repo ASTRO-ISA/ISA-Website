@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,28 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { isLoggedIn, userInfo } = useAuth();
   const location = useLocation();
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    if (mobileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [mobileMenuOpen]);
 
   // if the user is logged in, avatar will be shown and when clcking it, user dashboard will open
   const handleAvatarClick = () => {
@@ -176,38 +198,6 @@ const Navbar = () => {
               Webinars
             </Link>
 
-            {/* <Link to="/spline-models" className="text-white hover:text-space-light transition-colors flex items-center gap-1">
-              <Rocket size={16} />
-              <span>3D Models</span>
-            </Link>
-            <Link to="/figma-design" className="text-white hover:text-space-light transition-colors flex items-center gap-1">
-              <Palette size={16} />
-              <span>Figma</span>
-            </Link>
-            <Link to="/astronomy-resources" className="text-white hover:text-space-light transition-colors flex items-center gap-1">
-              <BookOpen size={16} />
-              <span>Resources</span>
-            </Link> */}
-
-            {/* <div className="flex items-center space-x-4">
-              <a 
-                href="https://www.instagram.com/isa.astrospace?igsh=cGgyeDB3M2d4dDJ5"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white hover:text-space-light transition-colors"
-              >
-                <Instagram />
-              </a>
-              <a 
-                href="https://chat.whatsapp.com/L3cBfJnQuO3BAbTnr4FbUE?fbclid=PAZXh0bgNhZW0CMTEAAabtBxDh4K2fihtHj_B3jxL87pA6nBaZurvhwesU32G5CftYqkhHFxdlicg_aem_v3_CsBh8Vl8Pxnf3HD8Ltg"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white hover:text-space-light transition-colors"
-              >
-                <MessageCircle />
-              </a>
-            </div> */}
-
             {!isLoggedIn && (
               <Button
                 asChild
@@ -259,6 +249,7 @@ const Navbar = () => {
         {/* Mobile Menu Panel */}
         {mobileMenuOpen && (
           <motion.div
+          ref={menuRef}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -347,61 +338,6 @@ const Navbar = () => {
               >
                 Webinars
               </Link>
-              {/* <Link
-                to="/spline-models"
-                className={`transition-colors ${
-                  location.pathname === '/community'
-                    ? 'text-space-accent'
-                    : 'text-white hover:text-space-light'
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <Rocket size={16} />
-                <span>3D Models</span>
-              </Link> */}
-              {/* <Link
-                to="/figma-design"
-                className={`transition-colors ${
-                  location.pathname === '/community'
-                    ? 'text-space-accent'
-                    : 'text-white hover:text-space-light'
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <Palette size={16} />
-                <span>Figma</span>
-              </Link> */}
-              {/* <Link
-                to="/astronomy-resources"
-                className={`transition-colors ${
-                  location.pathname === '/community'
-                    ? 'text-space-accent'
-                    : 'text-white hover:text-space-light'
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <BookOpen size={16} />
-                <span>Resources</span>
-              </Link> */}
-
-              {/* <div className="flex items-center space-x-4 py-2">
-                <a
-                  href="https://www.instagram.com/isa.astrospace?igsh=cGgyeDB3M2d4dDJ5"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white hover:text-space-light transition-colors"
-                >
-                  <Instagram />
-                </a>
-                <a
-                  href="https://chat.whatsapp.com/L3cBfJnQuO3BAbTnr4FbUE?fbclid=PAZXh0bgNhZW0CMTEAAabtBxDh4K2fihtHj_B3jxL87pA6nBaZurvhwesU32G5CftYqkhHFxdlicg_aem_v3_CsBh8Vl8Pxnf3HD8Ltg"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white hover:text-space-light transition-colors"
-                >
-                  <MessageCircle />
-                </a>
-              </div> */}
 
               {!isLoggedIn && (
                 <Button
@@ -416,16 +352,6 @@ const Navbar = () => {
                   </Link>
                 </Button>
               )}
-
-              {/* if the user is logged in show profile */}
-              {/* {isLoggedIn && (
-                <img
-                  src="/public/placeholder.svg"
-                  alt="User Avatar"
-                  onClick={handleAvatarClick}
-                  className="h-10 w-10 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform"
-                />
-              )} */}
             </div>
           </motion.div>
         )}

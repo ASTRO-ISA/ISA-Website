@@ -214,12 +214,16 @@ const ManageAdmins = () => {
                         Edit
                       </Button>
                       <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => deleteAdminMutation.mutate(admin._id)}
-                      >
-                        Delete
-                      </Button>
+  variant="destructive"
+  size="sm"
+  onClick={() => {
+    if (window.confirm("Are you sure you want to delete this admin? This action cannot be undone.")) {
+      deleteAdminMutation.mutate(admin._id)
+    }
+  }}
+>
+  Delete
+</Button>
                     </div>
                   </>
                 )}

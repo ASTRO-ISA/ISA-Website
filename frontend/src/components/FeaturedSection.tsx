@@ -51,116 +51,17 @@ const FeaturedSection = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Featured Blog */}
-        {featuredBlog && (
-          <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer">
-            <Link to={`/blogs/${featuredBlog.slug}`}>
-              <div className="relative aspect-[16/9] sm:aspect-video">
-                <img
-                  src={featuredBlog.thumbnail}
-                  alt={featuredBlog.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0" />
-              </div>
-              <div className="p-4 sm:p-6">
-                <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
-                  Featured Blog
-                </p>
-                <h3 className="text-lg sm:text-xl font-bold mb-2">
-                  {featuredBlog.title}
-                </h3>
-                <p className="text-sm text-gray-400 mb-2">
-                  Date: {new Date(featuredBlog.createdAt).toLocaleDateString()}
-                </p>
-                <p className="text-sm text-gray-400 mb-3 sm:block">
-                  {featuredBlog.description}
-                </p>
-                <p className="text-xs text-gray-500">
-                  Author:{" "}
-                  {featuredBlog.author?.name
-                    ? featuredBlog.author.name.toUpperCase()
-                    : "Unknown"}
-                </p>
-              </div>
-            </Link>
-          </div>
-        )}
-
-        {/* Featured News */}
-        {featuredNews && (
-          <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer">
-            <Link to={featuredNews.url}>
-              <div className="relative aspect-[16/9] sm:aspect-video">
-                <img
-                  src={featuredNews.image_url}
-                  alt={featuredNews.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0" />
-              </div>
-              <div className="p-4 sm:p-6">
-                <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
-                  News
-                </p>
-                <h3 className="text-lg sm:text-xl font-bold mb-2">
-                  {featuredNews.title}
-                </h3>
-                <p className="text-sm text-gray-400 mb-3 sm:block">
-                  {featuredNews.summary.slice(0, 150)}...
-                </p>
-                <p className="text-xs text-gray-500">
-                  Source: {featuredNews.news_site}
-                </p>
-              </div>
-            </Link>
-          </div>
-        )}
-
-        {/* Upcoming Event OR Featured Webinar */}
-        {upcomingEvent ? (
-          <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer">
-            <Link to={`/events/${upcomingEvent.slug}`}>
-              <div className="relative aspect-[16/9] sm:aspect-video">
-                <img
-                  src={upcomingEvent.thumbnail}
-                  alt={upcomingEvent.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0" />
-              </div>
-              <div className="p-4 sm:p-6">
-                <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
-                  Upcoming Event
-                </p>
-                <h3 className="text-lg sm:text-xl font-bold mb-2">
-                  {upcomingEvent.title}
-                </h3>
-                <p className="text-sm text-gray-400 mb-2">
-                  Date:{" "}
-                  {new Date(upcomingEvent.eventDate).toLocaleDateString()}
-                </p>
-                <p className="text-sm text-gray-400 mb-3 sm:block">
-                  {upcomingEvent.description.slice(0, 150)}...
-                </p>
-                <p className="text-xs text-gray-500">
-                  Venue: {upcomingEvent.location}
-                </p>
-              </div>
-            </Link>
-          </div>
-        ) : (
-          featuredWebinar && (
-            <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer">
-              <Link to={`/webinars/${featuredWebinar.slug}`}>
+      {/* Responsive Scroll Wrapper */}
+      <div className="overflow-x-auto lg:overflow-visible scrollbar-hide scroll-smooth snap-x snap-mandatory">
+        <div className="flex lg:grid lg:grid-cols-3 gap-6 min-w-[680px] lg:min-w-0">
+          {/* Featured Blog */}
+          {featuredBlog && (
+            <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer flex-shrink-0 w-72 sm:w-auto snap-start">
+              <Link to={`/blogs/${featuredBlog.slug}`}>
                 <div className="relative aspect-[16/9] sm:aspect-video">
                   <img
-                    src={featuredWebinar.thumbnail}
-                    alt={featuredWebinar.title}
+                    src={featuredBlog.thumbnail}
+                    alt={featuredBlog.title}
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
@@ -168,26 +69,130 @@ const FeaturedSection = () => {
                 </div>
                 <div className="p-4 sm:p-6">
                   <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
-                    Featured Webinar
+                    Featured Blog
                   </p>
                   <h3 className="text-lg sm:text-xl font-bold mb-2">
-                    {featuredWebinar.title}
+                    {featuredBlog.title}
                   </h3>
                   <p className="text-sm text-gray-400 mb-2">
-                    Date:{" "}
-                    {new Date(featuredWebinar.webinarDate).toLocaleDateString()}
+                    Date: {new Date(featuredBlog.createdAt).toLocaleDateString()}
                   </p>
                   <p className="text-sm text-gray-400 mb-3 sm:block">
-                    {featuredWebinar.description.slice(0, 150)}...
+                    {featuredBlog.description}
                   </p>
                   <p className="text-xs text-gray-500">
-                    Presenter: {featuredWebinar.presenter || "TBA"}
+                    Author:{" "}
+                    {featuredBlog.author?.name
+                      ? featuredBlog.author.name.toUpperCase()
+                      : "Unknown"}
                   </p>
                 </div>
               </Link>
             </div>
-          )
-        )}
+          )}
+
+          {/* Featured News */}
+          {featuredNews && (
+            <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer flex-shrink-0 w-72 sm:w-auto snap-start">
+              <Link to={featuredNews.url}>
+                <div className="relative aspect-[16/9] sm:aspect-video">
+                  <img
+                    src={featuredNews.image_url}
+                    alt={featuredNews.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0" />
+                </div>
+                <div className="p-4 sm:p-6">
+                  <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
+                    News
+                  </p>
+                  <h3 className="text-lg sm:text-xl font-bold mb-2">
+                    {featuredNews.title}
+                  </h3>
+                  <p className="text-sm text-gray-400 mb-3 sm:block">
+                    {featuredNews.summary.slice(0, 150)}...
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Source: {featuredNews.news_site}
+                  </p>
+                </div>
+              </Link>
+            </div>
+          )}
+
+          {/* Upcoming Event OR Featured Webinar */}
+          {upcomingEvent ? (
+            <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer flex-shrink-0 w-72 sm:w-auto snap-start">
+              <Link to={`/events/${upcomingEvent.slug}`}>
+                <div className="relative aspect-[16/9] sm:aspect-video">
+                  <img
+                    src={upcomingEvent.thumbnail}
+                    alt={upcomingEvent.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0" />
+                </div>
+                <div className="p-4 sm:p-6">
+                  <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
+                    Upcoming Event
+                  </p>
+                  <h3 className="text-lg sm:text-xl font-bold mb-2">
+                    {upcomingEvent.title}
+                  </h3>
+                  <p className="text-sm text-gray-400 mb-2">
+                    Date:{" "}
+                    {new Date(upcomingEvent.eventDate).toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-gray-400 mb-3 sm:block">
+                    {upcomingEvent.description.slice(0, 150)}...
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Venue: {upcomingEvent.location}
+                  </p>
+                </div>
+              </Link>
+            </div>
+          ) : (
+            featuredWebinar && (
+              <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer flex-shrink-0 w-72 sm:w-auto snap-start">
+                <Link to={`/webinars/${featuredWebinar.slug}`}>
+                  <div className="relative aspect-[16/9] sm:aspect-video">
+                    <img
+                      src={featuredWebinar.thumbnail}
+                      alt={featuredWebinar.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0" />
+                  </div>
+                  <div className="p-4 sm:p-6">
+                    <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
+                      Featured Webinar
+                    </p>
+                    <h3 className="text-lg sm:text-xl font-bold mb-2">
+                      {featuredWebinar.title}
+                    </h3>
+                    <p className="text-sm text-gray-400 mb-2">
+                      Date:{" "}
+                      {new Date(
+                        featuredWebinar.webinarDate
+                      ).toLocaleDateString()}
+                    </p>
+                    <p className="text-sm text-gray-400 mb-3 sm:block">
+                      {featuredWebinar.description.slice(0, 150)}...
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Presenter: {featuredWebinar.presenter || "TBA"}
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            )
+          )}
+        </div>
       </div>
     </section>
   );

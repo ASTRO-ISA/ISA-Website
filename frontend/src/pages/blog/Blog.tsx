@@ -21,7 +21,6 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import api from "@/lib/api";
-import { Helmet } from "react-helmet-async";
 
 const Blog = () => {
   const { toast } = useToast();
@@ -339,7 +338,7 @@ const Blog = () => {
           <h2 className="text-2xl font-bold mb-8">Featured</h2>
 
           {featuredId === null ? (
-            <p className="text-gray-500 italic">
+            <p className="text-gray-500 italic text-center sm:text-start">
               No featured blog at the moment. Stay tuned!
             </p>
           ) : (
@@ -466,7 +465,7 @@ const Blog = () => {
         {/* Recent Blogs */}
         <section className="mb-20">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold">Recent Blogs</h2>
+            <h2 className="text-2xl font-bold text-center sm:text-start">Recent Blogs</h2>
 
             {/* Create Blog Button */}
             <button
@@ -483,9 +482,9 @@ const Blog = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {loadingUserBlogs ? (
-              <p>Loading...</p>
+              <p className="text-gray-500 italic text-center sm:text-start">Loading...</p>
             ) : userBlogs.length === 0 ? (
-              <p className="text-gray-500 italic">
+              <p className="text-gray-500 italic text-center sm:text-start">
                 Nothing to see here right now!
               </p>
             ) : (
@@ -618,16 +617,6 @@ const Blog = () => {
                               )}
                             </DropdownMenuContent>
                           </DropdownMenu>
-                          {/* <DropdownActions
-  item={blog}
-  isAdmin={isAdmin}
-  featuredId={featuredId} // current featured blog id
-  handleSetFeatured={handleSetFeatured}
-  handleRemoveFeatured={handleRemoveFeatured}
-  handleAddToNewsletter={handleAddToNewsletter} // admin only
-  handleSave={handleSaveBlog} // blog save
-  variant="light"
-/> */}
                         </div>
                       </div>
                     </Link>
@@ -664,14 +653,14 @@ const Blog = () => {
         {/* Astronomical Blogs */}
         <section className="mb-20">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold">Astronomical Blogs</h2>
+            <h2 className="text-2xl font-bold text-center sm:text-start">Astronomical Blogs</h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {loadingExternalBlogs ? (
-              <p>Loading...</p>
+              <p className="text-gray-500 italic text-center sm:text-start">Loading...</p>
             ) : externalBlogs.length === 0 ? (
-              <p className="text-gray-500 italic">
+              <p className="text-gray-500 italic text-center sm:text-start">
                 Nothing to see here right now!
               </p>
             ) : (
@@ -752,14 +741,14 @@ const Blog = () => {
         {/* News */}
         <section className="mb-20">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold">News Articles</h2>
+            <h2 className="text-2xl font-bold text-center sm:text-start">News Articles</h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {loadingArticles ? (
-              <p>Loading...</p>
+              <p className="text-gray-500 italic text-center sm:text-start">Loading...</p>
             ) : articles.length === 0 ? (
-              <p className="text-gray-500 italic">
+              <p className="text-gray-500 italic text-center sm:text-start">
                 Nothing to see here right now!
               </p>
             ) : (

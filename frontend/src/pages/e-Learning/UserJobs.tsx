@@ -29,7 +29,7 @@ const UserJobs = () => {
 
   if (!jobs || jobs.length === 0)
     return (
-      <p className="text-gray-400 italic flex justify-center items-center">
+      <p className="text-gray-400 italic flex justify-center items-center text-center sm:text-start">
         Nothing to see here right now. Future job and internship postings will appear here!
       </p>
   );

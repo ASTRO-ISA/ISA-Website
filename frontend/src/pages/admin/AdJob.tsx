@@ -297,8 +297,12 @@ const AdminJobs = () => {
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => deleteJobMutation.mutate(job._id)}
                       variant="destructive"
+                      onClick={() => {
+                        if (window.confirm("Are you sure you want to delete this job? This action cannot be undone.")) {
+                          deleteJobMutation.mutate(job._id)
+                        }
+                      }}
                     >
                       <Trash2 className="w-4 h-4 mr-1" /> Delete
                     </Button>

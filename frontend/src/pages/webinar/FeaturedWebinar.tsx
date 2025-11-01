@@ -110,7 +110,7 @@ const FeaturedWebinars = () => {
 
     return (
         <section className="mb-16">
-  <h2 className="text-2xl font-bold mb-8">Featured Talk</h2>
+  <h2 className="text-2xl font-bold mb-8 text-center sm:text-start">Featured Talk</h2>
 
   {featured && (featured.videoId || featured.thumbnail) ? (
     <div className="cosmic-card p-0 overflow-hidden rounded-lg">
@@ -164,7 +164,7 @@ const FeaturedWebinars = () => {
       </div>
     </div>
   ) : (
-    <p className="text-gray-500 italic">
+    <p className="text-gray-500 italic text-center sm:text-start">
       No featured webinar at the moment.
     </p>
   )}

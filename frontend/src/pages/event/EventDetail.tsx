@@ -8,6 +8,7 @@ import Spinner from "@/components/ui/Spinner";
 import PaymentModal from "@/components/popups/PymentModal";
 import FormatDate from "@/components/ui/FormatDate";
 import FormatTime from "@/components/ui/FormatTime";
+import RegisterButton from "./RegisterButton";
 
 const EventDetails = () => {
   const { slug } = useParams();
@@ -35,7 +36,6 @@ const EventDetails = () => {
     fetchEvent();
   }, [slug]);
 
-  // Helpers
   const isRegistered = () =>
     event?.registeredUsers.some(
       (e) => e.user === userInfo?.user?._id
@@ -50,7 +50,6 @@ const EventDetails = () => {
     (s) => s.toString() === userInfo?.user._id.toString()
   );
 
-  // Register / Unregister functions
   const handleRegister = async (userId, eventId) => {
     if (!isLoggedIn) {
       return toast({
@@ -97,7 +96,11 @@ const EventDetails = () => {
     }
   };
 
-  // Delete Event
+  const handlePaidRegister = async (userId, eventData) => {
+    // Open payment modal instead of direct payment initiation
+    setSelectedEvent(eventData);
+  };
+
   const deleteEvent = async () => {
     setDeleting(true);
     try {
@@ -131,18 +134,15 @@ const EventDetails = () => {
     <div className="min-h-screen bg-space-dark text-white pt-20 px-4">
       <main className="container mx-auto px-4 pt-8 pb-16">
         <div className="max-w-4xl mx-auto space-y-8">
-          {/* Thumbnail */}
           <img
             src={event.thumbnail}
             alt={event.title}
             className="w-full max-h-[500px] object-cover rounded-xl mb-6 aspect-[16/9]"
           />
 
-          {/* Title & Description */}
           <h1 className="text-4xl font-bold mb-4">{event.title}</h1>
           <p className="text-gray-400 text-lg mb-8">{event.description}</p>
 
-          {/* Event Info Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
             <div className="space-y-4">
               <div className="flex items-center text-gray-400">
@@ -183,50 +183,16 @@ const EventDetails = () => {
             </div>
           </div>
 
-          {/* Register Button */}
-          <button
-  onClick={() => {
-    if (isRegistered()) {
-      if (event.isFree) handleUnregister(userInfo?.user._id, event._id);
-    } else {
-      if (isSoldOut()) {
-        toast({
-          title: "Sold Out",
-          description: "This event has reached maximum capacity.",
-          variant: "destructive",
-        });
-      } else if (event.isFree) {
-        handleRegister(userInfo?.user._id, event._id);
-      } else {
-        // Open payment modal instead of directly initiating payment
-        setSelectedEvent(event);
-      }
-    }
-  }}
-  disabled={(isRegistered() && !event.isFree) || isSoldOut()}
-  className={`w-full md:w-auto px-6 py-3 rounded-md transition text-white font-semibold flex justify-center
-    ${
-      isRegistered()
-        ? event.isFree
-          ? "bg-space-purple/30 hover:bg-space-purple/50"
-          : "bg-gray-500 cursor-not-allowed"
-        : isSoldOut()
-        ? "bg-gray-600 cursor-not-allowed"
-        : "bg-space-accent hover:bg-space-accent/80"
-    }`}
->
-  {loadingEventId === event._id ? (
-    <Spinner />
-  ) : isRegistered() ? (
-    event.isFree ? "Unregister" : "Registered"
-  ) : isSoldOut() ? (
-    "Sold Out"
-  ) : event.isFree ? (
-    "Register for this Event"
-  ) : (
-    `Register - ₹${event.fee}`
-  )}
-</button>
+          {/* Register Button (cleaned) */}
+          <RegisterButton
+            event={event}
+            userInfo={userInfo}
+            loadingEventId={loadingEventId}
+            handleRegister={handleRegister}
+            handleUnregister={handleUnregister}
+            handlePaidRegister={handlePaidRegister}
+            toast={toast}
+          />
 
           {/* Creator Only Buttons */}
           {userInfo && event.createdBy._id === userInfo.user?._id && (
@@ -271,6 +237,7 @@ const EventDetails = () => {
           )}
         </div>
       </main>
+
       {selectedEvent && (
         <PaymentModal
           event={selectedEvent}
