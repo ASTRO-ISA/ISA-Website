@@ -50,14 +50,14 @@ const PasswordChange: React.FC = () => {
         },
       });
   
-      toast({description:"Password changed successfully"});
+      toast({description:"Password changed successfully", variant: "success"});
       setPassword({
         currentPassword: "",
         newPassword: "",
         passwordConfirm: "",
       });
     } catch (error) {
-      toast({description:error.response?.data?.message || "Error: " + error.message});
+      toast({description:error.response?.data?.message || "Something went wrong" + error.message});
     } finally {
       setDisBtn(false);
     }

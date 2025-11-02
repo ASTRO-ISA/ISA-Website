@@ -40,11 +40,11 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     select: false
   },
-  country: {
-    type: String,
-    default: 'India',
-    // enum: ['India', 'Canada', 'Nepal', 'USA']
-  },
+  // country: {
+  //   type: String,
+  //   default: 'India',
+  //   // enum: ['India', 'Canada', 'Nepal', 'USA']
+  // },
   passwordChangedAt: Date,
   isVerified: {
     type: Boolean,

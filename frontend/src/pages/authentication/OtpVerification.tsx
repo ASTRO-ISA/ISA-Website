@@ -32,11 +32,10 @@ const OtpVerification = () => {
   const handleResend = async () => {
     try {
       await api.post("/auth/resend-otp", { email });
-      toast({ title: "OTP resent", description: "Check your inbox" });
+      toast({ description: "OTP sent to your registered email.", variant: "success" });
       setResendTimer(90);
     } catch {
       toast({
-        title: "Error",
         description: "Failed to resend OTP",
         variant: "destructive",
       });
@@ -101,7 +100,6 @@ const OtpVerification = () => {
     if (code.length !== 6) {
       setVerifying(false);
       toast({
-        title: "Invalid OTP",
         description: "Enter all 6 digits",
         variant: "destructive",
       });

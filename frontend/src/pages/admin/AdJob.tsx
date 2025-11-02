@@ -61,7 +61,7 @@ const AdminJobs = () => {
       });
     },
     onSuccess: () => {
-      toast({ title: "Job created successfully!" });
+      toast({ description: "Job created successfully." });
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
       setNewJobFormData({
         title: "",
@@ -71,7 +71,7 @@ const AdminJobs = () => {
         document: null,
       });
     },
-    onError: () => toast({ title: "Error Occurred!" }),
+    onError: () => toast({ description: "Something went wrong!" }),
   });
 
   // Delete Job
@@ -80,10 +80,10 @@ const AdminJobs = () => {
       await api.delete(`/jobs/${id}`);
     },
     onSuccess: () => {
-      toast({ title: "Job deleted successfully!" });
+      toast({ title: "Job deleted successfully." });
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
     },
-    onError: () => toast({ title: "Error deleting job!" }),
+    onError: () => toast({ description: "Something went wrong deleting job!" }),
   });
 
   // Update Job
@@ -92,12 +92,12 @@ const AdminJobs = () => {
       await api.patch(`/jobs/${editingJobId}`, editJobFormData);
     },
     onSuccess: () => {
-      toast({ title: "Job updated successfully!" });
+      toast({ description: "Job updated successfully." });
       setEditingJobId(null);
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
     },
     onError: () => {
-      toast({ title: "Error updating job" });
+      toast({ description: "Something went wrong updating job!" });
     },
   });
 

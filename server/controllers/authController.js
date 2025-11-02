@@ -6,7 +6,7 @@ const otpService = require('../services/otpService')
 
 exports.signup = async (req, res) => {
   try {
-    const { name, email, phoneNo, password, confirmPassword, country } = req.body
+    const { name, email, phoneNo, password, confirmPassword } = req.body
     
     // check if email already registered
     const existingUser = await User.findOne({ email })
@@ -17,8 +17,7 @@ exports.signup = async (req, res) => {
       email,
       phoneNo,
       password,
-      confirmPassword,
-      country
+      confirmPassword
     })
 
     // await otpService.sendOtp(user.email, sendEmail)

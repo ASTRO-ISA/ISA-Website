@@ -20,7 +20,7 @@ const Login = () => {
     e.preventDefault();
     setLoggingIn(true);
     try {
-      const res = await api.post("/auth/login", form, {
+      await api.post("/auth/login", form, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -29,15 +29,19 @@ const Login = () => {
       // If login is successful
       setLoggingIn(false);
       toast({
-        title: "Login successful!",
-        description: "Welcome back!",
+        description: "Login successful. Welcome back",
+        variant: "success"
       });
 
       await refetchUser();
       navigate("/");
     } catch (err) {
       setLoggingIn(false);
-      console.error("Login error:", err);
+      // console.error("Login error:", err);
+      toast({
+        description: err.response.data.message,
+        variant: "destructive"
+      })
 
       // if (err.response && err.response.status === 403) {
       //   // redirect to OTP page with email
@@ -100,9 +104,9 @@ const Login = () => {
             {/* Submit */}
             <button
               type="submit"
-              className="w-full bg-space-accent hover:bg-space-accent/80 text-white font-semibold py-2 rounded-md transition-colors"
+              className="w-full bg-space-accent hover:bg-space-accent/80 text-white flex justify-center items-center font-semibold py-2 rounded-md transition-colors"
             >
-              Sign In
+              {logginIn ? <Spinner /> : "Sign In"}
             </button>
 
             {/* Forgot Password */}

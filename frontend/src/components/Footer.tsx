@@ -25,9 +25,10 @@ const Footer = () => {
           { withCredentials: true }
         );
         toast({
-          title: "Subscribed Successfully!",
+          title: "Subscribed Successfully",
           description:
             "You will be the first to recieve the info about new events.",
+          variant: "success"
         });
         setUserEmail("");
         setUploadingEmail(false);
@@ -82,7 +83,7 @@ const Footer = () => {
         if (response.status === 200) {
           setIsSubscribedToNewsletter(false);
           toast({
-            title: "Unsubscribed successfully.",
+            title: "Unsubscribed successfully",
             description: "You will not receive any future newsletters.",
           });
         }

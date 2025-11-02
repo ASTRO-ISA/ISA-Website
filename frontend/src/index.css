@@ -160,3 +160,9 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.break-anywhere {
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}

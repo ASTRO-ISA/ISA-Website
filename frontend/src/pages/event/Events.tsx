@@ -113,7 +113,6 @@ const handlePaidRegister = async (userId, event) => {
       setLoadingEventId(null);
     } catch (err) {
       toast({
-        title: "Can't unregister.",
         description:
           "There seems to be a problem unregistering, please try again after some time.",
         variant: "destructive",
@@ -133,10 +132,10 @@ const handlePaidRegister = async (userId, event) => {
         },
         { withCredentials: true }
       );
-      toast({ title: "Added to newsletter draft!" });
+      toast({ description: "Added to newsletter draft!", variant: "success" });
     } catch (err) {
       toast({
-        title: "Failed to add to draft",
+        description: "Failed to add to draft",
         variant: "destructive",
       });
     }

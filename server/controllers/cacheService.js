@@ -77,7 +77,6 @@ const options = {
 const getAstronomyCalender = async () => {
   try {
     const response = await axios.request(options)
-    console.log(response)
 
     const isProduction = process.env.NODE_ENV === 'production'
 

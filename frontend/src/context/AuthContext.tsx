@@ -9,7 +9,7 @@ interface User {
     email: string;
     role: string;
     phoneNo: number;
-    country: string;
+    // country: string;
     avatar: string;
     createdAt: string;
   };

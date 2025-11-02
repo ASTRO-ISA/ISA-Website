@@ -15,8 +15,7 @@ const UserProfile = () => {
     try {
       await api.get("/auth/logout");
       toast({
-        title: "Logout successful!",
-        description: "See you again!",
+        description: "Logout successful! See you again!",
       });
       refetchUser();
       navigate("/");
@@ -76,7 +75,7 @@ const UserProfile = () => {
                   </h1>
                   <p className="text-gray-400 mb-2">{userInfo.user.email}</p>
                   <div className="flex items-center gap-4 text-sm text-gray-400">
-                    <span>Country: {userInfo.user.country}</span>
+                    {/* <span>Country: {userInfo.user.country}</span> */}
                     <span>Joined: {formatDate(userInfo.user.createdAt)}</span>
                   </div>
                 </div>

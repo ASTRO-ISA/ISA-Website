@@ -15,7 +15,6 @@ const BlogDetail = () => {
   const [loading, setLoading] = useState(true);
   const { userInfo } = useAuth();
   const [deleting, setDeleting] = useState(false);
-  (blog)
 
   // to get the blog data form database
   useEffect(() => {
@@ -117,12 +116,12 @@ const BlogDetail = () => {
           <div className="flex items-center gap-4 mt-12 pt-6 border-t border-gray-600">
                           <Avatar className="w-16 h-16">
                 <AvatarImage
-                  src={userInfo.user.avatar}
-                  alt={userInfo.user.name}
+                  src={blog?.author?.avatar}
+                  alt={blog?.author?.name}
                   className="object-cover"
                 />{" "}
                 <AvatarFallback className="text-2xl bg-space-purple">
-                  {userInfo.user.name
+                  {blog?.author?.name
                     .split(" ")
                     .map((n) => n[0])
                     .join("")}
@@ -130,7 +129,7 @@ const BlogDetail = () => {
               </Avatar>
             <div>
               <h4 className="font-semibold">{blog.author?.name}</h4>
-              <p className="text-sm text-gray-400">{blog.author?.country}</p>
+              {/* <p className="text-sm text-gray-400">{blog.author?.country}</p> */}
             </div>
           </div>
           <hr className="mb-3 mt-6" />

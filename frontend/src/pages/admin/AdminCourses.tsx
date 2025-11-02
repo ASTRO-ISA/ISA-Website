@@ -58,7 +58,7 @@ const AdminCourses = () => {
         },
       });
 
-      toast({ title: "Course created successfully!" });
+      toast({ description: "Course created successfully!" });
       setNewCourse({
         title: "",
         description: "",
@@ -69,7 +69,7 @@ const AdminCourses = () => {
       fetchCourses();
     } catch (error) {
       console.error("Error creating course:", error.message);
-      toast({ title: "Error occurred while creating course" });
+      toast({ description: "Something went wrong while creating course" });
     } finally {
       setCreatingCourse(false);
     }
@@ -79,11 +79,11 @@ const AdminCourses = () => {
     try {
       setIsDeleting(true);
       await api.delete(`/courses/${id}`);
-      toast({ title: "Course deleted successfully!" });
+      toast({ description: "Course deleted successfully." });
       fetchCourses();
     } catch (error) {
       console.error("Error deleting course:", error.message);
-      toast({ title: "Error deleting course" });
+      toast({ description: "Something went wrong deleting course" });
     } finally {
       setIsDeleting(false);
     }

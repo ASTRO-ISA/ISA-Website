@@ -45,12 +45,12 @@ const WriteBlog = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (title.length === 0) {
-      toast({ title: "Title required.", variant: "destructive" });
+      toast({ description: "Title required.", variant: "destructive" });
       return;
     }
     if (content.length < 1000) {
       toast({
-        title: "Content must be at least 1000 characters.",
+        description: "Content must be at least 1000 characters.",
         variant: "destructive",
       });
       return;
@@ -74,7 +74,7 @@ const WriteBlog = () => {
     } catch (err) {
       setLoading(false);
       toast({
-        title: "Error publishing blog.",
+        title: "Something went wrong publishing blog.",
         description: err.response?.data,
         variant: "destructive"
       });

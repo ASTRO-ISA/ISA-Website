@@ -127,7 +127,7 @@ const CreateEvent = () => {
     } catch (error) {
       setErrorMsg(error.response?.data?.message || "Something went wrong");
       toast({
-        title: "Error creating event!",
+        description: "Something went wrong creating event!",
       });
     } finally {
       setIsSubmitting(false);

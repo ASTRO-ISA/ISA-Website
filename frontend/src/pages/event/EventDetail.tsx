@@ -87,8 +87,7 @@ const EventDetails = () => {
     } catch (err) {
       console.error("Error unregistering:", err);
       toast({
-        title: "Can't unregister.",
-        description: "Please try again later.",
+        description: "Can't unregister. Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -105,7 +104,7 @@ const EventDetails = () => {
     setDeleting(true);
     try {
       await api.delete(`/events/${event._id}`);
-      toast({ title: "Event deleted successfully!" });
+      toast({ description: "Event deleted successfully!" });
       navigate("/events");
     } catch (err) {
       console.error("Error deleting event:", err);
@@ -141,7 +140,9 @@ const EventDetails = () => {
           />
 
           <h1 className="text-4xl font-bold mb-4">{event.title}</h1>
-          <p className="text-gray-400 text-lg mb-8">{event.description}</p>
+          <p className="text-gray-400 text-lg mb-8 break-anywhere">
+  {event.description}
+</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
             <div className="space-y-4">

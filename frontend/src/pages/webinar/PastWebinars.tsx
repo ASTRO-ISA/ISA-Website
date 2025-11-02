@@ -37,7 +37,7 @@ const PastWebinars = () => {
       });
     } else {
       navigator.clipboard.writeText(webinarUrl);
-      toast({ title: "Link copied." });
+      toast({ description: "Link copied." });
     }
   };
 
@@ -82,11 +82,11 @@ const PastWebinars = () => {
       await api.patch(`/webinars/featured/${webinar._id}`);
       setFeaturedId(webinar._id);
       fetchFeatured();
-      toast({ title: `Webinar \"${webinar.title}\" set as featured.` });
+      toast({ description: `Webinar \"${webinar.title}\" set as featured.`, variant: "success" });
     } catch (err) {
       console.error(`Failed to set webinar as featured:`, err.message);
       toast({
-        title: `Failed to set webinar \"${webinar.title}\" as featured!`,
+        description: `Failed to set webinar \"${webinar.title}\" as featured!`,
         variant: "destructive",
       });
     }
@@ -101,7 +101,7 @@ const PastWebinars = () => {
     } catch (err) {
       console.error(`Failed to remove featured webinar:`, err.message);
       toast({
-        title: `Failed to remove webinar \"${webinar.title}\" from featured!`,
+        description: `Failed to remove webinar \"${webinar.title}\" from featured!`,
         variant: "destructive",
       });
     }

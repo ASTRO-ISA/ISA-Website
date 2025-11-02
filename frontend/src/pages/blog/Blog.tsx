@@ -39,7 +39,7 @@ const Blog = () => {
     content: "",
     author: {
       name: "",
-      country: "",
+      // country: "",
     },
     createdAt: "",
   });
@@ -98,7 +98,7 @@ const Blog = () => {
           content: "",
           author: {
             name: "",
-            country: "",
+            // country: "",
           },
           createdAt: "",
         };
@@ -130,13 +130,13 @@ const Blog = () => {
     try {
       await api.patch(`/blogs/featured/${blog._id}`);
       toast({
-        title: `Blog "${blog.title}" set as featured.`,
+        description: `Blog "${blog.title}" set as featured.`,
       });
       await fetchFeatured();
     } catch (err) {
       // console.error("Error setting featured!", err.message);
       toast({
-        title: `Failed to set blog "${blog.title}" as featured!`,
+        description: `Failed to set blog "${blog.title}" as featured!`,
       });
     }
   };
@@ -146,13 +146,13 @@ const Blog = () => {
     try {
       await api.patch(`/blogs/featured/remove/${blog._id}`);
       toast({
-        title: `Blog removed "${blog.title}" from featured`,
+        description: `Blog removed "${blog.title}" from featured`,
       });
       await fetchFeatured();
     } catch (err) {
       console.error("Error removing featured", err.message);
       toast({
-        title: `Failed to remove blog "${blog.title}" from featured`,
+        description: `Failed to remove blog "${blog.title}" from featured`,
       });
     }
   };
@@ -167,10 +167,10 @@ const Blog = () => {
         },
         { withCredentials: true }
       );
-      toast({ title: "Added to newsletter draft!" });
+      toast({ description: "Added to newsletter draft!" });
     } catch (err) {
       toast({
-        title: "Failed to add to draft",
+        description: "Failed to add to draft",
         variant: "destructive",
       });
     } finally {
@@ -244,7 +244,6 @@ const Blog = () => {
   const handleSaveBlog = (blogId) => {
     if (!isLoggedIn) {
       toast({
-        title: "Hold on!",
         description: "You need to login to save blogs.",
         variant: "destructive",
       });
@@ -261,8 +260,8 @@ const Blog = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["saved-blogs"] });
       toast({
-        title: "Blog unsaved!",
-        description: "Blog is removed from saved."
+        description: "Blog is removed from saved.",
+        variant: "success"
       });
     },
     onError: (error) => {

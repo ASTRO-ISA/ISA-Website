@@ -49,13 +49,14 @@ const mutateUnSaveBlog = useMutation({
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ["saved-blogs"] });
     toast({
-      title: "Blog unsaved",
+      description: "Blog unsaved",
+      variant: "success"
     });
   },
   onError: (error) => {
     console.error(error.message);
     toast({
-      title: "Error",
+      title: "Something went wrong",
       description: error.message,
       variant: "destructive",
     });
@@ -96,7 +97,7 @@ const handleUnsaveBlog = (blogId) => {
     const shareUrl = `${window.location.origin}/blogs/${blog.slug}`;
     navigator.clipboard.writeText(shareUrl);
     toast({
-      title: "Link copied.",
+      description: "Link copied.",
     });
   };
 

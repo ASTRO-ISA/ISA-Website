@@ -50,7 +50,7 @@ const UserResearchPaper = () => {
     try {
       setIsEditingDeleting(true);
       await api.delete(`/research-papers/${paper_id}`);
-      toast({ title: "Deletion successful" });
+      toast({ description: "Deletion successful", variant: "success" });
       await fetchPapers(userInfo?.user?._id);
     } catch (error) {
       toast({
@@ -86,7 +86,7 @@ const UserResearchPaper = () => {
         },
       });
 
-      toast({ title: "Paper updated successfully!" });
+      toast({ description: "Paper updated successfully!" });
       setIsEditingPaper(false);
       await fetchPapers(userInfo?.user?._id);
     } catch (error) {

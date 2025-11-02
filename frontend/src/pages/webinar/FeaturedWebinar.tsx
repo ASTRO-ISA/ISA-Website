@@ -22,30 +22,30 @@ const FeaturedWebinars = () => {
   const { isLoggedIn, isAdmin } = useAuth();
   const { toast } = useToast();
 
-  const handleUnregister = async (userId, webinarId) => {
-    if(isLoggedIn){
-      setLoadingRegWebId(webinarId);
-      try {
-        await api.patch(`/webinars/unregister/${webinarId}/${userId}`);
-        setLoadingRegWebId(null);
-      } catch (err) {
-        toast({
-          title: "Can't unregister.",
-          description:
-            "There seems to be a problem unregistering, please try again after some time.",
-          variant: "destructive",
-        });
-        setLoadingRegWebId(null);
-      }
-    }
-    else {
-      toast({
-        title: "Hold on!",
-        description: "Please login first to unregister for the webinar.",
-        variant: "destructive",
-      });
-    }
-  };
+  // const handleUnregister = async (userId, webinarId) => {
+  //   if(isLoggedIn){
+  //     setLoadingRegWebId(webinarId);
+  //     try {
+  //       await api.patch(`/webinars/unregister/${webinarId}/${userId}`);
+  //       setLoadingRegWebId(null);
+  //     } catch (err) {
+  //       toast({
+  //         title: "Can't unregister.",
+  //         description:
+  //           "There seems to be a problem unregistering, please try again after some time.",
+  //         variant: "destructive",
+  //       });
+  //       setLoadingRegWebId(null);
+  //     }
+  //   }
+  //   else {
+  //     toast({
+  //       title: "Hold on!",
+  //       description: "Please login first to unregister for the webinar.",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
 
   // to get featured webinar
   const fetchFeatured = async () => {
@@ -86,7 +86,7 @@ const FeaturedWebinars = () => {
       });
       fetchFeatured();
       toast({
-        title: `"${webinar.title}" removed from featured.`,
+        description: `"${webinar.title}" removed from featured.`,
       });
     } catch (err) {
       console.error(
@@ -94,7 +94,7 @@ const FeaturedWebinars = () => {
         err.message
       );
       toast({
-        title: `Failed to remove webinar "${webinar.title}" from featured!`,
+        description: `Failed to remove webinar "${webinar.title}" from featured!`,
         variant: "destructive",
       });
     }

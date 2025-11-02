@@ -104,14 +104,13 @@ const UserPicUpload = () => {
   
       if (response.status === 500) {
         toast({ 
-          title: "Error!",
-          description: "Something went wrong submitting the image. Please try again later."
+          description: "Something went wrong submitting the image. Please try again later.",
+          variant: "destructive"
         });
         throw new Error("Upload failed");
       }
   
       toast({ 
-        title: "We got it!",
         description: "Your image has been submitted and is now pending admin review."
       });
   

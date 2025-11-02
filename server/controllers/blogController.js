@@ -7,7 +7,7 @@ exports.pendingBlogs = async (req, res) => {
   try {
     const allBlogs = await Blog.find({ status: 'pending' }).populate(
       'author',
-      'name country avatar'
+      'name avatar'
     )
 
     if (!allBlogs) {
@@ -24,7 +24,7 @@ exports.approvedBlogs = async (req, res) => {
   try {
     const approvedBlogs = await Blog.find({ status: 'approved' })
       .sort({ createdAt: -1 })
-      .populate('author', 'name country avatar')
+      .populate('author', 'name avatar')
 
     if (!approvedBlogs) {
       res.status(404).json({ message: 'Nothing to see here right now!' })
@@ -88,7 +88,7 @@ exports.featuredBlog = async (req, res) => {
   try {
     const featuredBlog = await Blog.findOne({ featured: true }).populate(
       'author',
-      'name country'
+      'name'
     )
     // if (!featuredBlog) {
     //   return res.status(404).json({ message: 'Blog not found' })
@@ -106,7 +106,7 @@ exports.readBlog = async (req, res) => {
     const { slug } = req.params
     const blog = await Blog.findOne({ slug: slug }).populate(
       'author',
-      'name country avatar'
+      'name avatar'
     )
 
     if (!blog) {
