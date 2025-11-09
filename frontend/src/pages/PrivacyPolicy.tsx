@@ -28,7 +28,7 @@ const PrivacyPolicy: React.FC = () => {
             <p>
               Welcome to <span className="text-indigo-400 font-semibold">ISA-India</span> (“we,” “our,” “us”). Your privacy is important to us. This
               Privacy Policy explains how we collect, use, disclose, and protect your personal information when you access or use our website{" "}
-              <a href="https://isa-india.in" className="text-indigo-400 hover:underline">
+              <a href="https://isa.org.in" className="text-indigo-400 hover:underline">
                 isa.org.in
               </a>{" "}
               (“Platform”) and related services.
