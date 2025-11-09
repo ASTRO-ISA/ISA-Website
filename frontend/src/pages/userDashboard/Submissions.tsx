@@ -104,11 +104,11 @@ export default function Submissions() {
             {item.statusAR}
           </p>
         )}
-        {item.status === "rejected" && item.adminComment && (
+        {/* {item.status === "rejected" && item.adminComment && ( */}
           <p className="text-xs text-red-300 mt-2">
             <strong>Admin Comment:</strong> {item.adminComment}
           </p>
-        )}
+        {/* )} */}
       </CardContent>
     </Card>
   );

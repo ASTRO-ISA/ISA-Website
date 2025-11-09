@@ -77,17 +77,7 @@ const options = {
 const getAstronomyCalender = async () => {
   try {
     const response = await axios.request(options)
-
-    const isProduction = process.env.NODE_ENV === 'production'
-
-    const cleanedData = response.data.map((event) => ({
-      ...event,
-      image: isProduction
-        ? event.image?.replace(/\s/g, 's')  // Replace spaces with 's' in production
-        : event.image?.replace(/\s/g, '')   // Just remove spaces in dev/local
-    }))
-
-    cache.astroCalender = cleanedData
+    cache.astroCalender = response.data
     timestamps.astroCalender = new Date()
   } catch (error) {
     console.error(
@@ -103,7 +93,6 @@ fetchLaunches()
 fetchBlogs()
 fetchArticles()
 getAstronomyCalender()
-// fetchAstroEvents()
 
 // every 20 minutes but not at the same time, we are calling them at differnt time so they dont fire at once
 cron.schedule('0,20,40 * * * *', async () => {

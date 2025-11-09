@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import api from "@/lib/api";
+import { Helmet } from "react-helmet-async";
 
 const Blog = () => {
   const { toast } = useToast();
@@ -320,6 +321,10 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-space-dark text-white">
       {/* <Navbar /> */}
+            <Helmet>
+              <title>Blogs | ISA-India</title>
+              {/* <meta name="description" content="Learn about ISA-India's mission to expand access to space education in India." /> */}
+            </Helmet>
 
 
       <main className="container mx-auto px-4 pt-24 pb-16">

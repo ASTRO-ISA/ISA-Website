@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button"
 import api from "@/lib/api"
 import RegisterButton from "../event/RegisterButton"
+import { Helmet } from "react-helmet-async"
 
 const AllEvents = () => {
   const [pendingEvents, setPendingEvents] = useState([])
@@ -167,6 +168,10 @@ const AllEvents = () => {
 
   return (
     <main>
+      <Helmet>
+        <title>Admin: All Events | ISA-India</title>
+        <meta name="description" content="Admin page for managing all events." />
+      </Helmet>
       <section className="mb-16">
         <h2 className="text-2xl font-bold mb-8">Pending Events</h2>
 

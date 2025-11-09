@@ -6,6 +6,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
 import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
+import { Helmet } from "react-helmet-async";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -144,6 +145,10 @@ const AdminJobs = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Admin: Jobs | ISA-India</title>
+        <meta name="description" content="Admin page for managing jobs." />
+      </Helmet>
       {/* New Job Form */}
       <Card className="bg-space-purple/10 border-space-purple/30">
         <CardHeader>

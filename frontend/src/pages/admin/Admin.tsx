@@ -17,6 +17,7 @@ import ManageAdmins from "./ManageAdmins";
 import AdminTransactions from "./AdminTransactions";
 import { useAuth } from "@/context/AuthContext";
 import QRScannerPage from "./qr/QRScanner";
+import { Helmet } from "react-helmet-async";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("events");
@@ -35,6 +36,10 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
+      <Helmet>
+        <title>Admin | ISA-India</title>
+        <meta name="description" content="Admin dashboard for ISA-India." />
+      </Helmet>
 
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="text-center mb-12">

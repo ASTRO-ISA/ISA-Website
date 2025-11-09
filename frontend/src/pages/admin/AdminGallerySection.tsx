@@ -15,6 +15,7 @@ import {
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import "yet-another-react-lightbox/plugins/captions.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import { Helmet } from "react-helmet-async";
 
 const AdminGallerySection = () => {
   const { toast } = useToast();
@@ -263,6 +264,10 @@ const AdminGallerySection = () => {
 
   return (
     <Card className="bg-space-purple/10 border-space-purple/30 p-4">
+      <Helmet>
+        <title>Admin: Gallery | ISA-India</title>
+        <meta name="description" content="Admin page for managing gallery." />
+      </Helmet>
       <CardHeader>
         <CardTitle>Gallery Uploads</CardTitle>
       </CardHeader>

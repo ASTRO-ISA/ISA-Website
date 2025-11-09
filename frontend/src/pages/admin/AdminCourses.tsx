@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
 import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
+import { Helmet } from "react-helmet-async";
 
 const AdminCourses = () => {
   const [creatingCourse, setCreatingCourse] = useState(false);
@@ -95,6 +96,10 @@ const AdminCourses = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Admin: Courses | ISA-India</title>
+        <meta name="description" content="Admin page for managing courses." />
+      </Helmet>
       <Card className="bg-space-purple/10 border-space-purple/30">
         <CardHeader>
           <CardTitle>Create New Course</CardTitle>

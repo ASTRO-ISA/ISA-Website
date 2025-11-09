@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { Helmet } from "react-helmet-async";
 
 interface Refund {
   _id: string;
@@ -136,6 +137,10 @@ export default function AdminTransactions({ adminEmail = "admin@example.com" }) 
 
   return (
     <div className="relative bg-gray-50 text-gray-900 font-sans rounded-xl">
+      <Helmet>
+        <title>Admin: Transactions | ISA-India</title>
+        <meta name="description" content="Admin page for managing transactions." />
+      </Helmet>
       {/* Background watermark */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
         <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] flex flex-wrap justify-center items-center text-xl font-bold text-gray-300/60 rotate-[-20deg]">

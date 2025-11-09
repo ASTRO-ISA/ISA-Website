@@ -70,6 +70,9 @@ const POTDSection = () => {
       ]
     : [];
 
+    // if none exist; hide this section
+  if (!pictureOfTheDay && !featuredImageData) return null;
+
   return (
     <section className="mb-4 py-4 px-4 sm:px-6">
       <div className="text-center mb-12">

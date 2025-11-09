@@ -1,3 +1,5 @@
+import { Helmet } from "react-helmet-async";
+
 const Shop = () => {
   const products = [
     {
@@ -62,7 +64,10 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-space-dark text-white">
-      
+      <Helmet>
+        <title>Shop | ISA-India</title>
+        <meta name="description" content="Shop for astronomical equipment, books, and space-themed merchandise." />
+      </Helmet>
       <main className="container mx-auto px-4 pt-24 pb-16">
         <h1>Coming Soon</h1>
         <div className="text-center mb-12">

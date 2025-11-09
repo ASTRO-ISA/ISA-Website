@@ -4,6 +4,7 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Helmet } from "react-helmet-async";
 
 // Types
 interface HostedBy { name: string; }
@@ -147,6 +148,10 @@ export default function EditEvent() {
 
   return (
     <div className="min-h-screen bg-space-dark text-white pt-20 px-4">
+      <Helmet>
+        <title>Admin: Edit Event | ISA-India</title>
+        <meta name="description" content="Admin page for editing an event." />
+      </Helmet>
       <main className="container mx-auto px-4 pb-16">
         <div className="max-w-4xl mx-auto space-y-8">
           <h2 className="text-2xl font-bold pt-10">Edit Event</h2>

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import QrReader from 'react-qr-scanner'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
+import { Helmet } from 'react-helmet-async'
 
 // Wrapper without facingMode
 const QRScanner = ({ delay = 300, onScan, onError, style = {} }) => {
@@ -105,6 +106,10 @@ const canScan = () => {
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-black text-white p-6 pt-[10rem]">
+      <Helmet>
+        <title>Admin: QR Scanner | ISA-India</title>
+        <meta name="description" content="Admin page for scanning QR codes." />
+      </Helmet>
       
       {/* Event Info & Scanner Access */}
       {event?.createdBy._id === userInfo?.user._id && (

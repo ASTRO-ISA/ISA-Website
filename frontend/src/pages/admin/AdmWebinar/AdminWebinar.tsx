@@ -6,6 +6,7 @@ import WebinarList from "./WebinarList"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
+import { Helmet } from "react-helmet-async"
 
 const AdminWebinars = () => {
   const { toast } = useToast()
@@ -164,6 +165,10 @@ const AdminWebinars = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Admin: Webinars | ISA-India</title>
+        <meta name="description" content="Admin page for managing webinars." />
+      </Helmet>
       {/* Create New Webinar Section */}
       <Card className="mb-6 relative">
         <CardHeader className="flex justify-between items-center">

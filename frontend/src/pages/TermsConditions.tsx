@@ -1,6 +1,7 @@
-import { useState } from "react";
+import React from "react";
+import { Helmet } from "react-helmet-async";
 
-export default function TermsAndConditions() {
+const TermsAndConditions: React.FC = () => {
   const terms = [
     {
       title: "Acceptance of Terms",
@@ -38,59 +39,60 @@ export default function TermsAndConditions() {
         "In no event will the Site or its affiliates be liable for any indirect, incidental, or consequential damages arising from your use of the Site.",
     },
     {
+      title: "Modifications to Terms",
+      content:
+        "We reserve the right to revise these Terms & Conditions at any time without prior notice. By continuing to use the Site, you agree to be bound by the latest version of these Terms.",
+    },
+    {
+      title: "Governing Law",
+      content:
+        "These Terms shall be governed by and construed in accordance with the laws of India, without regard to its conflict of law provisions.",
+    },
+    {
       title: "Contact",
       content:
         "For questions about these Terms & Conditions or payment disputes, contact our support team at astrospace.isa@gmail.com.",
     },
   ];
 
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
   return (
-    <div className="min-h-screen bg-black text-white flex justify-center p-6 mt-12 pt-12">
-      <div className="w-full max-w-4xl">
-        <h1 className="text-3xl font-bold mb-8 text-center">Terms & Conditions</h1>
-        <div className="space-y-3">
-          {terms.map((term, index) => (
-            <div
-              key={index}
-              className="bg-neutral-900 rounded-md overflow-hidden border border-neutral-700"
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full flex justify-between items-center px-5 py-4 text-left text-lg font-medium hover:bg-neutral-800 transition"
-              >
-                <span>{term.title}</span>
-                <svg
-                  className={`w-6 h-6 transform transition-transform duration-200 ${
-                    openIndex === index ? "rotate-45" : "rotate-0"
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-              </button>
+    <div className="relative min-h-screen bg-gradient-to-b from-black via-[#0b0f2f] to-black text-gray-300 overflow-hidden">
+      <Helmet>
+        <title>Terms & Conditions | ISA-India</title>
+        <meta name="description" content="Terms & Conditions for ISA-India." />
+      </Helmet>
+      {/* Stars Background */}
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30"></div>
 
-              {openIndex === index && (
-                <div className="px-5 pb-4 text-sm text-gray-300 border-t border-neutral-700">
-                  {term.content}
-                </div>
-              )}
-            </div>
+      {/* Floating Glow Effects */}
+      <div className="absolute -top-20 left-0 w-96 h-96 bg-indigo-600 rounded-full filter blur-[160px] opacity-25 animate-pulse"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-600 rounded-full filter blur-[160px] opacity-25 animate-pulse"></div>
+
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-16">
+        <h1 className="text-4xl md:text-5xl font-bold text-white text-center mb-4 mt-10">
+          Terms & Conditions
+        </h1>
+        <p className="text-center text-sm text-gray-400 mb-12">
+          Effective Date: 01st Nov 2025 • Last Updated: 01st Nov 2025
+        </p>
+
+        <div className="space-y-10 text-justify leading-relaxed">
+          {terms.map((term, index) => (
+            <section key={index}>
+              <h2 className="text-2xl text-indigo-400 font-semibold mb-2">
+                {index + 1}. {term.title}
+              </h2>
+              <p>{term.content}</p>
+            </section>
           ))}
         </div>
-        <footer className="mt-10 text-center text-gray-500 text-sm">
-          Last updated: October 8, 2025
+
+        <footer className="mt-16 text-center text-gray-500 text-sm">
+          © {new Date().getFullYear()} ISA-India. All rights reserved.
         </footer>
       </div>
     </div>
   );
-}
+};
+
+export default TermsAndConditions;

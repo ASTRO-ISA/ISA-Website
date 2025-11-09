@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Helmet } from "react-helmet-async";
 
 type Paper = {
   _id: string;
@@ -226,6 +227,10 @@ const AllResearchPapers = () => {
 
   return (
     <div className="space-y-10 mt-4">
+      <Helmet>
+        <title>Admin: Research Papers | ISA-India</title>
+        <meta name="description" content="Admin page for managing research papers." />
+      </Helmet>
       {/* Tabs */}
       <div className="flex gap-4 mb-6">
         <Button

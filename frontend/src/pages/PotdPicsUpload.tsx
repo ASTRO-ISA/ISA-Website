@@ -4,6 +4,7 @@ import Spinner from "@/components/ui/Spinner";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import api from "@/lib/api";
+import { Helmet } from "react-helmet-async";
 
 const UserPicUpload = () => {
   const [userPicCaption, setUserPicCaption] = useState("");
@@ -135,6 +136,10 @@ const UserPicUpload = () => {
 
   return (
     <div className="min-h-screen bg-space-dark text-white pt-20 px-4">
+      <Helmet>
+        <title>Picture of the Day Upload | ISA-India</title>
+        <meta name="description" content="Upload a picture for the Picture of the Day section." />
+      </Helmet>
       <main className="container mx-auto max-w-2xl pb-16">
       <div className="mb-4 p-4 bg-gray-900 rounded-xl border border-gray-700 text-gray-300 text-sm">
         <h2 className="text-lg font-semibold text-white mb-2">Upload Guidelines</h2>

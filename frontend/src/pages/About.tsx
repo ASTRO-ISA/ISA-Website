@@ -14,7 +14,7 @@ const About = () => {
   const leaders = [
     {
       name: "Jayaditya Malviya",
-      role: "Founder & President of ISA-INDIA",
+      role: "Founder & President",
       image: "/images/jayaditya.jpeg",
       github: "https://github.com/sunnyjhl",
       linkedin: "https://www.linkedin.com/in/jayaditya-malviya",
@@ -265,7 +265,7 @@ const About = () => {
                 <div className="flex justify-center space-x-8 pt-6">
                   <div className="text-center">
                     <div className="text-3xl font-bold text-space-accent">
-                      500+
+                      2500+
                     </div>
                     <div className="text-space-light">Students Inspired</div>
                   </div>
@@ -319,7 +319,7 @@ const About = () => {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">
               <a
-                href="https://www.instagram.com/isa.astrospace"
+                href="https://www.instagram.com/isac.india?igsh=bDQyZWh0c21yaTNp"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 bg-gradient-to-r from-space-purple to-pink-600 hover:opacity-90 transition-opacity px-6 py-3 rounded-lg text-white font-medium shadow-md"

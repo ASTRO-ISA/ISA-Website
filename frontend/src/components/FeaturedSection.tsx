@@ -40,7 +40,7 @@ const FeaturedSection = () => {
   });
 
   return (
-    <section className="mb-12 py-4 px-4 sm:px-6">
+    <section className="mb-12 py-4 pt-16 px-4 sm:px-6 ">
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
           Top Picks

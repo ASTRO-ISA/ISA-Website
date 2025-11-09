@@ -4,6 +4,7 @@ import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import Spinner from "@/components/ui/Spinner";
+import { Helmet } from "react-helmet-async";
 
 const OtpVerification = () => {
   const { refetchUser } = useAuth();
@@ -128,6 +129,10 @@ const OtpVerification = () => {
 
   return (
     <div className="min-h-screen bg-space-dark text-white flex flex-col">
+      <Helmet>
+        <title>OTP Verification | ISA-India</title>
+        <meta name="description" content="Verify your OTP to create an account with ISA-India." />
+      </Helmet>
       <main className="flex-grow flex items-center justify-center px-4 pt-24 pb-16">
         <form
           onSubmit={handleSubmit}

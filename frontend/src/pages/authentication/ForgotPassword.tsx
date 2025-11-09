@@ -2,6 +2,7 @@ import { useState } from "react";
 import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
+import { Helmet } from "react-helmet-async";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -41,6 +42,10 @@ const ForgotPassword = () => {
 
   return (
     <div className="min-h-screen bg-space-dark text-white flex flex-col">
+      <Helmet>
+        <title>Forgot Password | ISA-India</title>
+        <meta name="description" content="Forgot password page for ISA-India." />
+      </Helmet>
       <main className="flex-grow flex items-center justify-center px-4 pt-24 pb-16">
         <form
           onSubmit={handleSubmit}

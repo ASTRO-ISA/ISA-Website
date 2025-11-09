@@ -35,7 +35,10 @@ import EditEvent from "./pages/admin/admin-events/EditEvent";
 import QRScannerPage from "./pages/admin/qr/QRScanner";
 import PaymentStatus from "./components/PaymentVerify";
 import TermsAndConditions from "./pages/TermsConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { HelmetProvider } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
+import ReactGA from "react-ga4";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +65,18 @@ const App = () => {
     };
   }, []);
 
+  const TRACKING_ID = "G-283ZJ06KG0"; 
+  ReactGA.initialize(TRACKING_ID);
+  function RouteChangeTracker() {
+    const location = useLocation();
+  
+    useEffect(() => {
+      ReactGA.send({ hitType: "pageview", page: location.pathname + location.search });
+    }, [location]);
+  
+    return null; // No UI needed — just for tracking
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <HelmetProvider>
@@ -69,6 +84,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+        <RouteChangeTracker />
           <ScrollToTop />
           <Navbar />
           <Routes>
@@ -94,6 +110,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<CreateAccount />} />
             <Route path="terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/otp-verification/:email" element={<OtpVerification />} />
             <Route path="/blogs/:slug" element={<BlogDetail />} />
             <Route path="/host-event" element={<CreateEvent />} />

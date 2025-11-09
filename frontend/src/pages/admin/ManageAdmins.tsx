@@ -4,6 +4,7 @@ import CreateAccount from "../authentication/CreateAccount";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import SpinnerOverlay from "@/components/ui/SpinnerOverlay";
+import { Helmet } from "react-helmet-async";
 
 type Admin = {
   _id: string;
@@ -85,6 +86,10 @@ const ManageAdmins = () => {
 
   return (
     <div className="p-6 space-y-6">
+      <Helmet>
+        <title>Admin: Manage Admins | ISA-India</title>
+        <meta name="description" content="Admin page for managing admins." />
+      </Helmet>
       <h1 className="text-2xl font-bold">Managing Admins</h1>
 
       {/* Create Admin Toggler */}

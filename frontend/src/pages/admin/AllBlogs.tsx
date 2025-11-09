@@ -10,6 +10,7 @@ import { Calendar, Clock, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import api from "@/lib/api";
+import { Helmet } from "react-helmet-async";
 
 const AllBlogs = () => {
   const [loadingUserBlogs, setLoadingUserBlogs] = useState(false);
@@ -103,6 +104,10 @@ const AllBlogs = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Admin: All Blogs | ISA-India</title>
+        <meta name="description" content="Admin page for managing all blogs." />
+      </Helmet>
       {/* Pending Blogs */}
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-2xl font-bold">Pending Blogs</h2>

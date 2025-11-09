@@ -115,7 +115,7 @@ const Footer = () => {
             </p>
             <div className="flex justify-center space-x-4 items-center text-center sm:justify-start sm:items-start sm:text-left">
               <a
-                href="https://www.instagram.com/isa.astrospace?igsh=cGgyeDB3M2d4dDJ5"
+                href="https://www.instagram.com/isac.india?igsh=bDQyZWh0c21yaTNp"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-gray-700 hover:bg-gray-600 text-white w-10 h-10 rounded-full p-2 transition-colors"
@@ -196,6 +196,22 @@ const Footer = () => {
                   Webinars
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/privacy-policy"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  Privacy-Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms-and-conditions"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  Terms & Conditions
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -262,7 +278,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-12 pt-6 border-t border-gray-800 text-center text-gray-500">
-          <p>© {new Date().getFullYear()} ISA. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} ISA-India. All rights reserved.</p>
         </div>
       </div>
     </footer>

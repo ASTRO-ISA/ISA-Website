@@ -4,6 +4,7 @@ import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import Spinner from "@/components/ui/Spinner";
+import { Helmet } from "react-helmet-async";
 
 const Login = () => {
   const { refetchUser } = useAuth();
@@ -63,6 +64,10 @@ const Login = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Login | ISA-India</title>
+        <meta name="description" content="Login to your ISA-India account." />
+      </Helmet>
       <div className="min-h-screen bg-space-dark text-white flex flex-col">
         <main className="flex-grow flex items-center justify-center px-4 pt-24 pb-16">
           <form

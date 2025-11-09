@@ -115,14 +115,14 @@ const CreateEvent = () => {
         presentedBy: "",
         type: "",
         status: "",
-        isFree: true,   // <-- added
-        fee: "",        // <-- added
+        isFree: true,   
+        fee: "",      
       });
       setThumbnailFile(null);
       navigate("/events");
       toast({
         title: "Event created successfully!",
-        description: "It will be live once its been reviewd."
+        description: "It will be live once its been reviewed."
       });
     } catch (error) {
       setErrorMsg(error.response?.data?.message || "Something went wrong");

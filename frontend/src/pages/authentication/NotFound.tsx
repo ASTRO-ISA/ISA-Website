@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import StarBackground from "@/components/StarBackground";
+import { Helmet } from "react-helmet-async";
 
 const NotFound = () => {
   const location = useLocation();
@@ -17,6 +18,10 @@ const NotFound = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center  text-white">
+      <Helmet>
+        <title>404 Not Found | ISA-India</title>
+        <meta name="description" content="Page not found." />
+      </Helmet>
       <StarBackground />
       <div className="text-center px-4">
         <h1 className="text-9xl font-bold mb-4 text-space-accent">404</h1>

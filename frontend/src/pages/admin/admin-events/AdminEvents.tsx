@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { useNavigate } from "react-router-dom";
 import Spinner from "@/components/ui/Spinner";
+import { Helmet } from "react-helmet-async";
 
 // Types
 interface RegisteredUser {
@@ -85,6 +86,10 @@ export default function AdminEvents() {
 
   return (
     <Card className="bg-space-purple/10 border-space-purple/30">
+      <Helmet>
+        <title>Admin: Events | ISA-India</title>
+        <meta name="description" content="Admin page for managing events." />
+      </Helmet>
       <CardHeader>
         <CardTitle>Manage Events</CardTitle>
       </CardHeader>
