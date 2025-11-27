@@ -12,10 +12,12 @@ const PaymentStatus = () => {
   const { userInfo } = useAuth();
   const navigate = useNavigate();
 
+  // to redirect the user after successful payment
   const queryParams = new URLSearchParams(window.location.search);
   const transactionId = queryParams.get("orderId");
   const itemType = queryParams.get("itemType");
   const itemId = queryParams.get("itemId");
+  const itemSlug = queryParams.get("itemSlug");
 
   const verifyPayment = useCallback(async () => {
     if (!transactionId || !itemType) {
@@ -53,22 +55,14 @@ const PaymentStatus = () => {
             }
 
             await api.patch(apiUrl);
-            toast({
-              title: "Registration Complete",
-              description: `You are now registered for this ${itemType}.`,
-            });
-
-            // Redirect immediately to respective page
-            navigate(`/${itemType}s`);
+            if(itemType == "event"){
+              navigate(`/${itemType}s/${itemSlug}`);
+            } else {
+              navigate(`/${itemType}s`);
+            }
           } catch (regErr) {
             setStatus("failed");
-            setLog("Payment succeeded but registration failed.");
-            toast({
-              title: "Registration Issue",
-              description:
-                "Payment succeeded, but registration couldn’t be completed. Please contact support.",
-              variant: "destructive",
-            });
+            setLog("Payment succeeded, but registration couldn’t be completed.");
           }
           break;
 
@@ -79,11 +73,11 @@ const PaymentStatus = () => {
 
         default:
           setStatus("failed");
-          setLog("Payment failed. Please try again.");
+          setLog("Looks like the payment didn’t go through. If any amount was deducted, it will be refunded automatically.");
       }
     } catch (err) {
       setStatus("failed");
-      setLog("Unable to verify payment. Check your network.");
+      setLog("Looks like the payment didn’t go through. If any amount was deducted, it will be refunded automatically.");
     }
   }, [transactionId, itemType, itemId, userInfo, toast, navigate]);
 
@@ -97,13 +91,28 @@ const PaymentStatus = () => {
     return () => clearInterval(interval);
   }, [status, verifyPayment]);
 
+  // Redirect if failure
+  useEffect(() => {
+    if (status !== "failed") return;
+
+    const timeout = setTimeout(() => {
+      navigate(`/${itemType}s`);
+    }, 7000);
+
+    return () => clearTimeout(timeout);
+  }, [status, navigate, itemType, itemId]);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-800">
-      <Spinner className="w-8 h-8 mb-4" color="text-black" />
+      {(status === "loading" || status === "pending") && (
+        <Spinner className="w-8 h-8 mb-4" color="text-black" />
+      )}
+
       <p className="text-sm font-medium text-gray-600">{log}</p>
+
       {status === "failed" && (
         <p className="text-xs text-red-500 mt-2">
-          Payment failed or invalid. Please try again.
+          Redirecting you shortly… Please don’t refresh or press back during this process.
         </p>
       )}
     </div>

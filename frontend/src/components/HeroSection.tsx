@@ -219,7 +219,7 @@ useEffect(() => {
 
     //  Adjust origin only (same star logic everywhere)
     const originX = window.innerWidth >= 768 ? canvas.width / 2 : canvas.width / 2;
-    const originY = window.innerWidth >= 768 ? canvas.height / 3 : canvas.height * 0.3;
+    const originY = window.innerWidth >= 768 ? canvas.height / 3 : canvas.height * 0.5;
 
     for (const star of stars) {
       star.z -= 0.5;
@@ -250,7 +250,7 @@ useEffect(() => {
 <>
     <canvas
   ref={canvasRef}
-  className="absolute inset-0 z-0"
+  className="absolute inset-0 z-0 pointer-events-none"
 ></canvas>
 {/* <div
   className="absolute h-64 w-64 rounded-full bg-space-purple/20 top-20 -right-20 blur-3xl"

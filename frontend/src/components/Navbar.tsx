@@ -14,6 +14,32 @@ const Navbar = () => {
   const location = useLocation();
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // auto-hide navabar
+  const [hidden, setHidden] = useState(false);
+  const lastScroll = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScroll = window.scrollY;
+  
+      if (Math.abs(currentScroll - lastScroll.current) < 5) return; // ignore tiny movements
+  
+      // hide if scrolling down, show if scrolling up
+      if (currentScroll > lastScroll.current && currentScroll > 80) {
+        setHidden(true);
+      } else {
+        setHidden(false);
+      }
+  
+      lastScroll.current = currentScroll;
+    };
+  
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+
+  // handle click ouside the menu button when it is open
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -40,18 +66,16 @@ const Navbar = () => {
     navigate("/profile");
   };
 
+  // toggle mobile menu
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 120, damping: 20 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-black border-b border-white/10  bg-transparent/90"
-      
-      // className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-br from-space-purple/20 via-space-dark to-space-accent/20"
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 transition-opacity duration-300 ${
+        hidden ? "opacity-0 pointer-events-none" : "opacity-100"
+      }`}
     >
       <div className="container mx-auto px-4 py-5">
         {" "}
@@ -73,7 +97,6 @@ const Navbar = () => {
                   alt="ISA Logo"
                   className="h-7 w-auto"
                 />
-                {/* <span className="font-bold text-xl text-white">ISA Club</span> */}
               </Link>
             </div>
 
@@ -82,34 +105,36 @@ const Navbar = () => {
                 asChild
                 className="bg-space-accent hover:bg-space-accent/80 text-white md-hidden"
               >
+                <p>
                 <Link
                   to="/login"
                   className="text-white hover:text-space-light transition-colors md-hidden"
                 >
                   Login
                 </Link>
+                </p>
               </Button>
             )}
 
             {/* if the user is logged in show avatar */}
             {isLoggedIn && (
-            <Avatar
-              onClick={handleAvatarClick}
-              className="h-8 w-8 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform md:hidden"
-            >
-              <AvatarImage
-                src={
-                  userInfo.user.avatar === "profile-dark.webp"
-                    ? `images/${userInfo.user.avatar}`
-                    : userInfo.user.avatar
-                }
-                className="object-cover"
-              />
-              <AvatarFallback>
-                {userInfo.user.name?.[0] ?? "U"}
-              </AvatarFallback>
-            </Avatar>
-          )}
+              <Avatar
+                onClick={handleAvatarClick}
+                className="h-8 w-8 rounded-full cursor-pointer border border-white hover:scale-105 transition-transform md:hidden"
+              >
+                <AvatarImage
+                  src={
+                    userInfo.user.avatar === "profile-dark.webp"
+                      ? `images/${userInfo.user.avatar}`
+                      : userInfo.user.avatar
+                  }
+                  className="object-cover"
+                />
+                <AvatarFallback>
+                  {userInfo.user.name?.[0] ?? "U"}
+                </AvatarFallback>
+              </Avatar>
+            )}
           </div>
 
           <Link to="/" className="items-center gap-2 hidden md:flex">
@@ -118,7 +143,6 @@ const Navbar = () => {
               alt="ISA Logo"
               className="h-10 w-auto"
             />
-            {/* <span className="font-bold text-xl text-white">ISA Club</span> */}
           </Link>
 
           {/* Desktop Menu */}
@@ -137,7 +161,7 @@ const Navbar = () => {
               </Link>
             ) : null}
 
-            <Link // testing the color change on path change
+            <Link
               to="/about"
               className={`transition-colors ${
                 location.pathname === "/about"
@@ -167,17 +191,6 @@ const Navbar = () => {
             >
               Events
             </Link>
-            {/* shop - not needed right now */}
-            {/* <Link
-              to="/shop"
-              className={`transition-colors ${
-                location.pathname === "/shop"
-                  ? "text-space-accent"
-                  : "text-white hover:text-space-light"
-              }`}
-            >
-              Shop
-            </Link> */}
             <Link
               to="/training"
               className={`transition-colors ${
@@ -215,42 +228,33 @@ const Navbar = () => {
 
             {/* if the user is logged in show avatar */}
             {isLoggedIn && (
-            <Avatar
-              onClick={handleAvatarClick}
-              className="h-10 w-10 cursor-pointer border border-white hover:scale-105 transition-transform"
-            >
-              <AvatarImage
-                src={
-                  userInfo.user.avatar === "profile-dark.webp"
-                    ? `images/${userInfo.user.avatar}`
-                    : userInfo.user.avatar
-                }
-                alt="User Avatar"
-                className="object-cover"
-              />
-              <AvatarFallback>
-                {userInfo.user.name
-                  ? userInfo.user.name.charAt(0).toUpperCase()
-                  : "U"}
-              </AvatarFallback>
-            </Avatar>
-          )}
+              <Avatar
+                onClick={handleAvatarClick}
+                className="h-10 w-10 cursor-pointer border border-white hover:scale-105 transition-transform"
+              >
+                <AvatarImage
+                  src={
+                    userInfo.user.avatar === "profile-dark.webp"
+                      ? `images/${userInfo.user.avatar}`
+                      : userInfo.user.avatar
+                  }
+                  alt="User Avatar"
+                  className="object-cover"
+                />
+                <AvatarFallback>
+                  {userInfo.user.name
+                    ? userInfo.user.name.charAt(0).toUpperCase()
+                    : "U"}
+                </AvatarFallback>
+              </Avatar>
+            )}
           </div>
-
-          {/* Mobile Menu Button */}
-          {/* <div className="md:hidden">
-            <button
-              onClick={toggleMobileMenu}
-              className="text-white focus:outline-none"
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div> */}
         </div>
+
         {/* Mobile Menu Panel */}
         {mobileMenuOpen && (
           <motion.div
-          ref={menuRef}
+            ref={menuRef}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -305,18 +309,6 @@ const Navbar = () => {
               >
                 Events
               </Link>
-              {/* shop - not needed right now */}
-              {/* <Link
-                to="/shop"
-                className={`transition-colors ${
-                  location.pathname === "/shop"
-                    ? "text-space-accent"
-                    : "text-white hover:text-space-light"
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Shop
-              </Link> */}
               <Link
                 to="/training"
                 className={`transition-colors ${
@@ -357,7 +349,7 @@ const Navbar = () => {
           </motion.div>
         )}
       </div>
-    </motion.nav>
+    </nav>
   );
 };
 

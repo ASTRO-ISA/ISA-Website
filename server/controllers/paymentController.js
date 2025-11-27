@@ -35,6 +35,7 @@ exports.initiatePayment = async (req, res) => {
       const webinar = await Webinar.findById(itemId)
       if (!webinar) return res.status(404).json({ error: 'Webinar not found' })
       realAmount = webinar.fee
+      itemSlug = webinar.slug
     } else if (item_type === 'event') {
       const event = await Event.findById(itemId)
       if (!event) return res.status(404).json({ error: 'Event not found' })
@@ -51,10 +52,12 @@ exports.initiatePayment = async (req, res) => {
       }
     
       realAmount = event.fee
+      itemSlug = event.slug
     } else if (item_type === 'course') {
       const course = await Course.findById(itemId)
       if (!course) return res.status(404).json({ error: 'Course not found' })
       realAmount = course.fee
+      itemSlug = course.slug
     } else {
       return res.status(400).json({ error: 'Invalid item type' })
     }
@@ -72,7 +75,7 @@ exports.initiatePayment = async (req, res) => {
     const transactionId = `TXN_${Date.now()}_${Math.floor(Math.random() * 1000)}`
 
     // frontend will redirect to this url after gateway payment page
-    const redirectUrl = `${process.env.ORIGIN_FRONTEND}/payment-status?orderId=${transactionId}&itemType=${item_type}&itemId=${itemId}`
+    const redirectUrl = `${process.env.ORIGIN_FRONTEND}/payment-status?orderId=${transactionId}&itemType=${item_type}&itemId=${itemId}&itemSlug=${itemSlug}`
 
     // save new transaction log in our database
     const newTx = await PaymentTransaction.create({

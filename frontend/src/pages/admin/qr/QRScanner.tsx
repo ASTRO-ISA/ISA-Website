@@ -5,9 +5,21 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { Helmet } from 'react-helmet-async'
 
-// Wrapper without facingMode
+// wrapper facing environment camera
 const QRScanner = ({ delay = 300, onScan, onError, style = {} }) => {
-  return <QrReader delay={delay} onScan={onScan} onError={onError} style={style} />
+  return (
+    <QrReader
+      delay={delay}
+      onScan={onScan}
+      onError={onError}
+      style={style}
+      constraints={{
+        video: {
+          facingMode: { ideal: 'environment' },
+        },
+      }}
+    />
+  )
 }
 
 const QRScannerPage = () => {
@@ -21,7 +33,7 @@ const QRScannerPage = () => {
   const [showAddScanners, setShowAddScanners] = useState(false)
   const [scannerEmail, setScannerEmail] = useState('')
 
-  // Fetch event details
+  // fetch event details
   const fetchEvent = async () => {
     try {
       const res = await api.get(`/events/${slug}`)
@@ -42,7 +54,7 @@ const canScan = () => {
   
     const isCreator = event.createdBy._id === userId
   
-    // Handle scanners as ObjectIds
+    // handle scanners as ObjectIds
     const isScanner = event.scanners.some(
       (s) => s.toString() === userId.toString()
     )
