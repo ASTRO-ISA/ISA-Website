@@ -4,7 +4,7 @@ const BlogCard = ({ blog }) => {
   if (!blog) return null;
 
   return (
-    <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer">
+    <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer self-start">
       <Link to={`/blogs/${blog.slug}`}>
         <div className="relative aspect-[16/9] sm:aspect-video">
           <img

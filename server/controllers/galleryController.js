@@ -110,17 +110,27 @@ exports.deletePics = async (req, res) => {
 
 exports.allPics = async (req, res) => {
   try {
-    const pics = await Gallery.find({})
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const skip = (page - 1) * limit;
+
+    const pics = await Gallery.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit);
+    const total = await Gallery.countDocuments();
+
     if (!pics) {
-      res.status(404).json({ message: 'Nothing to see here right now!' })
+      return res.status(404).json({ message: 'Nothing to see here right now!' });
     }
-    res.status(200).json(pics)
+
+    res.status(200).json({
+      data: pics,
+      total,
+      page,
+      limit,
+    });
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        message: 'something went wrong in getallpics',
-        error: err.message
-      })
+    res.status(500).json({
+      message: 'something went wrong in getallpics',
+      error: err.message,
+    });
   }
-}
+};

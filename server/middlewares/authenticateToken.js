@@ -25,6 +25,13 @@ function authenticateToken(req, res, next) {
     const success = await setUser(req, decoded)
     if (!success) return res.status(401).json({ message: 'User not found' })
 
+    // Check if user changed password after the token was issued
+    if (req.user.changePasswordAfter(decoded.iat)) {
+      return res
+        .status(401)
+        .json({ message: 'User recently changed password! Please log in again.' })
+    }
+
     next()
   })
 }

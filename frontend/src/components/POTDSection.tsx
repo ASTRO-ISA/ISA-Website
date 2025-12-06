@@ -108,9 +108,9 @@ const POTDSection = () => {
               <p className="text-sm text-gray-300 mb-3">
                 {pictureOfTheDay.title}
               </p>
-              <p className="text-sm text-gray-400 mb-3 hidden sm:block">
-                {pictureOfTheDay.explanation.slice(0, 300)}...
-              </p>
+              <div className="text-sm text-gray-400 mb-3 hidden sm:block overflow-y-auto max-h-24 pr-2">
+                {pictureOfTheDay.explanation}
+              </div>
               <p className="text-xs text-gray-500">
                 Courtesy: {pictureOfTheDay.copyright || "NASA"}
               </p>

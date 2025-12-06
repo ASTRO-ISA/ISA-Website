@@ -1,120 +1,316 @@
+// import { Link } from "react-router-dom";
+// import { useQuery } from "@tanstack/react-query";
+// import api from "@/lib/api";
+
+// const FeaturedSection = () => {
+//   const { data: featuredBlog } = useQuery({
+//     queryKey: ["featuredBlog"],
+//     queryFn: async () => (await api.get("/blogs/featured")).data || null,
+//   });
+
+//   const { data: featuredNews } = useQuery({
+//     queryKey: ["featuredNews"],
+//     queryFn: async () => (await api.get("/news/articles")).data?.[0] || null,
+//   });
+
+//   const { data: upcomingEvent } = useQuery({
+//     queryKey: ["upcomingEvent"],
+//     queryFn: async () => (await api.get("/events")).data?.[0] || null,
+//   });
+
+//   const { data: featuredWebinar } = useQuery({
+//     queryKey: ["featuredWebinar"],
+//     queryFn: async () => (await api.get("/webinars/featured")).data || null,
+//   });
+
+//   const cardClass =
+//     "cosmic-card flex flex-col flex-shrink-0 w-72 sm:w-80 lg:flex-1 lg:min-w-0 lg:max-w-none snap-start";
+
+//   return (
+//     <section className="mb-12 pt-16 px-4 sm:px-6">
+//       <div className="text-center mb-12">
+//         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+//           Top Picks
+//         </h2>
+//         <p className="text-xl text-gray-400 max-w-3xl mx-auto hidden md:block">
+//           Handpicked highlights: the best blogs, latest news, and upcoming events you shouldn’t miss.
+//         </p>
+//       </div>
+
+//       {/* Horizontal on mobile, grid-like on desktop */}
+//       <div className="overflow-x-auto lg:overflow-visible scrollbar-hide">
+//         <div className="flex gap-6 flex-nowrap lg:flex-wrap scroll-smooth snap-x snap-mandatory items-stretch justify-start lg:justify-center">
+
+//           {featuredBlog && (
+//             <div className={cardClass}>
+//               <Link to={`/blogs/${featuredBlog.slug}`} className="flex flex-col h-full">
+//                 <div className="h-[180px] shrink-0">
+//                   <img
+//                     src={featuredBlog.thumbnail}
+//                     alt={featuredBlog.title}
+//                     className="w-full h-full object-cover"
+//                     loading="lazy"
+//                   />
+//                 </div>
+//                 <div className="p-5 flex flex-col justify-between flex-1 h-[260px]">
+//                   <div>
+//                     <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
+//                       Featured Blog
+//                     </p>
+//                     <h3 className="text-lg font-bold mb-2 line-clamp-2">
+//                       {featuredBlog.title}
+//                     </h3>
+//                     <p className="text-sm text-gray-400 mb-2">
+//                       Date: {new Date(featuredBlog.createdAt).toLocaleDateString()}
+//                     </p>
+//                     <p className="text-sm text-gray-400 line-clamp-3">
+//                       {featuredBlog.description}
+//                     </p>
+//                   </div>
+//                   <p className="text-xs text-gray-500 mt-3">
+//                     Author: {featuredBlog.author?.name?.toUpperCase() || "UNKNOWN"}
+//                   </p>
+//                 </div>
+//               </Link>
+//             </div>
+//           )}
+
+//           {featuredNews && (
+//             <div className={cardClass}>
+//               <Link to={featuredNews.url} className="flex flex-col h-full">
+//                 <div className="h-[180px] shrink-0">
+//                   <img
+//                     src={featuredNews.image_url}
+//                     alt={featuredNews.title}
+//                     className="w-full h-full object-cover"
+//                     loading="lazy"
+//                   />
+//                 </div>
+//                 <div className="p-5 flex flex-col justify-between flex-1 h-[260px]">
+//                   <div>
+//                     <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
+//                       News
+//                     </p>
+//                     <h3 className="text-lg font-bold mb-2 line-clamp-2">
+//                       {featuredNews.title}
+//                     </h3>
+//                     <p className="text-sm text-gray-400 line-clamp-4">
+//                       {featuredNews.summary}
+//                     </p>
+//                   </div>
+//                   <p className="text-xs text-gray-500 mt-3">
+//                     Source: {featuredNews.news_site}
+//                   </p>
+//                 </div>
+//               </Link>
+//             </div>
+//           )}
+
+//           {(upcomingEvent || featuredWebinar) && (
+//             <div className={cardClass}>
+//               <Link
+//                 to={
+//                   upcomingEvent
+//                     ? `/events/${upcomingEvent.slug}`
+//                     : `/webinars/${featuredWebinar.slug}`
+//                 }
+//                 className="flex flex-col h-full"
+//               >
+//                 <div className="h-[180px] shrink-0">
+//                   <img
+//                     src={upcomingEvent ? upcomingEvent.thumbnail : featuredWebinar.thumbnail}
+//                     alt={upcomingEvent ? upcomingEvent.title : featuredWebinar.title}
+//                     className="w-full h-full object-cover"
+//                     loading="lazy"
+//                   />
+//                 </div>
+//                 <div className="p-5 flex flex-col justify-between flex-1 h-[260px]">
+//                   <div>
+//                     <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
+//                       {upcomingEvent ? "Upcoming Event" : "Featured Webinar"}
+//                     </p>
+//                     <h3 className="text-lg font-bold mb-2 line-clamp-2">
+//                       {upcomingEvent ? upcomingEvent.title : featuredWebinar.title}
+//                     </h3>
+//                     <p className="text-sm text-gray-400 line-clamp-3">
+//                       {upcomingEvent ? upcomingEvent.description : featuredWebinar.description}
+//                     </p>
+//                   </div>
+//                   <p className="text-xs text-gray-500 mt-3">
+//                     {upcomingEvent
+//                       ? `Venue: ${upcomingEvent.location}`
+//                       : `Presenter: ${featuredWebinar.presenter || "TBA"}`}
+//                   </p>
+//                 </div>
+//               </Link>
+//             </div>
+//           )}
+
+//         </div>
+//       </div>
+//     </section>
+//   );
+// };
+
+// export default FeaturedSection;
+
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import Skeleton from "@mui/material/Skeleton";
 import api from "@/lib/api";
 
 const FeaturedSection = () => {
-  // Featured Blog
-  const { data: featuredBlog } = useQuery({
+  const {
+    data: featuredBlog,
+    isLoading: blogLoading,
+  } = useQuery({
     queryKey: ["featuredBlog"],
-    queryFn: async () => {
-      const res = await api.get("/blogs/featured");
-      return res.data || null;
-    },
+    queryFn: async () => (await api.get("/blogs/featured")).data || null,
   });
 
-  // Featured News
-  const { data: featuredNews } = useQuery({
+  const {
+    data: featuredNews,
+    isLoading: newsLoading,
+  } = useQuery({
     queryKey: ["featuredNews"],
-    queryFn: async () => {
-      const res = await api.get("/news/articles");
-      return res.data?.[0] || null;
-    },
+    queryFn: async () => (await api.get("/news/articles")).data?.[0] || null,
   });
 
-  // Upcoming Event
-  const { data: upcomingEvent } = useQuery({
+  const {
+    data: upcomingEvent,
+    isLoading: eventLoading,
+  } = useQuery({
     queryKey: ["upcomingEvent"],
-    queryFn: async () => {
-      const res = await api.get("/events");
-      return res.data?.[0] || null;
-    },
+    queryFn: async () => (await api.get("/events")).data?.[0] || null,
   });
 
-  // Featured Webinar
-  const { data: featuredWebinar } = useQuery({
+  const {
+    data: featuredWebinar,
+    isLoading: webinarLoading,
+  } = useQuery({
     queryKey: ["featuredWebinar"],
-    queryFn: async () => {
-      const res = await api.get("/webinars/featured");
-      return res.data || null;
-    },
+    queryFn: async () => (await api.get("/webinars/featured")).data || null,
   });
+
+  const isLoading =
+    blogLoading || newsLoading || eventLoading || webinarLoading;
+
+  const cardClass =
+    "cosmic-card flex flex-col flex-shrink-0 w-72 sm:w-80 lg:flex-1 lg:min-w-0 lg:max-w-none snap-start";
+
+  const SkeletonCard = () => (
+    <div className={cardClass}>
+      <div className="h-[180px]">
+        <Skeleton
+          variant="rectangular"
+          width="100%"
+          height="100%"
+        />
+      </div>
+
+      <div className="p-5 flex flex-col justify-between flex-1 h-[260px]">
+        <div className="space-y-2">
+          <Skeleton variant="text" width="40%" height={18} />
+          <Skeleton variant="text" width="90%" height={22} />
+          <Skeleton variant="text" width="80%" />
+          <Skeleton variant="text" width="100%" />
+          <Skeleton variant="text" width="95%" />
+        </div>
+
+        <Skeleton variant="text" width="50%" height={14} />
+      </div>
+    </div>
+  );
 
   return (
-    <section className="mb-12 py-4 pt-16 px-4 sm:px-6 ">
+    <section className="mb-12 pt-16 px-4 sm:px-6">
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
           Top Picks
         </h2>
         <p className="text-xl text-gray-400 max-w-3xl mx-auto hidden md:block">
-          Handpicked highlights: the best blogs, latest news, and upcoming
-          events you shouldn’t miss.
+          Handpicked highlights: the best blogs, latest news, and upcoming events
+          you shouldn’t miss.
         </p>
       </div>
 
-      {/* Responsive Scroll Wrapper */}
-      <div className="overflow-x-auto lg:overflow-visible scrollbar-hide scroll-smooth snap-x snap-mandatory">
-        <div className="flex lg:grid lg:grid-cols-3 gap-6 min-w-[680px] lg:min-w-0">
-          {/* Featured Blog */}
-          {featuredBlog && (
-            <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer flex-shrink-0 w-72 sm:w-auto snap-start">
-              <Link to={`/blogs/${featuredBlog.slug}`}>
-                <div className="relative aspect-[16/9] sm:aspect-video">
+      {/* Horizontal on mobile, grid-like on desktop */}
+      <div className="overflow-x-auto lg:overflow-visible scrollbar-hide">
+        <div className="flex gap-6 flex-nowrap lg:flex-wrap scroll-smooth snap-x snap-mandatory items-stretch justify-start lg:justify-center">
+
+          {isLoading && (
+            <>
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </>
+          )}
+
+          {!isLoading && featuredBlog && (
+            <div className={cardClass}>
+              <Link to={`/blogs/${featuredBlog.slug}`} className="flex flex-col h-full">
+                <div className="h-[180px] shrink-0">
                   <img
                     src={featuredBlog.thumbnail}
                     alt={featuredBlog.title}
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0" />
                 </div>
-                <div className="p-4 sm:p-6">
-                  <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
-                    Featured Blog
-                  </p>
-                  <h3 className="text-lg sm:text-xl font-bold mb-2">
-                    {featuredBlog.title}
-                  </h3>
-                  <p className="text-sm text-gray-400 mb-2">
-                    Date: {new Date(featuredBlog.createdAt).toLocaleDateString()}
-                  </p>
-                  <p className="text-sm text-gray-400 mb-3 sm:block">
-                    {featuredBlog.description}
-                  </p>
-                  <p className="text-xs text-gray-500">
+                <div className="p-5 flex flex-col justify-between flex-1 h-[260px]">
+                  <div>
+                    <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
+                      Featured Blog
+                    </p>
+                    <h3 className="text-lg font-bold mb-2 line-clamp-2">
+                      {featuredBlog.title}
+                    </h3>
+                    <p className="text-sm text-gray-400 mb-2">
+                      Date:{" "}
+                      {new Date(
+                        featuredBlog.createdAt
+                      ).toLocaleDateString()}
+                    </p>
+                    <p className="text-sm text-gray-400 line-clamp-3 overflow-y-auto max-h-24 pr-2">
+                      {featuredBlog.description}
+                    </p>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-3">
                     Author:{" "}
-                    {featuredBlog.author?.name
-                      ? featuredBlog.author.name.toUpperCase()
-                      : "Unknown"}
+                    {featuredBlog.author?.name?.toUpperCase() || "UNKNOWN"}
                   </p>
                 </div>
               </Link>
             </div>
           )}
 
-          {/* Featured News */}
-          {featuredNews && (
-            <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer flex-shrink-0 w-72 sm:w-auto snap-start">
-              <Link to={featuredNews.url}>
-                <div className="relative aspect-[16/9] sm:aspect-video">
+          {!isLoading && featuredNews && (
+            <div className={cardClass}>
+              <Link to={featuredNews.url} 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col h-full">
+                <div className="h-[180px] shrink-0">
                   <img
                     src={featuredNews.image_url}
                     alt={featuredNews.title}
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0" />
                 </div>
-                <div className="p-4 sm:p-6">
-                  <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
-                    News
-                  </p>
-                  <h3 className="text-lg sm:text-xl font-bold mb-2">
-                    {featuredNews.title}
-                  </h3>
-                  <p className="text-sm text-gray-400 mb-3 sm:block">
-                    {featuredNews.summary.slice(0, 150)}...
-                  </p>
-                  <p className="text-xs text-gray-500">
+                <div className="p-5 flex flex-col justify-between flex-1 h-[260px]">
+                  <div>
+                    <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
+                      News
+                    </p>
+                    <h3 className="text-lg font-bold mb-2 line-clamp-2">
+                      {featuredNews.title}
+                    </h3>
+                    <p className="text-sm text-gray-400 line-clamp-4 overflow-y-auto max-h-24 pr-2">
+                      {featuredNews.summary}
+                    </p>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-3">
                     Source: {featuredNews.news_site}
                   </p>
                 </div>
@@ -122,76 +318,62 @@ const FeaturedSection = () => {
             </div>
           )}
 
-          {/* Upcoming Event OR Featured Webinar */}
-          {upcomingEvent ? (
-            <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer flex-shrink-0 w-72 sm:w-auto snap-start">
-              <Link to={`/events/${upcomingEvent.slug}`}>
-                <div className="relative aspect-[16/9] sm:aspect-video">
+          {!isLoading && (upcomingEvent || featuredWebinar) && (
+            <div className={cardClass}>
+              <Link
+                to={
+                  upcomingEvent
+                    ? `/events/${upcomingEvent.slug}`
+                    : `/webinars/${featuredWebinar.slug}`
+                }
+                className="flex flex-col h-full"
+              >
+                <div className="h-[180px] shrink-0">
                   <img
-                    src={upcomingEvent.thumbnail}
-                    alt={upcomingEvent.title}
+                    src={
+                      upcomingEvent
+                        ? upcomingEvent.thumbnail
+                        : featuredWebinar.thumbnail
+                    }
+                    alt={
+                      upcomingEvent
+                        ? upcomingEvent.title
+                        : featuredWebinar.title
+                    }
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0" />
                 </div>
-                <div className="p-4 sm:p-6">
-                  <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
-                    Upcoming Event
-                  </p>
-                  <h3 className="text-lg sm:text-xl font-bold mb-2">
-                    {upcomingEvent.title}
-                  </h3>
-                  <p className="text-sm text-gray-400 mb-2">
-                    Date:{" "}
-                    {new Date(upcomingEvent.eventDate).toLocaleDateString()}
-                  </p>
-                  <p className="text-sm text-gray-400 mb-3 sm:block">
-                    {upcomingEvent.description.slice(0, 150)}...
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    Venue: {upcomingEvent.location}
+                <div className="p-5 flex flex-col justify-between flex-1 h-[260px]">
+                  <div>
+                    <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
+                      {upcomingEvent
+                        ? "Upcoming Event"
+                        : "Featured Webinar"}
+                    </p>
+                    <h3 className="text-lg font-bold mb-2 line-clamp-2">
+                      {upcomingEvent
+                        ? upcomingEvent.title
+                        : featuredWebinar.title}
+                    </h3>
+                    <p className="text-sm text-gray-400 line-clamp-3 overflow-y-auto max-h-24 pr-2">
+                      {upcomingEvent
+                        ? upcomingEvent.description
+                        : featuredWebinar.description}
+                    </p>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-3">
+                    {upcomingEvent
+                      ? `Venue: ${upcomingEvent.location}`
+                      : `Presenter: ${
+                          featuredWebinar.presenter || "TBA"
+                        }`}
                   </p>
                 </div>
               </Link>
             </div>
-          ) : (
-            featuredWebinar && (
-              <div className="cosmic-card overflow-hidden shadow-lg cursor-pointer flex-shrink-0 w-72 sm:w-auto snap-start">
-                <Link to={`/webinars/${featuredWebinar.slug}`}>
-                  <div className="relative aspect-[16/9] sm:aspect-video">
-                    <img
-                      src={featuredWebinar.thumbnail}
-                      alt={featuredWebinar.title}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0" />
-                  </div>
-                  <div className="p-4 sm:p-6">
-                    <p className="uppercase text-xs font-bold tracking-widest text-space-accent mb-2">
-                      Featured Webinar
-                    </p>
-                    <h3 className="text-lg sm:text-xl font-bold mb-2">
-                      {featuredWebinar.title}
-                    </h3>
-                    <p className="text-sm text-gray-400 mb-2">
-                      Date:{" "}
-                      {new Date(
-                        featuredWebinar.webinarDate
-                      ).toLocaleDateString()}
-                    </p>
-                    <p className="text-sm text-gray-400 mb-3 sm:block">
-                      {featuredWebinar.description.slice(0, 150)}...
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Presenter: {featuredWebinar.presenter || "TBA"}
-                    </p>
-                  </div>
-                </Link>
-              </div>
-            )
           )}
+
         </div>
       </div>
     </section>

@@ -2,137 +2,148 @@ import api from '@/lib/api';
 import { useEffect, useRef, useState } from 'react';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
-import Captions from "yet-another-react-lightbox/plugins/captions";
-import "yet-another-react-lightbox/plugins/captions.css";
-import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import Captions from 'yet-another-react-lightbox/plugins/captions';
+import 'yet-another-react-lightbox/plugins/captions.css';
+import Zoom from 'yet-another-react-lightbox/plugins/zoom';
+import { CircularProgress, Skeleton } from '@mui/material';
 
 const GallerySection = () => {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
-  const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [galleryImages, setGalleryImages] = useState<any[]>([]);
+  const [lightboxImages, setLightboxImages] = useState<any[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const loadMoreImages = async () => {
+    if (!hasMore || loadingMore) return;
+
+    setLoadingMore(true);
+
+    try {
+      const res = await api.get(`/gallery?page=${page + 1}&limit=4`);
+      const { data, total } = res.data;
+
+      if (data.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      const newImages = data.map((img: any) => ({
+        _id: img._id,
+        src: img.imageUrl,
+        caption: img.caption || '',
+      }));
+
+      setLightboxImages((prev) => [...prev, ...newImages]);
+      setPage((prev) => prev + 1);
+      setHasMore(lightboxImages.length + newImages.length < total);
+    } catch (err) {
+      console.error('Error fetching more images', err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   useEffect(() => {
-    setLoading(true);
-    api
-      .get('/gallery')
-      .then((res) => {
-        setImages(
-          res.data.map((img) => ({
-            _id: img._id,
-            src: img.imageUrl,
-            caption: img.caption || "",
-          }))
-        );
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching gallery.", err);
-        setLoading(false);
-      });
+    api.get('/gallery?page=1&limit=4').then((res) => {
+      const { data, total } = res.data;
+      const images = data.map((img: any) => ({
+        _id: img._id,
+        src: img.imageUrl,
+        caption: img.caption || '',
+      }));
+
+      setGalleryImages(images);
+      setLightboxImages(images);
+      setHasMore(images.length < total);
+      setInitialLoading(false);
+    });
   }, []);
-
-  const displayedImages = [...images].reverse().slice(0, 4);
-
-  const handleScroll = () => {
-    const scrollX = scrollRef.current?.scrollLeft || 0;
-    const width = scrollRef.current?.offsetWidth || 1;
-    const index = Math.round(scrollX / width);
-    setActiveIndex(index);
-  };
 
   return (
     <section className="py-10 bg-space-dark">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+                <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">ISA Club Gallery</h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto hidden md:block">
             Explore our community activities, workshops, and astronomical observations.
           </p>
         </div>
-
-        {/* Horizontal scroll on mobile */}
-        <div className="md:hidden overflow-hidden">
-          <div
-            ref={scrollRef}
-            onScroll={handleScroll}
-            className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth snap-x"
-          >
-            {displayedImages.map((image, i) => (
-              <div
-                key={i}
-                onClick={() => {
-                  setOpen(true);
-                  setIndex(i);
-                }}
-                className="w-72 flex-shrink-0 snap-start group overflow-hidden rounded-lg relative animate-fade-in cursor-pointer"
-                style={{ animationDelay: `${i * 0.1}s` }}
-              >
+        {/* Mobile Horizontal Scroll */}
+<div className="flex md:hidden gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+  {initialLoading
+    ? Array.from({ length: 4 }).map((_, i) => (
+        <Skeleton
+          key={i}
+          variant="rectangular"
+          width={240}
+          height={240}
+          className="flex-shrink-0 snap-start"
+        />
+      ))
+    : galleryImages.map((img, i) => (
+        <img
+          key={img._id}
+          src={img.src}
+          className="h-60 w-60 object-cover rounded cursor-pointer flex-shrink-0 snap-start"
+          onClick={() => {
+            setOpen(true);
+            setIndex(i);
+          }}
+        />
+      ))}
+</div>
+        <div className="hidden md:grid grid-cols-4 gap-4">
+          {initialLoading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} variant="rectangular" height={256} />
+              ))
+            : galleryImages.map((img, i) => (
                 <img
-                  src={image.src}
-                  alt={image.caption}
-                  className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                  key={img._id}
+                  src={img.src}
+                  className="h-64 w-full object-cover rounded cursor-pointer"
+                  onClick={() => {
+                    setOpen(true);
+                    setIndex(i);
+                  }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                  <p className="text-white font-medium">{image.caption}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Dot indicators */}
-          <div className="flex justify-center mt-4">
-            {displayedImages.map((_, i) => (
-              <div
-                key={i}
-                className={`w-2 h-2 mx-1 rounded-full transition-all duration-300 ${
-                  activeIndex === i ? 'bg-white' : 'bg-gray-500/50'
-                }`}
-              ></div>
-            ))}
-          </div>
-        </div>
-
-        {/* Grid for desktop view */}
-        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {displayedImages.map((image, i) => (
-            <div
-              key={i}
-              onClick={() => {
-                setOpen(true);
-                setIndex(i);
-              }}
-              className="group overflow-hidden rounded-lg relative animate-fade-in cursor-pointer"
-              style={{ animationDelay: `${i * 0.1}s` }}
-            >
-              <img
-                src={image.src}
-                alt={image.caption}
-                className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                <p className="text-white font-medium">{image.caption}</p>
-              </div>
-            </div>
-          ))}
+              ))}
         </div>
 
         <Lightbox
           open={open}
           close={() => setOpen(false)}
           index={index}
-          slides={displayedImages.map(img => ({ src: img.src, description: img.caption }))}
-          plugins={[Captions, Zoom]}
+          slides={lightboxImages.map((img) => ({
+            src: img.src,
+            description: img.caption,
+          }))}
+          plugins={[Zoom, Captions]}
+          on={{
+            view: ({ index: current }) => {
+              setIndex(current);
+              if (
+                current >= lightboxImages.length - 2 &&
+                hasMore &&
+                !loadingMore
+              ) {
+                loadMoreImages();
+              }
+            },
+          }}
+          render={{
+            controls: () =>
+              loadingMore ? (
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+                  <CircularProgress />
+                </div>
+              ) : null,
+          }}
         />
-
-        {/* <div className="text-center mt-12">
-          <button className="inline-flex items-center justify-center px-6 py-3 border border-space-purple text-space-light hover:bg-space-purple/20 rounded-md text-lg font-medium transition-colors">
-            <a href="https://www.instagram.com/isa.astrospace?igsh=cGgyeDB3M2d4dDJ5">View More Photos</a>
-          </button>
-        </div> */}
       </div>
     </section>
   );
