@@ -21,3 +21,4 @@ npm run dev
 
 # Step 6: Copy the localhost link and open it in the browser.
 ```
+have fun
