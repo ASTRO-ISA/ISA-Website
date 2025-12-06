@@ -82,7 +82,7 @@ const HeroSection = () => {
 
       <div
         ref={heroRef}
-        className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden w-full max-w-full"
+        className="relative h-[100svh] flex flex-col items-center justify-center overflow-hidden w-full max-w-full"
       >
         <div className="stars"></div>
         <div className="stars2"></div>
