@@ -167,6 +167,34 @@
   white-space: normal;
 }
 
+/* Custom styles for yet-another-react-lightbox captions */
+.yarl__slide_description {
+  max-height: 200px; /* Adjust as needed */
+  overflow-y: auto;
+  /* Optional: Style the scrollbar for better appearance */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(110, 89, 165, 0.7) rgba(26, 31, 44, 0.5); /* thumb color track color */
+}
+
+/* For Webkit browsers (Chrome, Safari, Edge) */
+.yarl__slide_description::-webkit-scrollbar {
+  width: 8px;
+}
+
+.yarl__slide_description::-webkit-scrollbar-track {
+  background: rgba(26, 31, 44, 0.5);
+  border-radius: 10px;
+}
+
+.yarl__slide_description::-webkit-scrollbar-thumb {
+  background: rgba(110, 89, 165, 0.7);
+  border-radius: 10px;
+}
+
+.yarl__slide_description::-webkit-scrollbar-thumb:hover {
+  background: rgba(110, 89, 165, 1);
+}
+
 /*trying new font and bg for homepage*/
 /* Starfield */
 .stars {

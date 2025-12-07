@@ -5,6 +5,7 @@ import { Skeleton } from "@mui/material";
 
 const EventsCalendar = () => {
   const [launches, setLaunches] = useState([]);
+  console.log(launches);
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -99,7 +100,7 @@ const EventsCalendar = () => {
                     <img
                       src={launch.image?.image_url}
                       loading="lazy"
-                      alt="event"
+                      alt={launch.name}
                     />
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">

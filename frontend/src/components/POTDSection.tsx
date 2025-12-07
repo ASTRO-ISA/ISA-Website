@@ -188,7 +188,7 @@ const POTDSection = () => {
           slides={pictureSlides}
           plugins={[Captions, Zoom]}
           carousel={{
-            finite: true, // disables infinite loop if we hae single image
+            finite: true, // disables infinite loop if we have single image
           }}
           controller={{
             closeOnBackdropClick: true,

@@ -1,5 +1,5 @@
 import api from '@/lib/api';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import Captions from 'yet-another-react-lightbox/plugins/captions';
@@ -76,24 +76,38 @@ const GallerySection = () => {
 <div className="flex md:hidden gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
   {initialLoading
     ? Array.from({ length: 4 }).map((_, i) => (
-        <Skeleton
-          key={i}
-          variant="rectangular"
-          width={240}
-          height={240}
-          className="flex-shrink-0 snap-start"
-        />
+                <div
+                  key={i}
+                  className="flex-shrink-0 snap-start w-60 h-60 rounded-xl bg-space-dark/70 border border-space-purple/30 overflow-hidden"
+                >
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height="100%"
+                    animation="wave"
+                  />
+                </div>
       ))
     : galleryImages.map((img, i) => (
-        <img
+        <div
           key={img._id}
-          src={img.src}
-          className="h-60 w-60 object-cover rounded cursor-pointer flex-shrink-0 snap-start"
+          className="relative group h-60 w-60 rounded overflow-hidden cursor-pointer flex-shrink-0 snap-start"
           onClick={() => {
             setOpen(true);
             setIndex(i);
           }}
-        />
+        >
+          <img
+            src={img.src}
+            alt={img.caption || 'Gallery image'}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <p className="text-white text-lg font-semibold text-center px-4">
+              {img.caption}
+            </p>
+          </div>
+        </div>
       ))}
 </div>
         <div className="hidden md:grid grid-cols-4 gap-4">
@@ -102,15 +116,25 @@ const GallerySection = () => {
                 <Skeleton key={i} variant="rectangular" height={256} />
               ))
             : galleryImages.map((img, i) => (
-                <img
+                <div
                   key={img._id}
-                  src={img.src}
-                  className="h-64 w-full object-cover rounded cursor-pointer"
+                  className="relative group h-64 w-full rounded overflow-hidden cursor-pointer"
                   onClick={() => {
                     setOpen(true);
                     setIndex(i);
                   }}
-                />
+                >
+                  <img
+                    src={img.src}
+                    alt={img.caption || 'Gallery image'}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="text-white text-lg font-semibold text-center px-4">
+                      {img.caption}
+                    </p>
+                  </div>
+                </div>
               ))}
         </div>
 
