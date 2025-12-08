@@ -1,28 +1,15 @@
-
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import StarBackground from "@/components/StarBackground";
 import { Helmet } from "react-helmet-async";
 
 const NotFound = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
-
   return (
     <div className="min-h-screen flex items-center justify-center  text-white">
       <Helmet>
         <title>404 Not Found | ISA-India</title>
         <meta name="description" content="Page not found." />
       </Helmet>
-      <StarBackground />
+      {/* <StarBackground /> */}
       <div className="text-center px-4">
         <h1 className="text-9xl font-bold mb-4 text-space-accent">404</h1>
         <p className="text-3xl mb-6">Houston, we have a problem!</p>
