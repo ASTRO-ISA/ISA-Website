@@ -85,6 +85,7 @@ const GallerySection = () => {
                     width="100%"
                     height="100%"
                     animation="wave"
+                    sx={{ bgcolor: "rgba(255,255,255,0.12)" }}
                   />
                 </div>
       ))
